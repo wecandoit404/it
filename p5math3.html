@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>五行元素通關戰｜圖形的 S 與 C</title>
+<style>
+  :root{
+    --bg:#0e1220; --panel:#fffaf0; --ink:#20242f; --line:#171821;
+    --gold:#ffd257; --good:#3fbf72; --bad:#ef5b3f; --muted:#6f7480;
+    --font:"PingFang TC","Microsoft JhengHei","Noto Sans TC","Hiragino Sans TC",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink); font-family:var(--font);
+    min-height:100vh; display:flex; padding:10px;
+  }
+  body::after{
+    content:""; position:fixed; inset:0; z-index:99; pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.055) 0 1px,transparent 1px 3px);
+  }
+  .wrap{width:100%;max-width:1180px;margin:auto;}
+  .panel{background:var(--panel);border:3px solid var(--line);box-shadow:8px 8px 0 #000;overflow:hidden;}
+  .hidden{display:none !important;}
+  .spriteDefs{position:absolute;width:0;height:0;overflow:hidden;}
+  /* SVG 共用色票：每個 symbol 用 --a/--l/--d/--g 換色 */
+  .sa{fill:var(--a);stroke:#171821;stroke-width:2;stroke-linejoin:miter;}
+  .sl{fill:var(--l);stroke:#171821;stroke-width:2;stroke-linejoin:miter;}
+  .sd{fill:var(--d);stroke:#171821;stroke-width:2;stroke-linejoin:miter;}
+  .sg{fill:var(--g);stroke:#171821;stroke-width:2;stroke-linejoin:miter;}
+  .eye{fill:#171821;}
+  svg[class*="spr"],.heroCard svg,.enemySpr,.pickCard svg{shape-rendering:crispEdges;image-rendering:pixelated;}
+
+  /* ── HUD ── */
+  .hud{
+    display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 12px;
+    background:linear-gradient(90deg,#ffd257,#f5a623);border-bottom:3px solid var(--line);
+    color:#3a2a00;font-weight:900;
+  }
+  .hud .title{font-size:18px;letter-spacing:1px;}
+  .hud .pill{background:#fff;border:2px solid var(--line);padding:3px 9px;font-size:12.5px;box-shadow:2px 2px 0 var(--line);white-space:nowrap;}
+  .hud .grow{flex:1;}
+  .hud .miniBtn{
+    font-family:var(--font);font-weight:900;font-size:12.5px;cursor:pointer;
+    background:#fff;border:2px solid var(--line);padding:4px 9px;box-shadow:2px 2px 0 var(--line);
+  }
+  .hud .miniBtn:active{transform:translate(2px,2px);box-shadow:none;}
+  .prog{display:flex;gap:5px;align-items:center;}
+  .prog i{width:17px;height:17px;border:2px solid var(--line);background:#fff;display:block;box-shadow:1px 1px 0 var(--line);}
+  .prog i.done{background:var(--good);}
+  .prog i.now{background:var(--gold);animation:pulse .9s ease-in-out infinite;}
+  .prog i.boss{width:14px;height:14px;transform:rotate(45deg);margin:0 2px;}
+  .prog i.boss.now{background:var(--bad);}
+  @keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
+  .prog i.boss.now{animation:none;box-shadow:0 0 0 3px #ffd257;}
+
+  /* ── 戰場 ── */
+  .arena{
+    position:relative;display:grid;grid-template-columns:1.15fr .85fr;
+    min-height:250px;border-bottom:3px solid var(--line);background:#1b2340;overflow:hidden;
+  }
+  .arena .bg{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+  /* 只讓兩個欄位參與格線；提示膠囊／閃光／傷害層必須維持絕對定位 */
+  .arena>.teamSide,.arena>.enemySide{position:relative;z-index:1;}
+  .teamSide{padding:10px 12px;display:flex;flex-direction:column;gap:7px;justify-content:center;}
+  .sideLabel{font-size:12px;font-weight:900;color:#fff;background:#171821;display:inline-block;padding:3px 9px;align-self:flex-start;border:2px solid #fff;}
+  .team{display:flex;gap:8px;flex-wrap:wrap;}
+  .heroCard{
+    width:104px;background:#fffaf0;border:3px solid var(--line);box-shadow:3px 3px 0 #000;
+    cursor:pointer;padding:5px 4px 6px;text-align:center;position:relative;
+  }
+  .heroCard.sel{background:#fff3cf;outline:3px solid var(--gold);outline-offset:2px;}
+  .heroCard.sel::after{content:"出戰";position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold);border:2px solid var(--line);font-size:10px;font-weight:900;padding:0 5px;white-space:nowrap;}
+  .heroCard.down{filter:grayscale(1);opacity:.5;cursor:not-allowed;}
+  .heroCard svg{width:50px;height:50px;display:block;margin:0 auto;}
+  .heroCard .nm{font-size:11.5px;font-weight:900;line-height:1.25;}
+  .heroCard .el{font-size:10.5px;font-weight:900;}
+  .hpbar{height:9px;background:#e5dfd0;border:2px solid var(--line);margin-top:4px;text-align:left;}
+  .hpbar i{display:block;height:100%;background:var(--good);}
+  .hpbar i.mid{background:#f5a623;}
+  .hpbar i.low{background:var(--bad);}
+  .hpnum{font-size:10px;font-weight:900;margin-top:2px;}
+  .enemySide{padding:10px 14px;display:flex;align-items:center;justify-content:center;}
+  .enemyCard{background:#fffaf0;border:3px solid var(--line);box-shadow:4px 4px 0 #000;padding:7px 12px 9px;min-width:236px;text-align:center;}
+  .enemyTop{display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:900;}
+  .elBadge{font-size:11px;font-weight:900;color:#fff;border:2px solid var(--line);padding:1px 7px;box-shadow:2px 2px 0 var(--line);}
+  .elBadge.metal{background:#a9861f;} .elBadge.wood{background:#2b7d47;}
+  .elBadge.water{background:#1d6fa5;} .elBadge.fire{background:#b52d1f;} .elBadge.earth{background:#86552a;}
+  .enemySpr{width:100px;height:100px;display:block;margin:1px auto 2px;}
+  .hpLine{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:900;}
+  .hpLine .bar{flex:1;height:13px;background:#e5dfd0;border:2px solid var(--line);}
+  .hpLine .bar > i{display:block;height:100%;background:var(--bad);transition:width .35s ease;}
+  .matchTip{font-size:11px;font-weight:800;color:#7a4b06;background:#fff3d6;border:2px dashed #e2c98c;padding:4px 6px;margin-top:5px;line-height:1.35;}
+  .turnPill{
+    position:absolute;top:7px;left:50%;transform:translateX(-50%);z-index:3;
+    background:#fff;border:2px solid var(--line);padding:3px 11px;font-weight:900;font-size:11.5px;
+    box-shadow:2px 2px 0 #000;white-space:nowrap;
+  }
+  .flash{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .2s;}
+  .flash.on{opacity:1;}
+  .floatLayer{position:absolute;inset:0;z-index:5;pointer-events:none;}
+  .floatDmg{position:absolute;font-size:26px;font-weight:900;color:#fff;text-shadow:2px 2px 0 #000,-2px -2px 0 #000;animation:floatUp .95s ease-out forwards;white-space:nowrap;}
+  @keyframes floatUp{0%{transform:translateY(0) scale(.5);opacity:0;}25%{transform:translateY(-10px) scale(1.15);opacity:1;}100%{transform:translateY(-58px) scale(1);opacity:0;}}
+  @keyframes lunge{0%{transform:translateX(0);}45%{transform:translateX(26px) scale(1.07);}100%{transform:translateX(0);}}
+  @keyframes lungeE{0%{transform:translateX(0);}45%{transform:translateX(-26px) scale(1.07);}100%{transform:translateX(0);}}
+  @keyframes shake{0%,100%{margin-left:0;}20%{margin-left:-7px;}40%{margin-left:7px;}60%{margin-left:-5px;}80%{margin-left:5px;}}
+  .atk{animation:lunge .5s ease;} .atkE{animation:lungeE .5s ease;} .hurt{animation:shake .45s ease;}
+
+  /* ── 作答區 ── */
+  .board{padding:10px 14px 12px;background:var(--panel);}
+  .qHead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;}
+  .qTag{background:#20303f;color:#fff;padding:3px 10px;font-weight:900;font-size:12px;border:2px solid var(--line);}
+  .who{font-size:12.5px;font-weight:900;}
+  .miniBtn2{
+    font-family:var(--font);font-weight:900;font-size:12px;cursor:pointer;
+    background:#fff;border:2px solid var(--line);padding:3px 9px;box-shadow:2px 2px 0 var(--line);
+  }
+  .miniBtn2:active{transform:translate(2px,2px);box-shadow:none;}
+  .hintBox{margin:0 0 6px;background:#fff3d6;border:2px dashed #e2c98c;padding:4px 9px;font-size:12.5px;font-weight:800;color:#7a4b06;}
+  .qText{font-size:20px;font-weight:900;line-height:1.45;min-height:48px;margin:2px 0 8px;}
+  .opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .opt{
+    display:flex;align-items:center;gap:9px;background:#fff;border:3px solid var(--line);
+    box-shadow:3px 3px 0 #000;padding:7px 10px;font-size:16.5px;font-weight:900;
+    cursor:pointer;text-align:left;font-family:var(--font);color:var(--ink);min-height:44px;
+  }
+  .opt i{font-style:normal;width:25px;height:25px;flex:0 0 25px;background:var(--gold);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;}
+  .opt:hover:not(:disabled){background:#fff3cf;}
+  .opt:active:not(:disabled){transform:translate(2px,2px);box-shadow:1px 1px 0 #000;}
+  .opt.right{background:#d6f5df;border-color:#1d7a45;}
+  .opt.wrong{background:#ffd9d1;border-color:#a92a1a;}
+  .opt:disabled{cursor:default;}
+  .explain{margin-top:8px;border:3px solid var(--line);background:#f1f8f3;padding:7px 10px;font-size:13px;line-height:1.55;box-shadow:3px 3px 0 #000;}
+  .explain .exHead{font-weight:900;font-size:14.5px;color:#0e7a4a;}
+  .explain .exHead.no{color:#b52d1f;}
+  .explain .exAns b{font-size:15px;color:#0e7a4a;}
+  .explain .exExtra{color:#8a5b06;font-weight:800;}
+  .boardFoot{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:8px;}
+  .meter{font-size:12.5px;font-weight:900;background:#fff;border:2px solid var(--line);padding:4px 9px;box-shadow:2px 2px 0 var(--line);}
+  .bigBtn{
+    font-family:var(--font);font-weight:900;font-size:16px;cursor:pointer;color:#fff;
+    background:#b52d1f;border:3px solid var(--line);padding:9px 20px;box-shadow:4px 4px 0 #000;letter-spacing:1px;
+  }
+  .bigBtn.green{background:#1d7a45;} .bigBtn.gold{background:#a9861f;} .bigBtn.blue{background:#1d6fa5;}
+  .bigBtn:disabled{background:#9b9b9b;cursor:not-allowed;box-shadow:2px 2px 0 #000;}
+  .bigBtn:active:not(:disabled){transform:translate(3px,3px);box-shadow:1px 1px 0 #000;}
+  .log{border-top:3px solid var(--line);background:#f3efe3;padding:5px 14px;min-height:40px;font-size:11.5px;font-weight:700;color:#4a4a55;line-height:1.5;}
+  .log div{border-bottom:1px dotted #d6cfba;padding:1px 0;}
+
+  /* ── 覆蓋層 ── */
+  .overlay{
+    position:fixed;inset:0;z-index:60;display:flex;align-items:safe center;justify-content:center;
+    background:rgba(8,10,20,.84);padding:18px;overflow:auto;
+  }
+  .startCard,.modalCard{
+    background:var(--panel);border:4px solid var(--line);box-shadow:10px 10px 0 #000;
+    padding:16px 22px 20px;max-width:920px;width:100%;text-align:center;
+  }
+  .eyebrow{display:inline-block;background:#20303f;color:#fff;font-size:11.5px;font-weight:900;letter-spacing:.14em;padding:4px 12px;border:2px solid var(--line);}
+  .startCard h1{font-size:32px;margin:8px 0 4px;letter-spacing:2px;}
+  .startCard .sub{font-size:14.5px;font-weight:800;color:#4a4a55;margin:0 0 10px;}
+  .rules{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;}
+  .rules span{background:#fff3d6;border:2px solid #e2c98c;font-size:11.5px;font-weight:800;padding:3px 9px;}
+  .heroPick{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin:10px 0;}
+  .pickCard{width:134px;background:#fff;border:3px solid var(--line);box-shadow:3px 3px 0 #000;padding:7px 6px;cursor:pointer;}
+  .pickCard.sel{background:#fff3cf;outline:3px solid var(--gold);outline-offset:2px;}
+  .pickCard svg{width:62px;height:62px;display:block;margin:0 auto;}
+  .pickCard .pn{font-size:14.5px;font-weight:900;}
+  .pickCard .ps{font-size:10.5px;color:#4a4a55;line-height:1.4;margin-top:2px;}
+  .pickCard .sk{font-size:10.5px;font-weight:800;color:#7a4b06;background:#fff3d6;border:2px solid #e2c98c;padding:2px;margin-top:4px;}
+  .cycle{font-size:12px;font-weight:800;color:#4a4a55;margin:8px 0 12px;}
+  .mTitle{font-size:25px;font-weight:900;margin-bottom:6px;}
+  .mBody{font-size:14.5px;font-weight:700;line-height:1.7;color:#3f4350;margin-bottom:12px;}
+  .mBtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .modalSprite{width:92px;height:92px;display:block;margin:0 auto 6px;}
+  .banner{
+    position:fixed;inset:0;z-index:55;display:flex;align-items:center;justify-content:center;
+    pointer-events:none;font-size:34px;font-weight:900;color:#fff;
+    text-shadow:3px 3px 0 #000,-2px -2px 0 #000;letter-spacing:2px;text-align:center;padding:20px;
+  }
+  .banner.show{animation:bannerPop 1.15s ease forwards;}
+  @keyframes bannerPop{0%{opacity:0;transform:scale(.7);}22%{opacity:1;transform:scale(1.06);}75%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(1.04);}}
+
+  /* ── 公式小抄 ── */
+  .cheat{position:fixed;inset:0;z-index:70;background:rgba(8,10,20,.88);display:flex;align-items:safe center;justify-content:center;padding:18px;overflow:auto;}
+  .cheatCard{background:#fffaf0;border:4px solid var(--line);box-shadow:10px 10px 0 #000;padding:14px 18px;max-width:760px;width:100%;}
+  .cheatCard h2{font-size:21px;margin:0 0 8px;}
+  .cheatCard table{width:100%;border-collapse:collapse;font-size:13px;}
+  .cheatCard th,.cheatCard td{border:2px solid var(--line);padding:5px 8px;text-align:left;}
+  .cheatCard th{background:#20303f;color:#fff;}
+  .cheatCard td.f{font-family:"Cambria Math",Georgia,serif;font-size:14.5px;font-weight:800;white-space:nowrap;}
+  .cheatCard .blk{margin-top:9px;border:2px dashed #e2c98c;background:#fff8e6;padding:8px 10px;font-size:12.5px;line-height:1.65;font-weight:700;}
+  .cheatCard .blk b{color:#8a5b06;}
+
+  /* ── 直屏 / 窄螢幕 ── */
+  @media (orientation:portrait){
+    .arena{grid-template-columns:1fr;min-height:0;}
+    .teamSide{padding:8px;}
+    .enemySide{padding:7px;}
+    .enemySpr{width:76px;height:76px;}
+    .heroCard{width:88px;}
+    .heroCard svg{width:42px;height:42px;}
+    .turnPill{top:4px;font-size:10.5px;}
+    .qText{font-size:18px;}
+    .opt{font-size:15px;padding:6px 8px;}
+  }
+  @media (max-width:700px){
+    body{padding:5px;}
+    .hud .title{font-size:15px;}
+    .opts{grid-template-columns:1fr;}
+    .startCard h1{font-size:25px;}
+    .pickCard{width:118px;}
+    .banner{font-size:24px;}
+  }
+  /* 直屏手機緊縮：讓整回合（含四個選項與按鈕）盡量落在一屏內 */
+  @media (orientation:portrait) and (max-width:700px){
+    .qHead .grow{display:none;}
+    .qHead{gap:6px;}
+    .qHead .miniBtn2{font-size:11px;padding:2px 6px;}
+    .qTag{font-size:11px;padding:2px 7px;}
+    .who{font-size:11px;}
+    .qText{font-size:17px;min-height:38px;margin:2px 0 6px;}
+    .opts{gap:6px;}
+    .opt{min-height:38px;font-size:14.5px;padding:5px 8px;}
+    .opt i{width:22px;height:22px;flex-basis:22px;font-size:12px;}
+    .board{padding:8px 10px;}
+    .boardFoot{margin-top:6px;gap:6px;}
+    .boardFoot .bigBtn{font-size:14px;padding:7px 13px;}
+    .meter{font-size:11px;padding:3px 7px;}
+    .log{min-height:30px;font-size:10.5px;padding:4px 10px;}
+    .enemySpr{width:60px;height:60px;}
+    .enemyCard{min-width:0;padding:5px 9px 6px;}
+    .enemySide{padding:5px;}
+    .teamSide{padding:6px;gap:5px;}
+    .heroCard svg{width:36px;height:36px;}
+    .hpbar{margin-top:2px;}
+    .sideLabel{font-size:11px;}
+    /* 回合膠囊移到右上，避免壓住左側「五行小隊」標籤 */
+    .turnPill{top:4px;left:auto;right:6px;transform:none;font-size:10px;padding:2px 7px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ 內聯 SVG 像素角色 ══ -->
+<svg class="spriteDefs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+
+  <!-- 五行主角 -->
+  <symbol id="sp-metal" viewBox="0 0 32 32" style="--a:#d9dbe6;--l:#f7f8ff;--d:#8b8fa3;--g:#ffd257">
+    <path class="sd" d="M9 26h6v5H9z M17 26h6v5h-6z"/>
+    <path class="sa" d="M9 14h14v12H9z"/>
+    <path class="sl" d="M11 16h10v6H11z"/>
+    <path class="sg" d="M9 23h14v2H9z"/>
+    <path class="sa" d="M5 15h4v9H5z M23 15h4v9h-4z"/>
+    <path class="sl" d="M27 5h3v14h-3z"/>
+    <path class="sg" d="M25 19h7v2h-7z"/>
+    <path class="sa" d="M10 4h12v11H10z"/>
+    <path class="sl" d="M11 8h10v5H11z"/>
+    <path class="sg" d="M15 1h2v4h-2z"/>
+    <rect class="eye" x="13" y="9" width="2" height="2"/>
+    <rect class="eye" x="17" y="9" width="2" height="2"/>
+    <path class="sg" d="M7 13h4v3H7z M21 13h4v3h-4z"/>
+  </symbol>
+  <symbol id="sp-wood" viewBox="0 0 32 32" style="--a:#4fbf72;--l:#a8e063;--d:#7a4b2a;--g:#ffe07a">
+    <path class="sd" d="M10 25h5v6h-5z M17 25h5v6h-5z"/>
+    <path class="sa" d="M9 13h14v13H9z"/>
+    <path class="sd" d="M12 21h8v5h-8z"/>
+    <path class="sa" d="M4 15h4v9H4z M24 15h4v9h-4z"/>
+    <path class="sl" d="M13 1h6v6h-6z"/>
+    <path class="sa" d="M5 5h9v7H5z M18 4h9v8h-9z"/>
+    <path class="sg" d="M22 8h3v3h-3z"/>
+    <rect class="eye" x="12" y="16" width="2" height="2"/>
+    <rect class="eye" x="18" y="16" width="2" height="2"/>
+    <path class="eye" d="M14 20h4v1h-4z"/>
+  </symbol>
+  <symbol id="sp-water" viewBox="0 0 32 32" style="--a:#48a9e6;--l:#c8ecff;--d:#1c6aa5;--g:#a0f0ff">
+    <path class="sa" d="M14 2h4v3h3v3h3v4h2v5h1v6h-3v4h-4v3h-8v-3H8v-4H5v-6h1v-5h2V8h3V5h3z"/>
+    <path class="sl" d="M13 9h3v3h-3z M12 12h3v4h-3z"/>
+    <rect class="eye" x="12" y="18" width="2" height="2"/>
+    <rect class="eye" x="18" y="18" width="2" height="2"/>
+    <path class="eye" d="M14 22h4v1h-4z"/>
+    <path class="sg" d="M6 25h4v2H6z M22 25h4v2h-4z"/>
+  </symbol>
+  <symbol id="sp-fire" viewBox="0 0 32 32" style="--a:#f0603a;--l:#ffd23f;--d:#a92a1a;--g:#fff2a8">
+    <path class="sa" d="M14 1h4v4h3v4h3v5h2v6h-2v5h-3v3h-4v3h-6v-3H8v-4H5v-6h2v-5h2V9h3V5h2z"/>
+    <path class="sl" d="M14 10h4v5h3v5h-2v4h-3v3h-4v-3h-2v-5h2v-5h2z"/>
+    <rect class="eye" x="12" y="18" width="2" height="2"/>
+    <rect class="eye" x="18" y="18" width="2" height="2"/>
+    <path class="eye" d="M14 23h4v1h-4z"/>
+  </symbol>
+  <symbol id="sp-earth" viewBox="0 0 32 32" style="--a:#c99454;--l:#e6c48f;--d:#7d5228;--g:#ffe9a8">
+    <path class="sd" d="M8 26h7v5H8z M17 26h7v5h-7z"/>
+    <path class="sa" d="M7 13h18v13H7z"/>
+    <path class="sl" d="M10 15h12v6H10z"/>
+    <path class="sd" d="M2 14h6v10H2z M24 14h6v10h-6z"/>
+    <path class="sa" d="M9 4h14v10H9z"/>
+    <path class="sg" d="M11 2h4v3h-4z M17 2h4v3h-4z"/>
+    <rect class="eye" x="12" y="8" width="3" height="2"/>
+    <rect class="eye" x="18" y="8" width="3" height="2"/>
+    <path class="eye" d="M14 11h4v1h-4z"/>
+  </symbol>
+
+  <!-- 五種圖形小怪 -->
+  <symbol id="sp-sq" viewBox="0 0 32 32" style="--a:#e8c15a;--l:#fff0b8;--d:#8a6a1c;--g:#fff8e0">
+    <path class="sd" d="M7 26h6v4H7z M19 26h6v4h-6z"/>
+    <rect class="sa" x="5" y="6" width="22" height="21"/>
+    <rect class="sl" x="8" y="9" width="16" height="6"/>
+    <rect class="eye" x="10" y="17" width="3" height="3"/>
+    <rect class="eye" x="19" y="17" width="3" height="3"/>
+    <path class="eye" d="M12 22h8v2h-8z"/>
+    <path class="sg" d="M6 6h4v3H6z M22 6h4v3h-4z"/>
+  </symbol>
+  <symbol id="sp-rect" viewBox="0 0 32 32" style="--a:#5fc27a;--l:#d7f5b8;--d:#2b7d47;--g:#fff8e0">
+    <path class="sd" d="M5 26h6v4H5z M21 26h6v4h-6z"/>
+    <rect class="sa" x="2" y="9" width="28" height="18"/>
+    <rect class="sl" x="5" y="12" width="22" height="5"/>
+    <rect class="eye" x="9" y="19" width="3" height="3"/>
+    <rect class="eye" x="20" y="19" width="3" height="3"/>
+    <path class="eye" d="M12 23h8v2h-8z"/>
+    <path class="sg" d="M3 9h4v3H3z M25 9h4v3h-4z"/>
+  </symbol>
+  <symbol id="sp-para" viewBox="0 0 32 32" style="--a:#48a9e6;--l:#c8ecff;--d:#1c6aa5;--g:#fff8e0">
+    <path class="sd" d="M8 26h6v4H8z M19 26h6v4h-6z"/>
+    <polygon class="sa" points="12,5 31,5 25,27 6,27"/>
+    <polygon class="sl" points="13,8 27,8 24,13 10,13"/>
+    <rect class="eye" x="12" y="17" width="3" height="3"/>
+    <rect class="eye" x="19" y="17" width="3" height="3"/>
+    <path class="eye" d="M14 22h7v2h-7z"/>
+    <path class="sg" d="M12 5h5v3h-5z"/>
+  </symbol>
+  <symbol id="sp-tri" viewBox="0 0 32 32" style="--a:#f0603a;--l:#ffd23f;--d:#a92a1a;--g:#fff8e0">
+    <path class="sd" d="M6 26h6v4H6z M20 26h6v4h-6z"/>
+    <polygon class="sa" points="16,2 31,27 1,27"/>
+    <polygon class="sl" points="16,8 23,19 9,19"/>
+    <rect class="eye" x="11" y="20" width="3" height="3"/>
+    <rect class="eye" x="18" y="20" width="3" height="3"/>
+    <path class="eye" d="M14 24h4v2h-4z"/>
+    <path class="sg" d="M14 1h4v4h-4z"/>
+  </symbol>
+  <symbol id="sp-trap" viewBox="0 0 32 32" style="--a:#c99454;--l:#e6c48f;--d:#7d5228;--g:#fff8e0">
+    <path class="sd" d="M5 26h6v4H5z M21 26h6v4h-6z"/>
+    <polygon class="sa" points="11,5 21,5 31,27 1,27"/>
+    <polygon class="sl" points="12,9 20,9 23,14 9,14"/>
+    <rect class="eye" x="10" y="18" width="3" height="3"/>
+    <rect class="eye" x="19" y="18" width="3" height="3"/>
+    <path class="eye" d="M13 23h6v2h-6z"/>
+    <path class="sg" d="M12 4h8v3h-8z"/>
+  </symbol>
+
+  <!-- 大魔王 -->
+  <symbol id="sp-boss" viewBox="0 0 32 32" style="--a:#7b4bb5;--l:#b98ce8;--d:#40216b;--g:#ffd257">
+    <path class="sd" d="M5 27h8v4H5z M19 27h8v4h-8z"/>
+    <path class="sa" d="M6 8h20v20H6z"/>
+    <path class="sd" d="M3 3h6v7H3z M23 3h6v7h-6z"/>
+    <path class="sg" d="M13 2h6v7h-6z"/>
+    <path class="sl" d="M9 12h14v6H9z"/>
+    <rect class="eye" x="10" y="14" width="4" height="3"/>
+    <rect class="eye" x="18" y="14" width="4" height="3"/>
+    <path class="eye" d="M12 21h8v2h-8z"/>
+    <path class="sg" d="M3 15h4v3H3z M25 15h4v3h-4z"/>
+  </symbol>
+</defs></svg>
+
+<div class="wrap">
+<div id="game" class="hidden">
+  <div class="panel">
+
+    <div class="hud">
+      <span class="title">⚔️ 五行元素通關戰</span>
+      <span class="pill" id="hudInfo">第 1 章・金之試煉｜第 1/6 關</span>
+      <span class="pill" id="hudTeam">隊伍 1/1</span>
+      <span class="pill" id="hudStat">答對 0/0</span>
+      <span class="grow"></span>
+      <div class="prog" id="prog"></div>
+      <button class="miniBtn" id="cheatBtn" type="button">📐 公式小抄</button>
+    </div>
+
+    <div class="arena" id="arena">
+      <svg class="bg" viewBox="0 0 1200 320" preserveAspectRatio="none" shape-rendering="crispEdges" aria-hidden="true">
+        <rect width="1200" height="320" fill="#1b2340"/>
+        <rect y="0" width="1200" height="72" fill="#242e52"/>
+        <rect y="72" width="1200" height="62" fill="#2c3a63"/>
+        <rect y="134" width="1200" height="62" fill="#354774"/>
+        <rect x="966" y="24" width="60" height="60" fill="#ffd257"/>
+        <rect x="974" y="32" width="44" height="44" fill="#ffe9a8"/>
+        <rect x="120" y="30" width="46" height="12" fill="#3a4c7d"/>
+        <rect x="136" y="22" width="30" height="10" fill="#3a4c7d"/>
+        <rect x="330" y="52" width="54" height="12" fill="#3a4c7d"/>
+        <rect x="348" y="44" width="32" height="10" fill="#3a4c7d"/>
+        <rect x="700" y="34" width="44" height="12" fill="#3a4c7d"/>
+        <rect x="714" y="26" width="28" height="10" fill="#3a4c7d"/>
+        <polygon points="0,196 130,108 260,196" fill="#3b4c7a"/>
+        <polygon points="180,196 330,96 480,196" fill="#354773"/>
+        <polygon points="420,196 570,120 720,196" fill="#3b4c7a"/>
+        <polygon points="650,196 810,100 970,196" fill="#354773"/>
+        <polygon points="880,196 1040,118 1200,196" fill="#3b4c7a"/>
+        <rect y="196" width="1200" height="124" fill="#26503f"/>
+        <rect y="196" width="1200" height="12" fill="#4f8f6a"/>
+        <rect x="70" y="208" width="16" height="16" fill="#1c3c30"/>
+        <rect x="62" y="224" width="32" height="8" fill="#1c3c30"/>
+        <rect x="1060" y="208" width="16" height="16" fill="#1c3c30"/>
+        <rect x="1052" y="224" width="32" height="8" fill="#1c3c30"/>
+        <rect x="560" y="240" width="80" height="8" fill="#1c3c30" opacity=".5"/>
+        <rect x="300" y="266" width="60" height="7" fill="#1c3c30" opacity=".4"/>
+        <rect x="860" y="282" width="70" height="7" fill="#1c3c30" opacity=".4"/>
+        <rect x="40" y="150" width="8" height="8" fill="#ffd257" opacity=".55"/>
+        <rect x="520" y="80" width="8" height="8" fill="#4aa9e0" opacity=".6"/>
+        <rect x="880" y="112" width="8" height="8" fill="#f0603a" opacity=".6"/>
+        <rect x="1130" y="90" width="8" height="8" fill="#5fc27a" opacity=".6"/>
+      </svg>
+      <div class="turnPill" id="turnPill">ROUND 1 ・ 我方回合</div>
+      <div class="flash" id="flash"></div>
+      <div class="floatLayer" id="floatLayer"></div>
+
+      <div class="teamSide">
+        <span class="sideLabel">五行小隊・點選出戰者</span>
+        <div class="team" id="team"></div>
+      </div>
+      <div class="enemySide">
+        <div class="enemyCard" id="enemyCard"></div>
+      </div>
+    </div>
+
+    <div class="board">
+      <div class="qHead">
+        <span class="qTag" id="qTag">題目</span>
+        <span class="who" id="who"></span>
+        <span class="grow" style="flex:1"></span>
+        <button class="miniBtn2" id="hintBtn" type="button">💡 提示（只給公式）</button>
+      </div>
+      <div class="hintBox hidden" id="hintBox"></div>
+      <div class="qText" id="qText"></div>
+      <div class="opts" id="opts"></div>
+      <div class="explain hidden" id="explain"></div>
+      <div class="boardFoot">
+        <span class="meter" id="comboTxt">連擊 0</span>
+        <span class="meter" id="chargeTxt">奧義 0/3</span>
+        <button class="bigBtn blue" id="skillBtn" type="button">五行奧義</button>
+        <span class="grow" style="flex:1"></span>
+        <button class="bigBtn green hidden" id="continueBtn" type="button">繼續 ▶</button>
+      </div>
+    </div>
+
+    <div class="log" id="log"></div>
+  </div>
+</div>
+</div>
+
+<!-- ══ 開始畫面 ══ -->
+<div class="overlay" id="startOverlay">
+  <div class="startCard">
+    <div class="eyebrow">五年級數學・圖形的 S 與 C</div>
+    <h1>五行元素通關戰</h1>
+    <p class="sub">選一位元素小將出發，答對面積 S／周長 C 題目才能發動攻擊。</p>
+    <div class="rules">
+      <span>① 每章 5 隻圖形小怪 ＋ 1 隻大魔王</span>
+      <span>② 打敗大魔王 → 解鎖新隊友、進入下一章</span>
+      <span>③ 相剋 ×1.6 傷害・相生回血・答錯會被加重反擊</span>
+    </div>
+    <div class="heroPick" id="heroPick"></div>
+    <div class="cycle">相剋　金 → 木 → 土 → 水 → 火 → 金　｜　相生　金 → 水 → 木 → 火 → 土 → 金</div>
+    <button class="bigBtn gold" id="startBtn" type="button">開始闖關 ▶</button>
+  </div>
+</div>
+
+<!-- ══ 通用視窗 ══ -->
+<div class="overlay hidden" id="modal"></div>
+<div class="banner hidden" id="banner"></div>
+
+<!-- ══ 公式小抄 ══ -->
+<div class="cheat hidden" id="cheat">
+  <div class="cheatCard">
+    <h2>📐 公式小抄（考試前看這張）</h2>
+    <table>
+      <thead><tr><th>圖形</th><th>S（面積）</th><th>C（周長）</th></tr></thead>
+      <tbody>
+        <tr><td>正方形（邊長 a）</td><td class="f">S＝a²</td><td class="f">C＝4a</td></tr>
+        <tr><td>長方形（長 a、闊 b）</td><td class="f">S＝ab</td><td class="f">C＝2( a + b )</td></tr>
+        <tr><td>平行四邊形（底 a、高 h、斜邊 b）</td><td class="f">S＝ah</td><td class="f">C＝2( a + b )</td></tr>
+        <tr><td>三角形（底 a、高 h、另兩邊 b c）</td><td class="f">S＝ah ÷ 2</td><td class="f">C＝a + b + c</td></tr>
+        <tr><td>梯形（上底 a、下底 b、高 h、兩腰 c d）</td><td class="f">S＝( a + b )h ÷ 2</td><td class="f">C＝a + b + c + d</td></tr>
+      </tbody>
+    </table>
+    <div class="blk">
+      <b>單位換算：</b>1 m ＝ 10 dm ＝ 100 cm（每級 ×10）；1 m² ＝ 100 dm² ＝ 10 000 cm²（每級 ×100）。<br />
+      大單位 → 小單位用乘法，小單位 → 大單位用除法；<b>平方單位的小數點要移兩倍位數</b>。代入公式前<b>先統一單位</b>。
+    </div>
+    <div class="blk">
+      <b>四個最容易錯的地方：</b>① 斜邊不是高，算 S 要用垂直的 h；② 三角形、梯形別忘 ÷ 2，反過來求高要先 × 2（平行四邊形不用）；③ S 用平方單位、C 用長度單位，別寫反；④ C 沒有萬用公式，把外圈每一條邊統統加起來。
+    </div>
+    <div class="blk"><b>記憶口訣：</b>S 看裡面，C 繞一圈；平四底乘高，三角別忘半；梯形上下加，乘高再除二；高要畫垂直，單位別寫反。</div>
+    <div style="text-align:center;margin-top:12px;"><button class="bigBtn gold" id="cheatClose" type="button">收起小抄 ✕</button></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════ QB-START：題庫產生器（純函式，可獨立驗算） ══════════════════ */
+const EL = {
+  metal:{k:'metal',n:'金',nm:'銳鋒將',c:'#e8c15a',hp:78,atk:15,sk:'破甲斬',skd:'立刻斬出 18 點無視相性的傷害'},
+  wood :{k:'wood', n:'木',nm:'青芽靈',c:'#5fc27a',hp:82,atk:13,sk:'回春藤',skd:'全隊回復 16 HP'},
+  water:{k:'water',n:'水',nm:'潮汐使',c:'#4aa9e0',hp:76,atk:13,sk:'鏡水盾',skd:'接下來 2 回合敵方傷害減半'},
+  fire :{k:'fire', n:'火',nm:'焰心童',c:'#ef6a3d',hp:70,atk:17,sk:'烈焰灼',skd:'立刻灼燒敵人 16 點'},
+  earth:{k:'earth',n:'土',nm:'磐岩衛',c:'#c99454',hp:92,atk:12,sk:'磐岩壁',skd:'全隊獲得 14 點護盾'}
+};
+const EK = ['metal','wood','water','fire','earth'];
+const KO = {metal:'wood',wood:'earth',earth:'water',water:'fire',fire:'metal'};
+const SHENG = {metal:'water',water:'wood',wood:'fire',fire:'earth',earth:'metal'};
+const SHAPES = [
+  {nm:'方塊兵',sh:'正方形',el:'metal',spr:'sp-sq'},
+  {nm:'磚牆兵',sh:'長方形',el:'wood', spr:'sp-rect'},
+  {nm:'斜刃兵',sh:'平行四邊形',el:'water',spr:'sp-para'},
+  {nm:'尖角兵',sh:'三角形',el:'fire', spr:'sp-tri'},
+  {nm:'盾甲兵',sh:'梯形',el:'earth',spr:'sp-trap'}
+];
+const BOSSES = [
+  {nm:'金甲魔將',el:'metal',spr:'sp-boss'},
+  {nm:'藤蔓巨獸',el:'wood', spr:'sp-boss'},
+  {nm:'深淵水妖',el:'water',spr:'sp-boss'},
+  {nm:'烈焰魔君',el:'fire', spr:'sp-boss'},
+  {nm:'岩土之王',el:'earth',spr:'sp-boss'}
+];
+const CHAPTERS = ['金之試煉','木之試煉','水之試煉','火之試煉','土之試煉'];
+
+function rint(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(a){return a[rint(0,a.length-1)];}
+function r2(n){return Math.round((n+Number.EPSILON)*100)/100;}
+function num(n){
+  if(typeof n!=='number') return String(n);
+  n=r2(n);
+  let s=String(n);
+  if(Math.abs(n)>=10000){
+    let p=s.split('.');
+    p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+    s=p[1]?p[0]+'.'+p[1]:p[0];
+  }
+  return s;
+}
+/* build：統一產生 4 個不重複選項、正確答案、解說、提示與驗算中繼資料 */
+function build(text,ans,unit,wrongs,explain,tag,hint,calc){
+  const correct = typeof ans==='number' ? num(ans)+unit : ans;
+  const opts=[correct];
+  for(const w of wrongs){
+    if(opts.length>=4) break;
+    const s = typeof w==='number' ? num(w)+unit : w;
+    if(s!==correct && !opts.includes(s)) opts.push(s);
+  }
+  let guard=0;
+  while(opts.length<4 && guard++<80){
+    const d=pick([1,2,3,4,5,6,8,10,12,-1,-2,-3,-4,-5,-6,-8,-10,-12]);
+    const v = typeof ans==='number' ? num(r2(ans+d))+unit : null;
+    if(v && v!==correct && !opts.includes(v)) opts.push(v);
+  }
+  for(let i=opts.length-1;i>0;i--){const j=rint(0,i);const t=opts[i];opts[i]=opts[j];opts[j]=t;}
+  return {text,opts,ci:opts.indexOf(correct),correct,ansVal:ans,unit,explain,tag,hint,calc};
+}
+function lit(text,correct,wrongs,explain,tag,hint){
+  return build(text,correct,'',wrongs,explain,tag,hint,{op:'literal'});
+}
+
+/* ── 正方形 ── */
+function qSquareS(ch){
+  const a=rint(3,9+ch*2);
+  return build(`正方形邊長 ${a} cm，S 是多少？`,a*a,' cm²',[4*a,2*a,a*a+a],
+    `S＝a²＝${a} × ${a}＝${num(a*a)} cm²。C 才是 4a＝${num(4*a)} cm，別把兩個公式混在一起。`,
+    '正方形 S','S＝a²（邊長 × 邊長）',{op:'squareS',a});
+}
+function qSquareC(ch){
+  const a=rint(3,9+ch*2);
+  return build(`正方形邊長 ${a} cm，C 是多少？`,4*a,' cm',[a*a,2*a,a+4],
+    `C＝4a＝4 × ${a}＝${num(4*a)} cm，是 4 條邊相加；a²＝${num(a*a)} 是 S，不是 C。`,
+    '正方形 C','C＝4a（4 條邊相加）',{op:'squareC',a});
+}
+function qSquareRev(ch){
+  const a=rint(3,11+ch), S=a*a;
+  return build(`正方形 S＝${num(S)} cm²，邊長 a 是多少？`,a,' cm',[r2(S/4),r2(S/2),a+3],
+    `S＝a²，所以 a × a＝${num(S)}，${a} × ${a}＝${num(S)}，邊長是 ${a} cm。別拿去除以 4（那是 C 的公式）。`,
+    '正方形 逆推','S＝a² → 想「哪個數自乘會得到 S」',{op:'squareRev',S});
+}
+/* ── 長方形 ── */
+function qRectS(ch){
+  let a=rint(4,10+ch*2),b=rint(2,8+ch); if(a===b) b=a+2;
+  return build(`長方形長 ${a} cm、闊 ${b} cm，S 是多少？`,a*b,' cm²',[2*(a+b),a+b,a*b-a],
+    `S＝ab＝${a} × ${b}＝${num(a*b)} cm²；2( a + b )＝${num(2*(a+b))} 是 C 的數字，單位也不同。`,
+    '長方形 S','S＝ab（長 × 闊）',{op:'rectS',a,b});
+}
+function qRectC(ch){
+  let a=rint(4,10+ch*2),b=rint(2,8+ch); if(a===b) b=a+2;
+  return build(`長方形長 ${a} cm、闊 ${b} cm，C 是多少？`,2*(a+b),' cm',[a*b,a+b,4*a],
+    `C＝2( a + b )＝( ${a} + ${b} ) × 2＝${num(2*(a+b))} cm。ab＝${num(a*b)} 是 S，單位是 cm²。`,
+    '長方形 C','C＝2( a + b )（長＋闊再 ×2）',{op:'rectC',a,b});
+}
+/* ── 平行四邊形 ── */
+function qParaS(ch){
+  const a=rint(5,10+ch*2),h=2*rint(2,4+ch),b=h+rint(2,6);
+  return build(`平行四邊形底 ${a} cm、高 ${h} cm、斜邊 ${b} cm，S 是多少？`,a*h,' cm²',[a*b,2*(a+b),a*h/2],
+    `S＝ah＝${a} × ${h}＝${num(a*h)} cm²。要用<b>垂直的高 ${h}</b>，不是斜邊 ${b}；斜邊只拿去算 C。`,
+    '平行四邊形 S','S＝ah（底 × 垂直的高）',{op:'paraS',a,h});
+}
+function qParaC(ch){
+  const a=rint(5,10+ch*2),h=2*rint(2,4+ch),b=h+rint(2,6);
+  return build(`平行四邊形底 ${a} cm、高 ${h} cm、斜邊 ${b} cm，C 是多少？`,2*(a+b),' cm',[a*h,a+b,a*b],
+    `C＝2( a + b )＝( ${a} + ${b} ) × 2＝${num(2*(a+b))} cm。這題用<b>斜邊 ${b}</b>，高 ${h} 不算進 C。`,
+    '平行四邊形 C','C＝2( a + b )（底＋斜邊再 ×2）',{op:'paraC',a,b});
+}
+function qParaRevH(ch){
+  const a=rint(4,10+ch*2),h=2*rint(2,4+ch),S=a*h;
+  return build(`平行四邊形 S＝${num(S)} cm²、底 a＝${a} cm，高 h 是多少？`,h,' cm',[2*S/a,r2(S/(2*a)),S-a],
+    `S＝ah，所以 h＝S ÷ a＝${num(S)} ÷ ${a}＝${h} cm。<b>這是平行四邊形，公式沒有 ÷ 2，不用先 × 2</b>（只有三角形、梯形才要）。`,
+    '平行四邊形 逆推','S＝ah → h＝S ÷ a（不用 ×2）',{op:'paraRevH',S,a});
+}
+/* ── 三角形 ── */
+function qTriS(ch){
+  const a=rint(4,10+ch*2),h=2*rint(2,4+ch);
+  return build(`三角形底 ${a} cm、高 ${h} cm，S 是多少？`,a*h/2,' cm²',[a*h,a+h,a*h/2+a],
+    `S＝ah ÷ 2＝${a} × ${h} ÷ 2＝${num(a*h/2)} cm²。兩個一樣的三角形才能拼成一個平行四邊形，所以別忘了 ÷ 2。`,
+    '三角形 S','S＝ah ÷ 2（別忘了除以 2）',{op:'triS',a,h});
+}
+function qTriC(ch){
+  const a=rint(5,10+ch),b=rint(4,9+ch),c=rint(4,9+ch),h=2*rint(2,5);
+  return build(`三角形三邊 ${a} cm、${b} cm、${c} cm，高 ${h} cm，C 是多少？`,a+b+c,' cm',[a+b,a+c,2*(a+b)],
+    `C＝a + b + c＝${a} + ${b} + ${c}＝${num(a+b+c)} cm。<b>高 ${h} 是垂直距離，不屬於任何一條邊</b>，不算進 C。`,
+    '三角形 C','C＝a + b + c（三條邊統統加起來）',{op:'triC',a,b,c});
+}
+function qTriRevH(ch){
+  const a=rint(4,10+ch*2),h=2*rint(2,4+ch),S=a*h/2;
+  return build(`三角形 S＝${num(S)} cm²、底 a＝${a} cm，高 h 是多少？`,h,' cm',[r2(S/a),r2(S/(2*a)),h+4],
+    `看到 ÷ 2，倒回來就<b>先 × 2</b>：${num(S)} × 2 ÷ ${a}＝${h} cm。直接 ${num(S)} ÷ ${a} 會少一半。`,
+    '三角形 逆推','S＝ah ÷ 2 → h＝S × 2 ÷ a',{op:'triRevH',S,a});
+}
+/* ── 梯形 ── */
+function qTrapS(ch){
+  const a=rint(2,6+ch),b=a+rint(2,6+ch),h=2*rint(2,4+ch);
+  return build(`梯形上底 ${a} cm、下底 ${b} cm、高 ${h} cm，S 是多少？`,(a+b)*h/2,' cm²',[(a+b)*h,r2(a*h/2),r2(b*h/2)],
+    `先把兩條底加起來：${a} + ${b}＝${num(a+b)}；再 × 高 ÷ 2＝${num(a+b)} × ${h} ÷ 2＝${num((a+b)*h/2)} cm²。`,
+    '梯形 S','S＝( a + b )h ÷ 2（上底＋下底）',{op:'trapS',a,b,h});
+}
+function qTrapC(ch){
+  const a=rint(2,6+ch),b=a+rint(2,6+ch),c=rint(3,7+ch),d=rint(3,7+ch),h=2*rint(2,4+ch);
+  return build(`梯形上底 ${a}、下底 ${b}、兩腰 ${c} 與 ${d} cm、高 ${h} cm，C 是多少？`,a+b+c+d,' cm',[a+b+h,a+b+c,r2((a+b)*h/2)],
+    `C＝a + b + c + d＝${a} + ${b} + ${c} + ${d}＝${num(a+b+c+d)} cm。<b>高 ${h} 不是邊</b>，不能加進去；${num((a+b)*h/2)} 是 S 不是 C。`,
+    '梯形 C','C＝a + b + c + d（四條邊相加）',{op:'trapC',a,b,c,d});
+}
+function qTrapRevH(ch){
+  const a=rint(2,6+ch),b=a+rint(2,6+ch),h=2*rint(2,4+ch),S=(a+b)*h/2;
+  return build(`梯形 S＝${num(S)} cm²、上底 ${a} cm、下底 ${b} cm，高 h 是多少？`,h,' cm',[r2(S/(a+b)),r2(2*S/a),h+3],
+    `先 × 2 再除以「上底＋下底」：${num(S)} × 2 ÷ ( ${a} + ${b} )＝${h} cm。`,
+    '梯形 逆推','S＝( a + b )h ÷ 2 → h＝2S ÷ ( a + b )',{op:'trapRevH',S,a,b});
+}
+/* ── 單位換算 ── */
+function qUnitLenMD(ch){
+  const x=pick([0.4,0.7,1.2,1.5,2.3,2.5,3.1,4.2]);
+  return build(`${num(x)} m ＝ ？ dm`,r2(x*10),' dm',[r2(x*100),r2(x/10),r2(x*10+5)],
+    `1 m＝10 dm，大單位換小單位用乘法：${num(x)} × 10＝${num(x*10)} dm。${num(x*100)} 是换成 cm 的數字，單位不對。`,
+    '長度換算 m→dm','1 m ＝ 10 dm（每級 ×10）',{op:'unitLenMD',x});
+}
+function qUnitLenMC(ch){
+  const x=pick([0.4,0.7,1.2,1.5,2.3,2.5,3.1,4.2]);
+  return build(`${num(x)} m ＝ ？ cm`,r2(x*100),' cm',[r2(x*10),r2(x*1000),r2(x/10)],
+    `m → cm 跨兩級：${num(x)} × 100＝${num(x*100)} cm（小數點右移 2 位）。`,
+    '長度換算 m→cm','1 m ＝ 100 cm（跨兩級 ×100）',{op:'unitLenMC',x});
+}
+function qUnitLenCMDM(ch){
+  const y=pick([36,45,72,125,250,360,480]);
+  return build(`${num(y)} cm ＝ ？ dm（用小數表示）`,r2(y/10),' dm',[y,r2(y/100),r2(y*10)],
+    `小單位換大單位用除法：${y} ÷ 10＝${num(y/10)} dm（小數點左移 1 位）。`,
+    '長度換算 cm→dm','1 dm ＝ 10 cm（小→大用除法）',{op:'unitLenCMtoDM',y});
+}
+function qUnitAreaM2DM2(ch){
+  const x=pick([0.4,0.6,1.2,2.4,3.5]);
+  return build(`${num(x)} m² ＝ ？ dm²`,r2(x*100),' dm²',[r2(x*10),r2(x*10000),r2(x/100)],
+    `<b>平方單位每級 ×100</b>：${num(x)} × 100＝${num(x*100)} dm²。只 ×10 是長度單位的規則，會算錯。`,
+    '面積換算 m²→dm²','1 m² ＝ 100 dm²（平方單位每級 ×100）',{op:'unitAreaM2DM2',x});
+}
+function qUnitAreaM2CM2(ch){
+  const x=pick([0.2,0.5,1.5,2]);
+  return build(`${num(x)} m² ＝ ？ cm²`,r2(x*10000),' cm²',[r2(x*100),r2(x*1000),r2(x*100000)],
+    `m² → cm² 跨兩級：×10 000（小數點右移 4 位），${num(x)} × 10 000＝${num(x*10000)} cm²。1 m² ≠ 100 cm²。`,
+    '面積換算 m²→cm²','1 m² ＝ 10 000 cm²（×10 000）',{op:'unitAreaM2CM2',x});
+}
+function qUnitAreaCM2DM2(ch){
+  const y=pick([450,750,1200,2400,6000]);
+  return build(`${num(y)} cm² ＝ ？ dm²（用小數表示）`,r2(y/100),' dm²',[r2(y/10),y,r2(y/1000)],
+    `1 dm²＝100 cm²，小→大用除法：${num(y)} ÷ 100＝${num(y/100)} dm²（小數點左移 2 位）。別只 ÷10。`,
+    '面積換算 cm²→dm²','1 dm² ＝ 100 cm²（平方單位 ÷100）',{op:'unitAreaCM2DM2',y});
+}
+/* ── 先統一單位 ── */
+function qMixedRectS(ch){
+  const a=pick([1.1,1.2,1.5,2.1,2.5]),b=rint(3,9);
+  return build(`長方形長 ${num(a)} dm、闊 ${b} cm，S 是多少 cm²？（先統一單位）`,r2(a*10*b),' cm²',[r2(a*b),r2(a*10*b/2),r2(2*(a*10+b))],
+    `先換成同一種單位：${num(a)} dm＝${num(a*10)} cm，再算 S＝${num(a*10)} × ${b}＝${num(a*10*b)} cm²。<b>不可以</b>直接寫 ${num(a)} × ${b}。`,
+    '先統一單位 S','先統一單位，再用 S＝ab',{op:'mixedRectS',a,b});
+}
+function qMixedRectC(ch){
+  const a=pick([1.1,1.2,1.5,2.1,2.5]),b=rint(3,9);
+  return build(`長方形長 ${num(a)} dm、闊 ${b} cm，C 是多少 cm？（先統一單位）`,r2(2*(a*10+b)),' cm',[r2(a*10*b),r2(a*10+b),r2(2*(a+b))],
+    `${num(a)} dm＝${num(a*10)} cm → C＝2( ${num(a*10)} + ${b} )＝${num(2*(a*10+b))} cm。先統一單位才不會把 dm 和 cm 加在一起。`,
+    '先統一單位 C','先統一單位，再用 C＝2( a + b )',{op:'mixedRectC',a,b});
+}
+function qMixedTriS(ch){
+  const a=pick([0.2,0.3,0.4,0.5,0.6]),h=pick([10,20,30,40]);
+  return build(`三角形底 ${num(a)} m、高 ${h} cm，S 是多少 dm²？（先統一單位）`,r2(a*h/2),' dm²',[r2(a*h),r2(a*h/2*100),r2(a*h/2/100)],
+    `${num(a)} m＝${num(a*10)} dm、${h} cm＝${num(h/10)} dm → S＝${num(a*10)} × ${num(h/10)} ÷ 2＝${num(a*h/2)} dm²。答案的單位也要跟著換。`,
+    '先統一單位 三角形','S＝ah ÷ 2；m→dm ×10、cm→dm ÷10',{op:'mixedTriS',a,h});
+}
+/* ── 觀念辨別題 ── */
+function qTrapUnit(){
+  return lit(`直角三角形兩條直角邊 6 cm、8 cm，斜邊 10 cm。S 與 C 的數字都是 24，單位應該怎麼寫？`,
+    'S＝24 cm²、C＝24 cm',
+    ['S＝24 cm、C＝24 cm²','S＝24 cm²、C＝24 cm²','S＝24 cm、C＝24 cm'],
+    `S＝6 × 8 ÷ 2＝24 <b>cm²</b>（平方單位）；C＝6 + 8 + 10＝24 <b>cm</b>（長度單位）。<b>數字一樣，單位不一樣</b>。`,
+    '易錯・單位','S 用平方單位；C 用長度單位');
+}
+function qUniversal(){
+  return lit(`萬用公式 S＝( a + b )h ÷ 2，把上底 a 縮成 0 之後，會變成哪個圖形的 S？`,
+    '三角形：S＝ah ÷ 2',
+    ['平行四邊形：S＝ah','長方形：S＝ab','梯形：S＝( a + b )h ÷ 2'],
+    `上底變 0 就是「縮成一個點」：( 0 + a )h ÷ 2＝ah ÷ 2，正是三角形。若上底＝下底＝a，才會變成平行四邊形 ah。`,
+    '萬用公式','S＝( a + b )h ÷ 2；令 a＝0');
+}
+function qHeight(){
+  return lit(`平行四邊形底 12 cm、高 5 cm、斜邊 7 cm。算 S 時要拿哪一個數當 h？`,
+    '5 cm（垂直的高）',
+    ['7 cm（斜邊 b）','12 cm（底 a）','5 + 7 cm'],
+    `S＝ah＝12 × 5＝60 cm²。<b>高一定要垂直於底</b>，斜邊 7 cm 只能拿去算 C＝2( 12 + 7 )＝38 cm。`,
+    '易錯・斜邊不是高','S＝ah；h 是垂直距離，b 是斜邊');
+}
+function qDiv2(){
+  return lit(`三角形 S＝24 cm²、底 a＝8 cm，求高的第一步要怎麼做？`,
+    '先 × 2：24 × 2 ÷ 8 ＝ 6 cm',
+    ['直接 24 ÷ 8 ＝ 3 cm','24 ÷ 2 ÷ 8','24 × 8 ÷ 2'],
+    `S＝ah ÷ 2，倒回來要先把兩個三角形「拼回去」：24 × 2＝48，再 ÷ 8＝6 cm。<b>只有三角形、梯形有 ÷ 2</b>；平行四邊形 S＝ah 直接除就好。`,
+    '易錯・逆推','看到 ÷ 2，倒回來先 × 2');
+}
+function qArea100(){
+  return lit(`1 m² 等於多少 cm²？`,'10 000 cm²',['100 cm²','1 000 cm²','10 cm²'],
+    `1 m＝100 cm，長、闊各換一次 → 100 × 100＝10 000。平方單位的小數點要移兩倍位數，<b>1 m² ≠ 100 cm²</b>。`,
+    '易錯・平方單位','1 m² ＝ 100 dm² ＝ 10 000 cm²');
+}
+function qSameS(){
+  return lit(`長 6×2 與 4×3 的長方形，S 都是 12 cm²，兩者的 C 分別是？`,
+    '16 cm 與 14 cm',['都是 16 cm','都是 14 cm','都是 12 cm'],
+    `C＝2( a + b )：2( 6 + 2 )＝16 cm、2( 4 + 3 )＝14 cm。<b>S 一樣，C 不一定一樣</b>。`,
+    '易錯・S 同 C 不同','C＝2( a + b )，把外圈邊統統加起來');
+}
+
+/* 依章節與關卡挑題：小怪考自己的圖形，大魔王考混合題 */
+function makeQuestion(ch,shapeIdx){
+  const boss = shapeIdx==='boss';
+  const pool=[];
+  const add=(min,fn)=>{ if(ch>=min) pool.push(fn); };
+  if(!boss){
+    if(shapeIdx===0){add(1,qSquareS);add(1,qSquareC);add(2,qSquareRev);}
+    if(shapeIdx===1){add(1,qRectS);add(1,qRectC);}
+    if(shapeIdx===2){add(1,qParaS);add(1,qParaC);add(2,qParaRevH);}
+    if(shapeIdx===3){add(1,qTriS);add(1,qTriC);add(2,qTriRevH);}
+    if(shapeIdx===4){add(1,qTrapS);add(1,qTrapC);add(2,qTrapRevH);}
+  }else{
+    add(1,qSquareS);add(1,qRectS);add(1,qParaS);add(1,qTriS);add(1,qTrapS);
+    add(2,qSquareRev);add(2,qParaRevH);add(2,qTriRevH);add(2,qTrapRevH);
+  }
+  if(ch>=3){add(3,qUnitLenMD);add(3,qUnitLenMC);add(3,qUnitLenCMDM);add(3,qUnitAreaM2DM2);add(3,qUnitAreaM2CM2);add(3,qUnitAreaCM2DM2);}
+  if(ch>=4){add(4,qMixedRectS);add(4,qMixedRectC);add(4,qMixedTriS);}
+  if(ch>=5){add(5,qTrapUnit);add(5,qUniversal);add(5,qHeight);add(5,qDiv2);add(5,qArea100);add(5,qSameS);}
+  return pick(pool)(ch);
+}
+/* ══════════════════ QB-END ══════════════════ */
+
+/* ══════════════════ 遊戲邏輯 ══════════════════ */
+const $=id=>document.getElementById(id);
+const delay=ms=>new Promise(r=>setTimeout(r,ms));
+const G={
+  chapter:1,battle:0,starter:'metal',team:[],active:0,enemy:null,
+  round:1,combo:0,charge:0,skillUsed:false,shieldTurns:0,teamShield:0,
+  correctCount:0,totalQ:0,maxCombo:0,phase:'menu',q:null,log:[]
+};
+function makeHero(k){return {el:k,nm:EL[k].nm,hp:EL[k].hp,maxHp:EL[k].hp,atk:EL[k].atk,down:false};}
+function pushLog(t){G.log.unshift(t); if(G.log.length>4) G.log.length=4; renderLog();}
+function renderLog(){ $('log').innerHTML=G.log.length?G.log.map(x=>`<div>${x}</div>`).join(''):'<div>戰鬥紀錄：答對題目發動攻擊，答錯會被敵人加重反擊。</div>'; }
+
+function renderMenu(){
+  $('heroPick').innerHTML=EK.map(k=>{
+    const e=EL[k];
+    return `<div class="pickCard ${G.starter===k?'sel':''}" data-k="${k}">
+      <svg viewBox="0 0 32 32"><use href="#sp-${k}"></use></svg>
+      <div class="pn" style="color:${e.c}">${e.n}・${e.nm}</div>
+      <div class="ps">HP ${e.hp}｜攻擊 ${e.atk}<br>${e.sk}：${e.skd}</div>
+      <div class="sk">五行奧義：${e.sk}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('#heroPick .pickCard').forEach(c=>{
+    c.onclick=()=>{G.starter=c.dataset.k;renderMenu();};
+  });
+}
+function startGame(){
+  G.team=[makeHero(G.starter)];
+  G.chapter=1;G.battle=0;G.active=0;
+  G.correctCount=0;G.totalQ=0;G.maxCombo=0;G.log=[];
+  $('startOverlay').classList.add('hidden');
+  $('game').classList.remove('hidden');
+  startBattle();
+}
+function renderHud(){
+  $('hudInfo').textContent=`第 ${G.chapter} 章・${CHAPTERS[G.chapter-1]}｜第 ${G.battle+1}/6 關`;
+  $('hudTeam').textContent=`隊伍 ${G.team.filter(h=>!h.down).length}/${G.team.length}`;
+  $('hudStat').textContent=`答對 ${G.correctCount}/${G.totalQ}`;
+  $('prog').innerHTML=Array.from({length:6},(_,i)=>`<i class="${i<G.battle?'done':(i===G.battle?'now':'')} ${i===5?'boss':''}"></i>`).join('');
+}
+function renderTeam(){
+  $('team').innerHTML=G.team.map((h,i)=>{
+    const e=EL[h.el],pct=Math.max(0,Math.round(h.hp/h.maxHp*100));
+    const cls=pct<=30?'low':(pct<=60?'mid':'');
+    return `<div class="heroCard ${i===G.active?'sel':''} ${h.down?'down':''}" data-i="${i}">
+      <svg viewBox="0 0 32 32"><use href="#sp-${h.el}"></use></svg>
+      <div class="nm">${e.nm}</div>
+      <div class="el" style="color:${e.c}">${e.n}屬｜攻 ${h.atk}</div>
+      <div class="hpbar"><i class="${cls}" style="width:${pct}%"></i></div>
+      <div class="hpnum">${h.down?'倒下':`HP ${h.hp}/${h.maxHp}`}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('#team .heroCard').forEach(c=>{
+    c.onclick=()=>selectHero(+c.dataset.i);
+  });
+}
+function selectHero(i){
+  if(G.phase!=='question'||G.team[i].down) return;
+  G.active=i; renderTeam(); renderFoot(); renderTurnPill(); renderEnemy();
+}
+function matchTip(){
+  const c=EK.find(k=>KO[k]===G.enemy.el);
+  if(G.team.some(h=>h.el===c&&!h.down)) return `💡 派「${EL[c].n}」出戰可剋 ${EL[G.enemy.el].n} → 傷害 ×1.6`;
+  const a=G.team[G.active];
+  if(KO[G.enemy.el]===a.el) return `⚠️ ${EL[G.enemy.el].n} 剋 ${EL[a.el].n}，敵方反擊 ×1.5，換人試試！`;
+  return `還沒有能剋 ${EL[G.enemy.el].n} 的隊友，靠答題與奧義硬拼！`;
+}
+function renderEnemy(){
+  const e=G.enemy,pct=Math.max(0,Math.round(e.hp/e.maxHp*100));
+  $('enemyCard').innerHTML=`
+    <div class="enemyTop"><span class="elBadge ${e.el}">${EL[e.el].n}屬</span><b>${e.nm}</b>${e.isBoss?' 👑':''}</div>
+    <svg class="enemySpr" viewBox="0 0 32 32"><use href="#${e.spr}"></use></svg>
+    <div class="hpLine"><span>HP</span><div class="bar"><i style="width:${pct}%"></i></div><span>${e.hp}/${e.maxHp}</span></div>
+    <div class="matchTip">${matchTip()}</div>`;
+}
+function renderTurnPill(){
+  const a=G.team[G.active];
+  $('turnPill').textContent=`ROUND ${G.round} ・ ${G.phase==='question'?'我方回合':(G.phase==='answer'?'結算':'戰鬥中')}｜出戰：${EL[a.el].n}・${a.nm}`;
+}
+function renderFoot(){
+  $('comboTxt').textContent=`連擊 ${G.combo}`;
+  $('chargeTxt').textContent=`奧義 ${Math.min(G.charge,3)}/3`;
+  const a=G.team[G.active];
+  $('skillBtn').textContent=G.skillUsed?'本關已用':`五行奧義・${EL[a.el].sk}`;
+  $('skillBtn').disabled=!(G.phase==='question'&&G.charge>=3&&!G.skillUsed);
+  $('continueBtn').classList.toggle('hidden',G.phase!=='answer');
+  renderTurnPill();
+}
+function renderAll(){renderHud();renderTeam();renderEnemy();renderFoot();renderLog();}
+function renderQuestion(){
+  const q=G.q;
+  $('qTag').textContent=q.tag;
+  $('who').textContent=`本題出戰：${EL[G.team[G.active].el].n}・${G.team[G.active].nm}`;
+  $('qText').innerHTML=q.text;
+  $('opts').innerHTML=q.opts.map((o,i)=>`<button class="opt" type="button" data-i="${i}"><i>${'ABCD'[i]}</i><span>${o}</span></button>`).join('');
+  document.querySelectorAll('#opts .opt').forEach(b=>{b.onclick=()=>answer(+b.dataset.i);});
+  $('explain').classList.add('hidden');
+  $('hintBox').classList.add('hidden');
+  renderFoot();
+}
+function showBanner(t){
+  const b=$('banner'); b.textContent=t; b.classList.remove('hidden','show'); void b.offsetWidth; b.classList.add('show');
+  setTimeout(()=>b.classList.add('hidden'),1150);
+}
+function showModal(title,body,buttons){
+  $('modal').innerHTML=`<div class="modalCard"><div class="mTitle">${title}</div><div class="mBody">${body}</div>
+    <div class="mBtns">${buttons.map((b,i)=>`<button class="bigBtn ${b.color||''}" type="button" data-b="${i}">${b.label}</button>`).join('')}</div></div>`;
+  $('modal').classList.remove('hidden');
+  document.querySelectorAll('#modal .bigBtn').forEach((btn,i)=>{
+    btn.onclick=()=>{$('modal').classList.add('hidden');buttons[i].fn();};
+  });
+}
+function floatText(txt,left,top,color){
+  const d=document.createElement('div');
+  d.className='floatDmg';d.textContent=txt;d.style.left=left;d.style.top=top;d.style.color=color;
+  $('floatLayer').appendChild(d);
+  setTimeout(()=>d.remove(),980);
+}
+function showFlash(k){
+  const f=$('flash');
+  f.style.background=`radial-gradient(circle at 60% 55%, ${EL[k].c}88, transparent 72%)`;
+  f.classList.add('on'); setTimeout(()=>f.classList.remove('on'),420);
+}
+async function animatePlayer(dmg,mult){
+  const hc=document.querySelectorAll('#team .heroCard')[G.active];
+  const es=document.querySelector('.enemySpr');
+  if(hc) hc.classList.add('atk'); if(es) es.classList.add('hurt');
+  showFlash(G.team[G.active].el);
+  floatText(`−${dmg}${mult>1?' ⚡相剋':''}`,'58%','42%','#ffe07a');
+  await delay(560);
+  if(hc) hc.classList.remove('atk'); if(es) es.classList.remove('hurt');
+}
+async function animateEnemy(d,idx,wasWrong){
+  const es=document.querySelector('.enemySpr');
+  const hc=document.querySelectorAll('#team .heroCard')[idx];
+  if(es) es.classList.add('atkE'); if(hc) hc.classList.add('hurt');
+  showFlash(G.enemy.el);
+  floatText(`−${d}`,'16%','48%','#ff9a86');
+  pushLog(`👹 ${G.enemy.nm} 反擊 ${G.team[idx].nm} ${d} 點${wasWrong?'（答錯加重）':''}`);
+  await delay(540);
+  if(es) es.classList.remove('atkE'); if(hc) hc.classList.remove('hurt');
+}
+function startBattle(){
+  const boss=G.battle===5;
+  const src=boss?BOSSES[G.chapter-1]:SHAPES[G.battle];
+  const hp=boss?60+G.chapter*18:24+G.chapter*7;
+  G.enemy={nm:src.nm,sh:src.sh||'',el:src.el,spr:src.spr,isBoss:boss,hp,maxHp:hp,atk:boss?8+G.chapter*3:4+G.chapter*2};
+  G.team.forEach(h=>{ if(h.down){h.down=false;h.hp=Math.ceil(h.maxHp*0.5);} });
+  G.round=1;G.combo=0;G.charge=0;G.skillUsed=false;G.shieldTurns=0;G.teamShield=0;
+  G.active=G.team.findIndex(h=>!h.down);
+  G.phase='intro';
+  renderAll();
+  showBanner(boss?`第 ${G.chapter} 章・大魔王 ${src.nm} 登場！`:`第 ${G.battle+1} 隻・${src.sh} ${src.nm}`);
+  delay(1150).then(()=>nextQuestion());
+}
+function nextQuestion(){
+  G.q=makeQuestion(G.chapter,G.enemy.isBoss?'boss':G.battle);
+  G.totalQ++;G.phase='question';
+  renderQuestion();renderHud();
+}
+function showExplain(q,ok,extra){
+  $('explain').innerHTML=`<div class="exHead ${ok?'':'no'}">${ok?'✅ 答對了！':'❌ 答錯了，看一下做法'}</div>
+    <div class="exAns">正確答案：<b>${q.correct}</b></div>
+    <div>${q.explain}</div>${extra?`<div class="exExtra">${extra}</div>`:''}`;
+  $('explain').classList.remove('hidden');
+}
+async function answer(i){
+  if(G.phase!=='question') return;
+  G.phase='resolving';
+  const q=G.q,ok=(i===q.ci);
+  document.querySelectorAll('#opts .opt').forEach(b=>{
+    b.disabled=true;
+    if(+b.dataset.i===q.ci) b.classList.add('right');
+  });
+  if(!ok) document.querySelectorAll('#opts .opt')[i].classList.add('wrong');
+  let dmg=0,mult=1;
+  if(ok){
+    G.correctCount++;G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);G.charge++;
+    const h=G.team[G.active];
+    mult=KO[h.el]===G.enemy.el?1.6:(KO[G.enemy.el]===h.el?0.8:1);
+    dmg=Math.round(h.atk*mult*(1+Math.min(G.combo-1,5)*0.1));
+    pushLog(`✅ ${h.nm} 答對，造成 ${dmg} 點傷害${mult>1?'（相剋 ×1.6）':''}`);
+    await animatePlayer(dmg,mult);
+    G.enemy.hp=Math.max(0,G.enemy.hp-dmg);
+    const sup=G.team.find((x,idx)=>idx!==G.active&&!x.down&&SHENG[x.el]===h.el);
+    if(sup){
+      h.hp=Math.min(h.maxHp,h.hp+4);
+      floatText('+4 相生','18%','40%','#8ef0b0');
+      pushLog(`🌱 相生！${EL[sup.el].n} 生 ${EL[h.el].n}，${h.nm} 回 4 HP`);
+    }
+  }else{
+    G.combo=0;
+    floatText('答錯！','18%','42%','#ff9a86');
+    pushLog(`❌ 答錯了，${G.enemy.nm} 的反擊會加重 1.6 倍`);
+    await delay(420);
+  }
+  renderEnemy();renderTeam();renderHud();
+  if(G.enemy.hp<=0){
+    showExplain(q,ok,`💥 ${G.enemy.nm} 被擊倒了！`);
+    G.phase='answer';renderFoot();return;
+  }
+  await delay(220);
+  const wipe=await enemyTurn(!ok);
+  if(wipe){
+    G.phase='defeat';
+    showExplain(q,ok,'⚠️ 隊伍全滅了。');
+    renderFoot();
+    setTimeout(showDefeat,350);
+    return;
+  }
+  showExplain(q,ok);
+  G.phase='answer';renderFoot();
+}
+async function enemyTurn(wasWrong){
+  const alive=G.team.map((h,i)=>({h,i})).filter(x=>!x.h.down);
+  if(!alive.length) return true;
+  const t=pick(alive);
+  let d=G.enemy.atk*(wasWrong?1.6:1);
+  if(KO[G.enemy.el]===t.h.el) d*=1.5;
+  if(G.shieldTurns>0) d*=0.5;
+  d=Math.round(d);
+  if(G.teamShield>0){const ab=Math.min(G.teamShield,d);G.teamShield-=ab;d-=ab;}
+  t.h.hp=Math.max(0,t.h.hp-d);
+  if(t.h.hp<=0){t.h.down=true;pushLog(`💤 ${t.h.nm} 倒下了！`);}
+  if(G.shieldTurns>0) G.shieldTurns--;
+  await animateEnemy(d,t.i,wasWrong);
+  renderTeam();renderHud();renderFoot();
+  return G.team.every(h=>h.down);
+}
+function cont(){
+  if(G.phase!=='answer') return;
+  if(G.enemy.hp<=0){winBattle();return;}
+  G.round++;
+  if(G.team[G.active].down) G.active=G.team.findIndex(h=>!h.down);
+  nextQuestion();
+}
+function useSkill(){
+  if(G.phase!=='question'||G.charge<3||G.skillUsed) return;
+  const k=G.team[G.active].el;
+  let msg='';
+  if(k==='metal'){G.enemy.hp=Math.max(0,G.enemy.hp-18);msg='⚔️ 破甲斬！敵人 −18 HP（無視相性）';}
+  if(k==='wood'){G.team.forEach(h=>{if(!h.down)h.hp=Math.min(h.maxHp,h.hp+16);});msg='🌿 回春藤！全隊 +16 HP';}
+  if(k==='water'){G.shieldTurns=2;msg='💧 鏡水盾！接下來 2 回合敵方傷害減半';}
+  if(k==='fire'){G.enemy.hp=Math.max(0,G.enemy.hp-16);msg='🔥 烈焰灼！敵人 −16 HP';}
+  if(k==='earth'){G.teamShield+=14;msg='🪨 磐岩壁！全隊護盾 +14';}
+  G.skillUsed=true;G.charge=0;
+  pushLog(msg);showFlash(k);
+  floatText('奧義！','58%','38%',EL[k].c);
+  renderEnemy();renderTeam();renderFoot();
+  if(G.enemy.hp<=0){
+    $('explain').innerHTML=`<div class="exHead">⚡ 五行奧義直接擊倒了敵人！</div><div>${msg}</div>`;
+    $('explain').classList.remove('hidden');
+    document.querySelectorAll('#opts .opt').forEach(b=>b.disabled=true);
+    G.phase='answer';renderFoot();
+  }
+}
+function winBattle(){
+  G.team.forEach(h=>{if(h.down){h.down=false;h.hp=Math.ceil(h.maxHp*0.5);}else h.hp=Math.min(h.maxHp,h.hp+10);});
+  if(G.battle<5){
+    G.battle++;
+    /* 先不重繪 HUD，避免進度條跑到敵人卡前面；下一場 startBattle() 會一併更新 */
+    showModal(`🎉 擊敗 ${G.enemy.nm}！`,
+      `第 ${G.battle+1}/6 關準備好了。隊伍回 10 HP，倒下的隊友以一半 HP 復活。<br>目前答對 ${G.correctCount} 題，最高連擊 ${G.maxCombo}。`,
+      [{label:'下一隻 ▶',color:'green',fn:startBattle}]);
+  }else chapterClear();
+}
+function chapterClear(){
+  G.team.forEach(h=>{h.down=false;h.hp=h.maxHp;});
+  if(G.chapter>=5){showFinal();return;}
+  const k=EK.find(x=>!G.team.some(h=>h.el===x));
+  G.team.push(makeHero(k));
+  const e=EL[k];
+  showModal(`🏆 第 ${G.chapter} 章・${CHAPTERS[G.chapter-1]} 通關！`,
+    `<svg class="modalSprite" viewBox="0 0 32 32"><use href="#sp-${k}"></use></svg>
+     <b style="color:${e.c}">新隊友加入：${e.n}・${e.nm}</b><br>
+     HP ${e.hp}｜攻擊 ${e.atk}｜奧義 ${e.sk}：${e.skd}<br>
+     全隊血量回滿，下一章可以派「${e.n}」去剋制敵人。`,
+    [{label:`進入第 ${G.chapter+1} 章 ▶`,color:'gold',fn:()=>{G.chapter++;G.battle=0;startBattle();}}]);
+}
+function showDefeat(){
+  showModal('💀 隊伍全滅了',
+    `在「第 ${G.chapter} 章・第 ${G.battle+1}/6 關」被 ${G.enemy.nm} 打倒了。<br>
+     題目都来自講義的 S／C 公式，先開「📐 公式小抄」複習一下再來！`,
+    [{label:'重打本關 ↻',color:'green',fn:()=>{
+        G.team.forEach(h=>{h.down=false;h.hp=Math.max(1,Math.ceil(h.maxHp*0.7));});
+        startBattle();
+      }},
+     {label:'重新選角',color:'blue',fn:()=>{
+        $('game').classList.add('hidden');$('startOverlay').classList.remove('hidden');
+        G.phase='menu';renderMenu();
+      }}]);
+}
+function showFinal(){
+  showModal('🏆 五行齊聚・全通關！',
+    `你帶著五位元素小將打完 5 章、30 場戰鬥。<br>
+     答對 <b>${G.correctCount}</b> / ${G.totalQ} 題，最高連擊 <b>${G.maxCombo}</b>。<br>
+     公式、單位換算、易錯陷阱全部都練過一遍了！`,
+    [{label:'再玩一次 ↻',color:'gold',fn:()=>{
+        $('game').classList.add('hidden');$('startOverlay').classList.remove('hidden');
+        G.phase='menu';renderMenu();
+      }}]);
+}
+
+/* ── 事件綁定 ── */
+$('startBtn').onclick=startGame;
+$('continueBtn').onclick=cont;
+$('skillBtn').onclick=useSkill;
+$('hintBtn').onclick=()=>{
+  if(!G.q) return;
+  $('hintBox').textContent=`💡 提示（只給公式，不給答案）：${G.q.hint}`;
+  $('hintBox').classList.remove('hidden');
+};
+$('cheatBtn').onclick=()=>$('cheat').classList.remove('hidden');
+$('cheatClose').onclick=()=>$('cheat').classList.add('hidden');
+$('cheat').onclick=e=>{if(e.target===$('cheat'))$('cheat').classList.add('hidden');};
+document.addEventListener('keydown',e=>{
+  if(!$('cheat').classList.contains('hidden')){if(e.key==='Escape')$('cheat').classList.add('hidden');return;}
+  if(!$('modal').classList.contains('hidden')||!$('startOverlay').classList.contains('hidden'))return;
+  if(G.phase==='question'&&['1','2','3','4'].includes(e.key)) answer(+e.key-1);
+  else if(G.phase==='answer'&&(e.key==='Enter'||e.key===' ')){e.preventDefault();cont();}
+});
+renderMenu();renderLog();
+</script>
+</body>
+</html>
