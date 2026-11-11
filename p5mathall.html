@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>五年級數學・遊戲總覽｜數學街機大廳</title>
+<meta name="description" content="五年級數學遊戲總覽：小數乘除守塔、代數雙人對決、五行元素通關戰，三款線上遊戲選一張卡就開打。">
+<style>
+  :root{
+    --bg:#0E1220; --bg2:#151C33; --paper:#FFFDF2; --ink:#16161A;
+    --gold:#FFD257; --coral:#FF7A59; --blue:#3A6FD8; --teal:#12807F;
+    --cream:#FFFDF2; --dim:#AAB4CC; --line:rgba(255,255,255,.16);
+    --font:"PingFang TC","Microsoft JhengHei","Hiragino Sans TC","Noto Sans TC",system-ui,sans-serif;
+    --mono:"Courier New",ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--cream); font-family:var(--font);
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(900px 500px at 12% -8%, rgba(58,111,216,.28), transparent 70%),
+      radial-gradient(760px 460px at 92% 4%, rgba(255,122,89,.20), transparent 70%),
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size:auto,auto,24px 24px,24px 24px;
+  }
+  [hidden]{display:none!important}
+  a{color:inherit;text-decoration:none}
+  .wrap{width:min(1180px,calc(100% - 44px));margin:0 auto}
+  .mono{font-family:var(--mono)}
+
+  /* ── 頂部列 ── */
+  .topbar{border-bottom:1px solid var(--line);background:rgba(10,14,28,.55);backdrop-filter:blur(6px)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:18px;letter-spacing:.5px}
+  .brand svg{display:block;flex:none}
+  .brand small{display:block;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);margin-top:2px}
+  .topRight{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .stat{font-size:12px;font-weight:700;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:7px 13px;background:rgba(255,255,255,.04)}
+  .stat b{color:var(--gold);font-family:var(--mono);font-size:13px}
+  .miniBtn{
+    font-family:inherit;font-weight:900;font-size:13px;cursor:pointer;color:var(--ink);
+    background:var(--gold);border:2px solid var(--ink);border-radius:9px;padding:9px 15px;
+    box-shadow:3px 3px 0 rgba(0,0,0,.6);transition:transform .12s,box-shadow .12s;
+  }
+  .miniBtn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 rgba(0,0,0,.6)}
+  .miniBtn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 rgba(0,0,0,.6)}
+
+  /* ── 主視覺 ── */
+  .hero{display:grid;grid-template-columns:1.02fr .98fr;gap:46px;align-items:center;padding:52px 0 34px}
+  .eyebrow{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:3px;color:var(--gold);margin:0 0 18px}
+  .eyebrow::before{content:"▶ ";color:var(--coral)}
+  h1{margin:0;font-size:clamp(38px,5.6vw,66px);line-height:1.16;font-weight:900;letter-spacing:-1px}
+  h1 .hl{
+    display:inline-block;margin-top:10px;background:var(--gold);color:var(--ink);
+    padding:2px 18px 6px;border:3px solid var(--ink);border-radius:6px;
+    transform:rotate(-2deg);box-shadow:7px 7px 0 rgba(0,0,0,.65);
+  }
+  .lead{margin:24px 0 0;font-size:16px;line-height:1.85;color:#D6DDF0;max-width:30em}
+  .lead b{color:var(--gold)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}
+  .chipInfo{font-size:12px;font-weight:800;border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;color:#E6ECFA;background:rgba(255,255,255,.05)}
+  .chipInfo i{font-style:normal;color:var(--gold);font-family:var(--mono);margin-right:5px}
+  .heroActions{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:30px}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;font-family:inherit;font-weight:900;font-size:15px;
+    color:var(--ink);background:var(--gold);border:3px solid var(--ink);border-radius:10px;
+    padding:13px 22px;line-height:1.4;cursor:pointer;box-shadow:5px 5px 0 rgba(0,0,0,.65);
+    transition:transform .12s,box-shadow .12s;
+  }
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 rgba(0,0,0,.65)}
+  .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 rgba(0,0,0,.65)}
+  .btn.ghost{background:transparent;color:var(--cream);border-color:rgba(255,255,255,.5);box-shadow:5px 5px 0 rgba(0,0,0,.4)}
+  .btn.ghost:hover{background:rgba(255,255,255,.08)}
+  .heroArt{position:relative}
+  .heroArt svg{display:block;width:100%;height:auto;filter:drop-shadow(10px 12px 0 rgba(0,0,0,.45))}
+  .blink{animation:blink 1.25s steps(2,start) infinite}
+  @keyframes blink{50%{opacity:.28}}
+
+  /* ── 學習路線 ── */
+  .route{margin:6px 0 46px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.035);padding:20px 22px}
+  .routeHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+  .routeHead h2{margin:0;font-size:15px;font-weight:900;letter-spacing:1px}
+  .routeHead span{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:1px}
+  .routeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .step{
+    position:relative;display:block;border:1.5px solid var(--line);border-radius:12px;
+    padding:13px 14px 13px 46px;background:rgba(9,13,26,.55);transition:border-color .15s,transform .15s,background .15s;
+  }
+  .step:hover{border-color:var(--gold);transform:translateY(-3px);background:rgba(255,210,87,.08)}
+  .step .n{
+    position:absolute;left:12px;top:13px;width:25px;height:25px;border-radius:7px;
+    display:grid;place-items:center;font-family:var(--mono);font-weight:900;font-size:13px;
+    color:var(--ink);background:var(--sc,var(--gold));border:2px solid var(--ink);
+  }
+  .step b{display:block;font-size:14px;font-weight:900;margin-bottom:3px}
+  .step small{display:block;font-size:11.5px;line-height:1.5;color:var(--dim)}
+  .step .go{position:absolute;right:10px;top:12px;font-size:13px;color:var(--gold);font-family:var(--mono)}
+
+  /* ── 區塊標題 ── */
+  .sec{margin-bottom:54px}
+  .secHead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:20px}
+  .secTitle{display:flex;align-items:center;gap:12px}
+  .secTitle .tag{
+    font-family:var(--mono);font-size:11px;font-weight:900;letter-spacing:1px;color:var(--ink);
+    background:var(--gold);border:2px solid var(--ink);border-radius:6px;padding:5px 8px;box-shadow:3px 3px 0 rgba(0,0,0,.5);
+  }
+  .secHead h2{margin:0;font-size:clamp(21px,2.5vw,28px);font-weight:900;letter-spacing:.5px}
+  .secHead p{margin:6px 0 0;font-size:13px;color:var(--dim)}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chip{
+    font-family:inherit;font-size:12.5px;font-weight:800;cursor:pointer;color:#D9E1F2;
+    background:rgba(255,255,255,.05);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .chip:hover{border-color:var(--gold);color:#fff}
+  .chip.on{background:var(--gold);border-color:var(--ink);color:var(--ink);box-shadow:2px 2px 0 rgba(0,0,0,.5)}
+  .count{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-left:4px}
+  .empty{text-align:center;color:var(--dim);font-size:14px;padding:40px;border:1px dashed var(--line);border-radius:14px}
+
+  /* ── 遊戲卡 ── */
+  .gameGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .gcard{
+    display:block;position:relative;background:var(--paper);color:var(--ink);
+    border:3px solid var(--ink);border-radius:16px;overflow:hidden;
+    box-shadow:8px 8px 0 rgba(0,0,0,.55);
+    transition:transform .18s ease,box-shadow .18s ease;
+  }
+  .gcard:hover{transform:translate(-3px,-6px);box-shadow:12px 14px 0 rgba(0,0,0,.55)}
+  .gcard:focus-visible{outline:4px solid var(--gold);outline-offset:4px}
+  .art{position:relative;width:100%;aspect-ratio:320/168;background:var(--tint);border-bottom:3px solid var(--ink);overflow:hidden}
+  .art svg{display:block;width:100%;height:100%}
+  .played{
+    position:absolute;right:10px;top:10px;z-index:2;font-size:11px;font-weight:900;
+    color:var(--ink);background:#FFFDF2;border:2px solid var(--ink);border-radius:999px;padding:5px 10px;
+    box-shadow:2px 2px 0 rgba(0,0,0,.4);
+  }
+  .gbody{padding:18px 18px 20px}
+  .gTop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .gNum{font-family:var(--mono);font-size:11px;font-weight:900;letter-spacing:1px;color:var(--ink);background:var(--c1);border:2px solid var(--ink);border-radius:5px;padding:4px 8px}
+  .gBadge{font-size:11px;font-weight:900;color:#4A5262;border:1.5px dashed #AEB6C2;border-radius:999px;padding:4px 9px;white-space:nowrap}
+  .gcard h3{margin:0;font-size:21px;font-weight:900;line-height:1.35;letter-spacing:.2px}
+  .tagline{margin:8px 0 0;font-size:13px;line-height:1.65;color:#5A6270;min-height:2.6em}
+  .meta{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+  .meta span{font-size:11.5px;font-weight:800;color:var(--deep);background:var(--tint);border:1px solid rgba(0,0,0,.14);border-radius:6px;padding:5px 8px}
+  .feat{list-style:none;margin:14px 0 18px;padding:0;border-top:1.5px dashed #D9D3C2;padding-top:12px}
+  .feat li{position:relative;padding-left:17px;font-size:12.5px;line-height:1.85;color:#3C4553;font-weight:700}
+  .feat li::before{content:"";position:absolute;left:0;top:8px;width:8px;height:8px;background:var(--c1);border:1.5px solid var(--ink)}
+  .play{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--c1);border:3px solid var(--ink);border-radius:9px;padding:11px 15px;
+    font-size:15px;font-weight:900;color:var(--ink);box-shadow:4px 4px 0 var(--ink);
+    transition:transform .12s,box-shadow .12s;
+  }
+  .gcard:hover .play{transform:translate(-1px,-1px);box-shadow:6px 6px 0 var(--ink)}
+  .play .arrow{font-family:var(--mono);font-size:14px;background:var(--paper);border:2px solid var(--ink);border-radius:5px;padding:2px 8px}
+  .hintKey{font-family:var(--mono);font-size:11px;color:#7A8290;text-align:center;margin:10px 0 0}
+
+  /* ── 提示與頁尾 ── */
+  .tip{
+    display:flex;gap:16px;align-items:flex-start;background:var(--paper);color:var(--ink);
+    border:3px solid var(--ink);border-radius:14px;padding:20px 22px;margin:0 0 46px;
+    box-shadow:8px 8px 0 rgba(0,0,0,.5);border-left:12px solid var(--gold);
+  }
+  .tip .bulb{font-family:var(--mono);font-size:22px;font-weight:900;flex:none;background:var(--gold);border:2px solid var(--ink);border-radius:9px;width:40px;height:40px;display:grid;place-items:center}
+  .tip h3{margin:0 0 6px;font-size:16px;font-weight:900}
+  .tip p{margin:0;font-size:13.5px;line-height:1.85;color:#414A58}
+  footer{border-top:1px dashed var(--line);padding:24px 0 40px;color:var(--dim);font-size:12px;line-height:1.9}
+  footer .wrap{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  footer b{color:#E6ECFA}
+  kbd{font-family:var(--mono);font-size:11px;background:rgba(255,255,255,.1);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:#E6ECFA}
+
+  @media (max-width:1000px){
+    .hero{grid-template-columns:1fr;gap:32px;padding-top:38px}
+    .heroArt{max-width:520px;margin:0 auto}
+    .gameGrid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:680px){
+    .wrap{width:min(100% - 28px,1180px)}
+    .topbar .wrap{padding:12px 0;min-height:0}
+    .brand{font-size:16px}
+    .hero{padding:30px 0 24px}
+    .lead{font-size:14.5px}
+    .route{padding:16px}
+    .routeGrid{grid-template-columns:1fr}
+    .gameGrid{grid-template-columns:1fr}
+    .gcard{max-width:460px;width:100%;margin:0 auto}
+    .sec{margin-bottom:40px}
+    .secHead{align-items:flex-start}
+    .tip{flex-direction:column;gap:12px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ 頂部列 ══ -->
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="42" height="42" viewBox="0 0 42 42" shape-rendering="crispEdges" aria-hidden="true">
+        <rect x="2" y="2" width="38" height="38" fill="#16161A"/>
+        <rect x="5" y="5" width="32" height="32" fill="#FFD257" stroke="#16161A" stroke-width="2"/>
+        <rect x="9" y="9" width="10" height="10" fill="#16161A"/>
+        <rect x="23" y="9" width="10" height="10" fill="#16161A"/>
+        <rect x="9" y="23" width="10" height="10" fill="#16161A"/>
+        <rect x="23" y="23" width="10" height="10" fill="#E8413A"/>
+      </svg>
+      <div>五年級數學 · 遊戲基地<small>MATH ARCADE / GRADE 5</small></div>
+    </div>
+    <div class="topRight">
+      <span class="stat"><b>3</b> 款遊戲・<b>3</b> 種主題</span>
+      <span class="stat">線上即玩 · 免安裝</span>
+      <button class="miniBtn" id="randomBtn" type="button">🎲 隨機開一局</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ══ 主視覺 ══ -->
+  <section class="hero">
+    <div class="heroCopy">
+      <p class="eyebrow">SELECT YOUR STAGE</p>
+      <h1>把數學練成闖關<br><span class="hl">遊戲總覽</span></h1>
+      <p class="lead">從 <b>小數乘除</b> 到 <b>代數方程</b>、再到 <b>圖形的 S 與 C</b>，選一張卡就開打。算對一題，就往前推一關；換一個主題，又是新的一局。</p>
+      <div class="chips">
+        <span class="chipInfo"><i>01</i>三款可玩遊戲</span>
+        <span class="chipInfo"><i>02</i>單人／雙人皆可</span>
+        <span class="chipInfo"><i>03</i>題目隨機不重複</span>
+        <span class="chipInfo"><i>04</i>線上即開即玩</span>
+      </div>
+      <div class="heroActions">
+        <a class="btn" href="#games">選擇關卡 <span class="mono">▶</span></a>
+        <button class="btn ghost" id="randomBtn2" type="button">🎲 隨機開一局</button>
+      </div>
+    </div>
+    <div class="heroArt" id="heroArt" aria-label="像素風闖關路線圖"></div>
+  </section>
+
+  <!-- ══ 學習路線 ══ -->
+  <section class="route" aria-label="學習路線">
+    <div class="routeHead">
+      <h2>🗺️ 學習路線・照這個順序玩</h2>
+      <span>CLICK A STEP TO JUMP ↗</span>
+    </div>
+    <div class="routeGrid">
+      <a class="step" href="https://wecandoit404.github.io/it/p5math1" target="_blank" rel="noopener" style="--sc:#FF7A59">
+        <span class="n">1</span><b>小數乘除</b><small>把小數點位置算穩</small><span class="go">↗</span>
+      </a>
+      <a class="step" href="https://wecandoit404.github.io/it/p5math2" target="_blank" rel="noopener" style="--sc:#7FB0FF">
+        <span class="n">2</span><b>代數式與方程</b><small>化簡・代入・求未知數</small><span class="go">↗</span>
+      </a>
+      <a class="step" href="https://wecandoit404.github.io/it/p5math3" target="_blank" rel="noopener" style="--sc:#FFD257">
+        <span class="n">3</span><b>圖形的 S 與 C</b><small>五種圖形＋單位換算</small><span class="go">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ══ 遊戲卡 ══ -->
+  <section class="sec" id="games">
+    <div class="secHead">
+      <div>
+        <div class="secTitle"><span class="tag">STAGE 01–03</span><h2>🎮 挑一款開玩</h2></div>
+        <p>點整張卡就會在新分頁開啟；關掉分頁就回到這裡。</p>
+      </div>
+      <div class="filters" role="group" aria-label="依主題篩選遊戲">
+        <button class="chip on" type="button" data-filter="all" aria-pressed="true">全部</button>
+        <button class="chip" type="button" data-filter="num" aria-pressed="false">數與計算</button>
+        <button class="chip" type="button" data-filter="alg" aria-pressed="false">代數</button>
+        <button class="chip" type="button" data-filter="geo" aria-pressed="false">圖形與面積</button>
+        <button class="chip" type="button" data-filter="duo" aria-pressed="false">雙人同樂</button>
+        <span class="count" id="count">顯示 3 / 3 款</span>
+      </div>
+    </div>
+
+    <div class="gameGrid" id="gameGrid">
+
+      <a class="gcard" href="https://wecandoit404.github.io/it/p5math1" target="_blank" rel="noopener"
+         data-id="tower" data-tags="num duo" aria-keyshortcuts="1"
+         style="--c1:#FF7A59;--tint:#FFF0E2;--deep:#B8411F">
+        <div class="art" id="art-tower">
+          <span class="played" hidden>⭐ 上次玩過</span>
+        </div>
+        <div class="gbody">
+          <div class="gTop"><span class="gNum">STAGE 01</span><span class="gBadge">單人 / 雙人合作</span></div>
+          <h3>小數乘除守塔大作戰</h3>
+          <p class="tagline">算對一題就放一招，把怪物擋在城牆外。</p>
+          <div class="meta"><span>小數乘法</span><span>小數除法</span><span>定義與應用題</span></div>
+          <ul class="feat">
+            <li>4 種職業 × 3 絕技＋專屬主動技</li>
+            <li>3 段難度、輸入／選擇題雙模式</li>
+            <li>5 條共享生命，每關有超大 BOSS</li>
+          </ul>
+          <div class="play">進入遊戲 <span class="arrow">▶</span></div>
+          <p class="hintKey">快捷鍵 1</p>
+        </div>
+      </a>
+
+      <a class="gcard" href="https://wecandoit404.github.io/it/p5math2" target="_blank" rel="noopener"
+         data-id="duel" data-tags="alg duo" aria-keyshortcuts="2"
+         style="--c1:#6FA0FF;--tint:#EAF1FF;--deep:#1D3F96">
+        <div class="art" id="art-duel">
+          <span class="played" hidden>⭐ 上次玩過</span>
+        </div>
+        <div class="gbody">
+          <div class="gTop"><span class="gNum">STAGE 02</span><span class="gBadge">對戰 / 合作 / 單挑</span></div>
+          <h3>代數雙人對決大作戰</h3>
+          <p class="tagline">法師與騎士用代數式過招，答得快就打得痛。</p>
+          <div class="meta"><span>代數式化簡</span><span>解方程</span><span>雙字母同類項</span></div>
+          <ul class="feat">
+            <li>3 種模式：KO 對戰、雙人合作、單人單挑</li>
+            <li>題類 × 難度自選，魔王 5 關逐關升級</li>
+            <li>4 招技能，冷卻只算自己答過的題</li>
+          </ul>
+          <div class="play">進入遊戲 <span class="arrow">▶</span></div>
+          <p class="hintKey">快捷鍵 2</p>
+        </div>
+      </a>
+
+      <a class="gcard" href="https://wecandoit404.github.io/it/p5math3" target="_blank" rel="noopener"
+         data-id="five" data-tags="geo" aria-keyshortcuts="3"
+         style="--c1:#FFD257;--tint:#FFF6DA;--deep:#7A4B00">
+        <div class="art" id="art-five">
+          <span class="played" hidden>⭐ 上次玩過</span>
+        </div>
+        <div class="gbody">
+          <div class="gTop"><span class="gNum">STAGE 03</span><span class="gBadge">單人闖關</span></div>
+          <h3>五行元素通關戰</h3>
+          <p class="tagline">帶著金木水火土小將，把五種圖形一一收服。</p>
+          <div class="meta"><span>面積 S</span><span>周長 C</span><span>單位換算</span></div>
+          <ul class="feat">
+            <li>5 章 × 6 戰＝30 場，通關解鎖新隊友</li>
+            <li>相剋 ×1.6、相生回血、五行奧義集氣</li>
+            <li>答完先看解說，公式小抄隨時叫出</li>
+          </ul>
+          <div class="play">進入遊戲 <span class="arrow">▶</span></div>
+          <p class="hintKey">快捷鍵 3</p>
+        </div>
+      </a>
+    </div>
+    <p class="empty" id="empty" hidden>這個分類還沒有遊戲，換一個分類試試 🎲</p>
+  </section>
+
+  <!-- ══ 小提醒 ══ -->
+  <section class="tip">
+    <div class="bulb">!</div>
+    <div>
+      <h3>上課小提醒</h3>
+      <p>三款遊戲都能先選<b>題類、難度與模式</b>再開打，建議讓孩子先自己試一題，答錯就留在同一個主題多練幾輪。遊戲都放在線上，<b>連上網路點開就能玩、不用安裝</b>，建議用 Chrome 開啟；點卡片會開新分頁，關掉就回到本頁。</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>五年級數學 · 遊戲基地　|　<b>3 款遊戲・3 種主題・1 條學習路線</b></div>
+    <div>快捷鍵：<kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> 快速開局　<kbd>R</kbd> 隨機　|　本頁單檔 HTML・內聯 SVG・零外部依賴</div>
+  </div>
+</footer>
+
+<script>
+/* ══════════════ 像素精靈：以字串地圖即時產生內聯 SVG ══════════════ */
+const PAL = {
+  K:'#16161A', W:'#FFFDF2', S:'#FFD8AE', B:'#3A6FD8', b:'#86B6FF',
+  R:'#E0473B', r:'#FF9A80', G:'#3FBF72', g:'#9BE3A8', Y:'#FFD257',
+  P:'#7B4BB5', D:'#2B3A4A', C:'#48A9E6', c:'#C8ECFF'
+};
+const SP = {
+  mage:[
+    "......KKKK......",".....KbbbbK.....","....KbbbbbbK....","...KbbbbbbbbK...",
+    ".KKKKKKKKKKKKKK.","....KSSSSSSK....","....KSKSSKSK....","....KWWWWWWK....",
+    ".....KWWWWK.....","...KBBBBBBBBK...","..KBBBBBBBBBBK..","..KBBBbBBbBBBK..",
+    "..KBBBBBBBBBBK..","..KBBBBBBBBBBK..","...KKKKKKKKKK...","....KK....KK...."
+  ],
+  knight:[
+    "......KYYK......",".....KRRRRK.....","....KRRrrRRK....","....KRRRRRRK....",
+    "....KSSSSSSK....","....KSKSSKSK....","....KWWWWWWK....",".....KRRRRK.....",
+    "...KRRRRRRRRK...","..KRRRRRRRRRRK..","..KRRrRRRRrRRK..","..KRRRRRRRRRRK..",
+    "..KRRRRRRRRRRK..","...KKKKKKKKKK...","....KDDDDDDDK...","....KK....KK...."
+  ],
+  boss:[
+    "..KK........KK..","..KPK......KPK..","..KPPK....KPPK..","...KPPPPPPPPK...",
+    "..KPPPPPPPPPPK..","..KPPPKWWKPPPK..","..KPPPKWKKPPPK..","..KPPPPPPPPPPK..",
+    "..KPPPKKKKPPPK..","...KPPPPPPPPK...","....KPPPPPPK....","...KPPPPPPPPK...",
+    "..KPPPPPPPPPPK..","..KPPPPPPPPPPK..","...KKKKKKKKKK...","..KK........KK.."
+  ],
+  slime:[
+    "....KKKK....","..KKGGGGKK..",".KGGGGGGGGK.",".KGGWKGGWKG.",
+    "KGGGGGGGGGGK","KGGGGGGGGGGK","KGGGggggGGGK",".KKKKKKKKKK."
+  ]
+};
+function spriteRects(name){
+  const rows = SP[name];
+  const w = Math.max.apply(null, rows.map(r => r.length));
+  let out = '';
+  for(let y=0; y<rows.length; y++){
+    const row = rows[y];
+    for(let x=0; x<row.length; x++){
+      const ch = row[x];
+      if(ch === '.' || !PAL[ch]) continue;
+      out += '<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+PAL[ch]+'"/>';
+    }
+  }
+  return out;
+}
+function sprite(name, x, y, s){
+  return '<g transform="translate('+x+' '+y+') scale('+s+')">'+spriteRects(name)+'</g>';
+}
+const svgOpen = (label) =>
+  '<svg viewBox="0 0 320 168" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges" ' +
+  'xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+label+'">';
+
+/* ── 卡片插圖 1：城堡與小數怪物 ── */
+function artTower(){
+  let s = svgOpen('城堡、法師與小數怪物');
+  s += '<rect width="320" height="168" fill="#BFE9FF"/>';
+  s += '<rect width="320" height="58" fill="#E8F8FF"/>';
+  s += '<circle cx="38" cy="28" r="15" fill="#FFD257" stroke="#16161A" stroke-width="3"/>';
+  s += '<rect x="104" y="24" width="36" height="9" fill="#FFFDF2" stroke="#16161A" stroke-width="2"/>';
+  s += '<rect x="114" y="16" width="22" height="10" fill="#FFFDF2" stroke="#16161A" stroke-width="2"/>';
+  s += '<rect x="270" y="62" width="38" height="9" fill="#FFFDF2" stroke="#16161A" stroke-width="2"/>';
+  s += '<rect x="0" y="112" width="320" height="56" fill="#7ED957"/>';
+  s += '<rect x="0" y="112" width="320" height="8" fill="#5CB83C"/>';
+  s += '<polygon points="72,168 252,168 222,120 102,120" fill="#D9A066" stroke="#16161A" stroke-width="3"/>';
+  s += '<path d="M162 124 L162 168" stroke="#FFFDF2" stroke-width="4" stroke-dasharray="9 9"/>';
+  // 城堡
+  s += '<rect x="24" y="52" width="62" height="68" fill="#E8CFA6" stroke="#16161A" stroke-width="3"/>';
+  [24,40,56,72].forEach(x=>{
+    s += '<rect x="'+x+'" y="44" width="12" height="11" fill="#E8CFA6" stroke="#16161A" stroke-width="2.5"/>';
+  });
+  s += '<rect x="44" y="68" width="18" height="18" fill="#48A9E6" stroke="#16161A" stroke-width="3"/>';
+  s += '<rect x="47" y="97" width="17" height="23" fill="#8A5A2B" stroke="#16161A" stroke-width="3"/>';
+  s += '<rect x="53" y="27" width="3" height="18" fill="#16161A"/>';
+  s += '<polygon points="56,27 80,33 56,39" fill="#E8413A" stroke="#16161A" stroke-width="2"/>';
+  // 法師與怪物
+  s += sprite('mage', 96, 74, 4.2);
+  s += '<rect x="128" y="70" width="3" height="54" fill="#FFD257" stroke="#16161A" stroke-width="1.5"/>';
+  s += '<circle cx="129" cy="66" r="6" fill="#C8ECFF" stroke="#16161A" stroke-width="2"/>';
+  s += sprite('slime', 192, 92, 3.6);
+  s += sprite('slime', 254, 100, 3.0);
+  // 算式氣泡
+  s += '<rect x="148" y="9" width="154" height="31" rx="5" fill="#FFFDF2" stroke="#16161A" stroke-width="3"/>';
+  s += '<text x="225" y="30" text-anchor="middle" font-family="Courier New,monospace" font-size="16" font-weight="900" fill="#16161A">0.8 × 0.6 = ?</text>';
+  s += '</svg>';
+  return s;
+}
+
+/* ── 卡片插圖 2：法師 VS 騎士 ── */
+function artDuel(){
+  let s = svgOpen('法師與騎士的代數對決');
+  s += '<rect width="320" height="168" fill="#172546"/>';
+  s += '<rect width="320" height="44" fill="#2A3B6B"/>';
+  s += '<rect y="126" width="320" height="42" fill="#3A2E4A"/>';
+  s += '<rect y="126" width="320" height="5" fill="#16161A"/>';
+  s += '<path d="M0 148 H320" stroke="#57436E" stroke-width="2"/>';
+  s += '<rect x="40" y="0" width="6" height="126" fill="#233561"/>';
+  s += '<rect x="274" y="0" width="6" height="126" fill="#233561"/>';
+  s += '<circle cx="160" cy="80" r="30" fill="#FFD257" stroke="#16161A" stroke-width="4"/>';
+  s += '<text x="160" y="89" text-anchor="middle" font-family="Courier New,monospace" font-size="23" font-weight="900" fill="#16161A">VS</text>';
+  s += sprite('mage', 18, 46, 5);
+  s += sprite('knight', 222, 46, 5);
+  s += '<polygon points="112,84 120,72 118,84 128,84 116,98 119,87" fill="#FFFDF2" stroke="#16161A" stroke-width="2"/>';
+  s += '<polygon points="204,84 196,72 198,84 188,84 200,98 197,87" fill="#FFFDF2" stroke="#16161A" stroke-width="2"/>';
+  s += '<rect x="18" y="133" width="82" height="10" fill="#16161A"/>';
+  s += '<rect x="21" y="136" width="70" height="4" fill="#3A6FD8"/>';
+  s += '<rect x="220" y="133" width="82" height="10" fill="#16161A"/>';
+  s += '<rect x="229" y="136" width="70" height="4" fill="#E0473B"/>';
+  s += '<rect x="98" y="8" width="124" height="29" rx="5" fill="#FFFDF2" stroke="#16161A" stroke-width="3"/>';
+  s += '<text x="160" y="28" text-anchor="middle" font-family="Courier New,monospace" font-size="15" font-weight="900" fill="#16161A">3x + 6 = 24</text>';
+  s += '</svg>';
+  return s;
+}
+
+/* ── 卡片插圖 3：五行元素與魔王 ── */
+function artFive(){
+  let s = svgOpen('五行元素與圖形魔王');
+  s += '<rect width="320" height="168" fill="#0E1220"/>';
+  s += '<rect y="150" width="320" height="18" fill="#1B2340"/>';
+  s += '<rect y="150" width="320" height="3" fill="#FFD257" opacity=".55"/>';
+  const stars = [[24,22],[68,14],[112,26],[176,18],[216,30],[300,64],[288,112],[18,96],[302,132]];
+  stars.forEach(p=>{ s += '<rect x="'+p[0]+'" y="'+p[1]+'" width="4" height="4" fill="#FFFDF2" opacity=".75"/>'; });
+  s += '<circle cx="286" cy="26" r="15" fill="#FFD257" stroke="#16161A" stroke-width="3"/>';
+  const orb = [
+    {x:44,  f:'#D9DBE6', l:'#F7F8FF', t:'金', sh:'<rect x="37" y="47" width="14" height="14" fill="#F7F8FF" stroke="#16161A" stroke-width="1.5"/>'},
+    {x:94,  f:'#4FBF72', l:'#A8E063', t:'木', sh:'<rect x="85" y="48" width="18" height="12" fill="#A8E063" stroke="#16161A" stroke-width="1.5"/>'},
+    {x:144, f:'#48A9E6', l:'#C8ECFF', t:'水', sh:'<polygon points="135,61 140,47 153,47 148,61" fill="#C8ECFF" stroke="#16161A" stroke-width="1.5"/>'},
+    {x:194, f:'#F0603A', l:'#FFD23F', t:'火', sh:'<polygon points="194,45 185,61 203,61" fill="#FFD23F" stroke="#16161A" stroke-width="1.5"/>'},
+    {x:244, f:'#C99454', l:'#E6C48F', t:'土', sh:'<polygon points="234,61 238,47 250,47 254,61" fill="#E6C48F" stroke="#16161A" stroke-width="1.5"/>'}
+  ];
+  orb.forEach(o=>{
+    s += '<circle cx="'+o.x+'" cy="54" r="18" fill="'+o.f+'" stroke="#16161A" stroke-width="3"/>';
+    s += o.sh;
+    s += '<text x="'+o.x+'" y="86" text-anchor="middle" font-family="PingFang TC,Microsoft JhengHei,sans-serif" font-size="12" font-weight="900" fill="#FFFDF2">'+o.t+'</text>';
+  });
+  s += sprite('boss', 128, 88, 4);
+  s += '<rect x="12" y="8" width="116" height="27" rx="5" fill="#FFD257" stroke="#16161A" stroke-width="3"/>';
+  s += '<text x="70" y="27" text-anchor="middle" font-family="PingFang TC,Microsoft JhengHei,sans-serif" font-size="13" font-weight="900" fill="#16161A">5 章 × 6 戰</text>';
+  s += '</svg>';
+  return s;
+}
+
+/* ── 主視覺：像素闖關路線圖 ── */
+function heroArt(){
+  let s = '<svg viewBox="0 0 420 272" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="像素風闖關路線圖">';
+  s += '<defs><pattern id="pxgrid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="#24304A" stroke-width="1"/></pattern></defs>';
+  s += '<rect x="14" y="14" width="396" height="254" fill="#16161A"/>';
+  s += '<rect x="6" y="6" width="396" height="254" fill="#FFFDF2" stroke="#16161A" stroke-width="4"/>';
+  s += '<rect x="6" y="6" width="396" height="42" fill="#FFD257" stroke="#16161A" stroke-width="4"/>';
+  s += '<text x="22" y="34" font-family="Courier New,monospace" font-size="15" font-weight="900" fill="#16161A">STAGE MAP / 闖關路線</text>';
+  [326,344,362].forEach(x=>{ s += '<rect x="'+x+'" y="20" width="12" height="12" fill="#E8413A" stroke="#16161A" stroke-width="2"/>'; });
+  s += '<rect x="22" y="58" width="364" height="164" fill="#10162B" stroke="#16161A" stroke-width="3"/>';
+  s += '<rect x="22" y="58" width="364" height="164" fill="url(#pxgrid)"/>';
+  s += '<path d="M62 190 L170 120 L330 108" fill="none" stroke="#FFD257" stroke-width="5" stroke-dasharray="10 8"/>';
+  const nodes = [
+    {x:62,  y:190, c:'#FF7A59', n:'1'},
+    {x:170, y:120, c:'#7FB0FF', n:'2'},
+    {x:330, y:108, c:'#FFD257', n:'3'}
+  ];
+  nodes.forEach(p=>{
+    s += '<circle cx="'+p.x+'" cy="'+p.y+'" r="17" fill="'+p.c+'" stroke="#16161A" stroke-width="3"/>';
+    s += '<text x="'+p.x+'" y="'+(p.y+5)+'" text-anchor="middle" font-family="Courier New,monospace" font-size="15" font-weight="900" fill="#16161A">'+p.n+'</text>';
+  });
+  s += sprite('mage', 26, 140, 2.2);
+  s += '<polygon points="330,54 334,66 346,66 336,74 339,86 330,79 321,86 324,74 314,66 326,66" fill="#FFD257" stroke="#16161A" stroke-width="2"/>';
+  s += '<circle cx="52" cy="244" r="9" fill="#FFD257" stroke="#16161A" stroke-width="2.5"/>';
+  s += '<circle cx="78" cy="244" r="9" fill="#FF7A59" stroke="#16161A" stroke-width="2.5"/>';
+  s += '<rect x="112" y="238" width="132" height="12" rx="3" fill="#16161A"/>';
+  s += '<text class="blink" x="290" y="249" font-family="Courier New,monospace" font-size="12" font-weight="900" fill="#16161A">PRESS START ▶</text>';
+  s += '</svg>';
+  return s;
+}
+
+/* ══════════════ 注入插圖 ══════════════ */
+(function initArt(){
+  const map = {
+    'heroArt': heroArt,
+    'art-tower': artTower,
+    'art-duel': artDuel,
+    'art-five': artFive
+  };
+  Object.keys(map).forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const svg = map[id]();
+    // 保留「上次玩過」等覆蓋層
+    el.insertAdjacentHTML('afterbegin', svg);
+  });
+})();
+
+/* ══════════════ 篩選・隨機・快捷鍵 ══════════════ */
+(function initUI(){
+  const cards = Array.prototype.slice.call(document.querySelectorAll('.gcard'));
+  const chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+  const countEl = document.getElementById('count');
+  const emptyEl = document.getElementById('empty');
+  let filter = 'all';
+
+  function visible(){ return cards.filter(c => !c.classList.contains('hidden')); }
+
+  function applyFilter(f){
+    filter = f;
+    chips.forEach(c=>{
+      const on = c.dataset.filter === f;
+      c.classList.toggle('on', on);
+      c.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    let n = 0;
+    cards.forEach(card=>{
+      const tags = (card.dataset.tags || '').split(' ');
+      const show = f === 'all' || tags.indexOf(f) !== -1;
+      card.classList.toggle('hidden', !show);
+      if(show) n++;
+    });
+    countEl.textContent = '顯示 ' + n + ' / ' + cards.length + ' 款';
+    emptyEl.hidden = n > 0;
+  }
+  chips.forEach(c => c.addEventListener('click', ()=>applyFilter(c.dataset.filter)));
+
+  function saveLast(id){
+    try{ localStorage.setItem('math-arcade-last', id); }catch(e){}
+    markLast();
+  }
+  function markLast(){
+    let id = null;
+    try{ id = localStorage.getItem('math-arcade-last'); }catch(e){}
+    cards.forEach(c=>{
+      const badge = c.querySelector('.played');
+      if(badge) badge.hidden = (c.dataset.id !== id);
+    });
+  }
+  function openCard(card){
+    saveLast(card.dataset.id);
+    window.open(card.href, '_blank', 'noopener');
+  }
+  cards.forEach(c => c.addEventListener('click', ()=>saveLast(c.dataset.id)));
+  markLast();
+
+  function randomPick(){
+    const list = visible();
+    if(!list.length) return;
+    openCard(list[Math.floor(Math.random() * list.length)]);
+  }
+  ['randomBtn','randomBtn2'].forEach(function(id){
+    var b = document.getElementById(id);
+    if(b) b.addEventListener('click', randomPick);
+  });
+
+  document.addEventListener('keydown', e=>{
+    const t = e.target;
+    if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if(e.altKey || e.ctrlKey || e.metaKey) return;
+    if(e.key === '1' || e.key === '2' || e.key === '3'){
+      const c = cards[Number(e.key) - 1];
+      if(c && !c.classList.contains('hidden')) openCard(c);
+    }else if(e.key === 'r' || e.key === 'R'){
+      randomPick();
+    }
+  });
+})();
+</script>
+</body>
+</html>
