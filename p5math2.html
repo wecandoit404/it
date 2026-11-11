@@ -186,6 +186,37 @@
     100%{opacity:0; transform:translate(-50%,-50%) scale(1.05);}
   }
 
+  /* 進入新關卡的橫幅：「第 2 關 / 狂暴魔王 / Lv.2 熟練」 */
+  .stageBanner{
+    position:absolute; left:50%; top:39%; transform:translate(-50%,-50%) scale(.75); z-index:9;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:12px 32px; border-radius:16px;
+    background:linear-gradient(180deg, rgba(38,22,66,.96), rgba(74,36,110,.96));
+    border:3px solid #fff; box-shadow:0 12px 34px rgba(0,0,0,.5);
+    text-align:center; pointer-events:none; opacity:0;
+  }
+  .stageBanner .sbNo{font-size:14px; font-weight:900; letter-spacing:3px; color:#ffd76a;}
+  .stageBanner .sbBoss{font-size:27px; font-weight:900; color:#fff; letter-spacing:1px;}
+  .stageBanner .sbLv{font-size:13px; font-weight:900; color:#a9f0ff;}
+  .stageBanner.show{animation:stageBannerPop 1.8s ease forwards;}
+  @keyframes stageBannerPop{
+    0%{opacity:0; transform:translate(-50%,-50%) scale(.72);}
+    12%{opacity:1; transform:translate(-50%,-50%) scale(1.06);}
+    22%{transform:translate(-50%,-50%) scale(1);}
+    78%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+    100%{opacity:0; transform:translate(-50%,-58%) scale(.98);}
+  }
+  /* 第 3 關起，魔王發光強化（逐關變強的視覺提示） */
+  .fighter.boss-elite svg{ filter:drop-shadow(0 0 9px rgba(178,80,245,.9)) drop-shadow(0 0 20px rgba(120,0,200,.55)); }
+
+  /* 結算卡片按鈕列 */
+  .btnRow{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
+  .btnRow .btn{ margin-top:0; }
+  #nextBtn{
+    background:linear-gradient(90deg,#5ddb84,#1fa858) !important;
+    box-shadow:0 5px 0 #14763c !important; color:#fff !important;
+  }
+
   /* ── 下半屏：作答區 ── */
   .answer{
     flex:1 1 0; min-height:0; display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:10px;
@@ -200,13 +231,13 @@
   .zone{display:grid; grid-template-columns:1fr 1fr; gap:6px; flex:1;}
   .choice{
     display:flex; align-items:center; justify-content:center; gap:6px; border:none; border-radius:12px;
-    padding:7px 6px; font-size:15px; font-weight:800; cursor:pointer;
+    padding:5px 6px; font-size:15px; font-weight:800; cursor:pointer;
     transition:transform .05s, box-shadow .05s, background .2s; user-select:none;
     font-family:inherit; min-height:40px;
   }
   .choice i{
-    width:20px; height:20px; border-radius:6px; background:#fff; font-style:normal;
-    display:grid; place-items:center; font-size:11px; font-weight:900; flex:none;
+    width:28px; height:28px; border-radius:8px; background:#fff; font-style:normal;
+    display:grid; place-items:center; font-size:17px; font-weight:900; flex:none; line-height:1;
   }
   .p1col .choice{background:#eef4fb; color:var(--ink); box-shadow:0 4px 0 #b9cfe8;}
   .p1col .choice i{color:var(--blue-d);}
@@ -267,15 +298,18 @@
   .card p{margin:6px 0; font-size:16px; line-height:1.6; color:#4a5a6a;}
   .duo{display:flex; gap:16px; justify-content:center; align-items:flex-end; margin:10px 0 4px; flex-wrap:wrap;}
   .duo .who{
-    display:flex; flex-direction:column; align-items:center; gap:6px; width:170px;
-    border-radius:18px; padding:12px 8px; box-shadow:0 6px 16px rgba(40,60,90,.14);
+    display:flex; flex-direction:column; align-items:center; gap:5px; width:150px;
+    border-radius:18px; padding:9px 8px; box-shadow:0 6px 16px rgba(40,60,90,.14);
   }
   .duo .who.p1{background:linear-gradient(180deg,#e3f0ff,#cfe5ff);}
   .duo .who.p2{background:linear-gradient(180deg,#ffece7,#ffd9d0);}
-  .duo .who .char{width:130px; height:150px; display:block;}
+  .duo .who .char{width:104px; height:120px; display:block;}
   .duo .who b{font-size:16px;}
   .duo .who small{color:#8aa0b4; font-weight:700;}
   .modeRow{display:flex; gap:12px; justify-content:center; margin:6px 0 2px; flex-wrap:wrap;}
+  /* 題類 / 難度：比模式按鈕再緊湊一點，避免開始卡片過高 */
+  #typeRow .modeBtn, #diffRow .modeBtn{ padding:7px 12px; font-size:14px; gap:0; }
+  #typeRow .modeBtn small, #diffRow .modeBtn small{ font-size:10px; }
   .modeBtn{
     border:3px solid #ffd9b0; background:#fff; border-radius:16px; padding:10px 16px;
     font-weight:900; font-size:16px; cursor:pointer; color:var(--accent-d);
@@ -286,9 +320,19 @@
   .modeBtn:active{transform:translateY(2px);}
   .modeBtn.active{background:linear-gradient(90deg,#ff7a59,#ef5a36); color:#fff; border-color:#ef5a36; box-shadow:0 5px 0 #c8451f;}
   .modeBtn.active small{color:#ffe6d8;}
+  .pickLabel{
+    margin:10px 0 0; font-weight:900; font-size:14px; color:var(--accent-d);
+    letter-spacing:1px;
+  }
+  .pickInfo{
+    margin:8px 0 0; font-size:13px; font-weight:900; color:#7a5a3a;
+    background:#fff3e6; border-radius:10px; padding:5px 12px; display:inline-block;
+  }
+  /* 單人模式：選角色列取代上方角色預覽，避免開始卡片過高 */
+  #startOv.solo .duo{ display:none; }
   .rules{
-    text-align:left; background:#f4faff; border-radius:14px; padding:12px 16px; margin:10px 0 0;
-    font-size:15px; line-height:1.8; color:#44586c;
+    text-align:left; background:#f4faff; border-radius:14px; padding:10px 15px; margin:8px 0 0;
+    font-size:14px; line-height:1.62; color:#44586c;
   }
   .btn{
     margin-top:14px; border:none; border-radius:16px; padding:14px 34px; font-size:20px; font-weight:900;
@@ -296,6 +340,11 @@
     box-shadow:0 5px 0 #c8451f; letter-spacing:1px; font-family:inherit;
   }
   .btn:active{transform:translateY(3px); box-shadow:0 2px 0 #c8451f;}
+  .btn.ghost{
+    background:#fff; color:var(--accent-d); box-shadow:0 5px 0 #ffd9b0;
+    border:3px solid #ffd9b0; margin-left:10px; font-size:17px; padding:14px 24px;
+  }
+  .btn.ghost:active{box-shadow:0 2px 0 #ffd9b0;}
   .tag{display:inline-block; background:#fff3e6; color:var(--accent-d); border-radius:999px; padding:4px 12px; font-weight:800; font-size:14px;}
   .banner{background:transparent; box-shadow:none; border:none;}
   .banner .big{
@@ -317,6 +366,9 @@
     animation:bannerIn .6s ease; position:relative; overflow:hidden;
   }
   .winnerImg svg{position:absolute; inset:0; width:100%; height:100%; display:block;}
+  /* 雙人合作：兩個角色並排，不要疊在一起 */
+  .winnerImg.duo{ width:280px; display:flex; align-items:flex-end; justify-content:center; gap:2px; }
+  .winnerImg.duo svg{ position:static; width:48%; height:100%; flex:0 0 48%; }
   .statRow{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:8px;}
   .statRow .s{
     background:#fff; border-radius:14px; padding:8px 16px; font-weight:800; color:#44586c;
@@ -340,7 +392,7 @@
     .pHud .hpbar{height:9px; margin:3px 0 2px;}
     .pHudFoot{font-size:10px;}
     .vs{font-size:30px; top:40%;}
-    .stageName{top:3%; font-size:12px; padding:3px 10px;}
+    .stageName{display:none;}   /* 直屏：兩個血條已佔滿頂部，關卡資訊在頂部膠囊顯示即可 */
     .raceTip{top:54%; font-size:12px; padding:4px 12px;}
     .dmg{font-size:26px;}
     .answer{grid-template-columns:1fr 1fr; gap:8px; padding:8px 10px 10px;}
@@ -350,8 +402,8 @@
     .hint{display:none;}
     .zoneTitle{font-size:11px; padding:2px 8px;}
     .zone{gap:6px;}
-    .choice{font-size:14px; min-height:38px; padding:6px 4px; border-radius:10px;}
-    .choice i{width:19px; height:19px; font-size:10px;}
+    .choice{font-size:14px; min-height:40px; padding:6px 4px; border-radius:10px;}
+    .choice i{width:25px; height:25px; font-size:15px;}
     .pstat{font-size:11px; min-height:15px;}
     .overlay{padding:14px;}
     .overlay .card{max-width:92vw; padding:18px 16px;}
@@ -373,7 +425,8 @@
     .answer{gap:8px; padding:8px 10px;}
     .question{font-size:20px;}
     .explain{font-size:12px;}
-    .choice{font-size:13px; min-height:36px; padding:5px 4px;}
+    .choice{font-size:13px; min-height:38px; padding:5px 4px;}
+    .choice i{width:23px; height:23px; font-size:14px;}
     .hint{display:none;}
   }
 
@@ -415,6 +468,14 @@
   .pHud.boss .hpbar > i{ background:linear-gradient(90deg,#7b2fb0,#c79bff); }
   .pHud.boss .hpbar > i.mid{ background:linear-gradient(90deg,#a259ff,#d9a8ff); }
   .pHud.boss .hpbar > i.low{ background:linear-gradient(90deg,#e85d4a,#ff8a70); }
+
+  /* ── 單人挑戰魔王：只留一名角色，作答區只剩自己那一格 ── */
+  .battle.solo .fighter.fx2{ display:none; }
+  .battle.solo .fighter.fx1{ left:15%; }
+  .answer.solo{ grid-template-columns:1.3fr 1fr; }
+  .answer.solo .p2col{ display:none; }
+  .answer.solo .zone{ gap:8px; }
+  .answer.solo .question{ font-size:24px; }
 
   @media (orientation:portrait){
     .skillBtn .si{ font-size:16px; }
@@ -483,6 +544,7 @@
   .modeBtn small{ color:#7a5a3a !important; }
   .modeBtn.active{ background:var(--accent) !important; color:#fff !important; border-color:var(--line) !important; box-shadow:4px 4px 0 var(--accent-d) !important; }
   .modeBtn.active small{ color:#fff !important; }
+  .pickInfo{ background:#ffe3c2 !important; border:2px solid var(--line); color:#3a2f4a !important; }
   /* 主按鈕 */
   .btn, .startBtn{
     border:3px solid var(--line) !important; background:var(--accent) !important; color:#fff !important;
@@ -490,6 +552,7 @@
     border-radius:0 !important;
   }
   .btn:active, .startBtn:active, .modeBtn:active{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--accent-d) !important; }
+  .btn.ghost{ background:#fff3e6 !important; color:var(--accent-d) !important; border-color:var(--line) !important; box-shadow:4px 4px 0 rgba(36,26,51,.4) !important; }
   /* 作答選項 */
   .zoneTitle{ border:2px solid var(--line); }
   .p1col .zoneTitle{ background:#dfeaff; color:var(--blue-d) !important; }
@@ -517,6 +580,15 @@
   .stageName{ color:var(--accent-d) !important; }
   .vs{ background:var(--accent); color:#fff; }
   .bossAtk{ background:var(--red); color:#fff; border-color:var(--line); }
+  /* 結果卡片剛彈出時，按鈕先不收點擊：避免玩家連點作答時誤觸「再戰／返回選單」 */
+  .lockTap{ pointer-events:none !important; }
+
+  /* 例外錯誤提示條 */
+  #errBar{
+    display:none; position:fixed; left:0; right:0; bottom:0; z-index:9998;
+    padding:8px 14px; background:#c8342a; color:#fff; border-top:4px solid var(--line);
+    font:13px/1.5 "Courier New",ui-monospace,monospace; letter-spacing:.5px;
+  }
 </style>
 </head>
 <body>
@@ -526,7 +598,7 @@
       <div class="title">⚔️ 代數雙人對決</div>
       <div class="grow"></div>
       <div class="pill" id="roundPill">第 1 題</div>
-      <div class="stage-chip" id="stageChip">階段一・代數式</div>
+      <div class="stage-chip" id="stageChip">代數式・中等</div>
     </div>
 
     <!-- 角色 / 背景 SVG 定義（系統原生渲染，無外部圖片） -->
@@ -1952,10 +2024,15 @@
       <div class="flash p2flash" id="flash2"></div>
       <div class="flash bossflash" id="flashBoss"></div>
       <div class="flash bosshit" id="flashBossHit"></div>
-      <div class="stageName" id="stageName">第一階段：代數式</div>
+      <div class="stageName" id="stageName">代數式・中等</div>
       <div class="vs" id="vs">VS</div>
       <div class="raceTip" id="raceTip">⚡ 誰先答對，誰就攻擊！</div>
       <div class="bossAtk" id="bossAtk">👹 魔王攻擊！</div>
+      <div class="stageBanner" id="stageBanner">
+        <div class="sbNo" id="stageBannerNo">第 1 關</div>
+        <div class="sbBoss" id="stageBannerName">見習魔王</div>
+        <div class="sbLv" id="stageBannerLv">Lv.1 見習</div>
+      </div>
 
       <div class="pHud p1">
         <div class="pHudTop"><b>🧙 1P 藍隊法師</b><span id="hp1num">HP 100 / 100</span></div>
@@ -1990,7 +2067,7 @@
       <div class="qCol">
         <div class="question" id="question">準備開始…</div>
         <div class="explain" id="explain">同一條題目，兩人各自作答，誰先答對誰攻擊對方！</div>
-        <div class="hint" id="hintLine">答對：對手 -20HP（連擊 -25HP）· 答錯：自己 -5HP 並鎖定本題</div>
+        <div class="hint" id="hintLine">答對：對手 -10HP（連擊 -14HP）· 答錯：自己 -4HP 並鎖定本題</div>
       </div>
       <div class="zoneCol p2col">
         <div class="zoneTitle">📝 2P 作答區</div>
@@ -2007,7 +2084,7 @@
 <div class="overlay" id="startOv">
   <div class="card">
     <h1>⚔️ 代數雙人對決大作戰</h1>
-    <div class="tag">五年級數學 · 階段一「代數式」＋ 階段二「解方程」</div>
+    <div class="tag">五年級數學 · 自選題類與難度</div>
     <div class="duo">
       <div class="who p1">
         <svg class="char" viewBox="0 0 240 320"><use href="#char-mage"/></svg>
@@ -2021,27 +2098,39 @@
       </div>
     </div>
     <div class="modeRow" id="modeRow">
-      <button class="modeBtn active" data-mode="campaign">🛡️ 闖關模式<small>保證進入階段二</small></button>
-      <button class="modeBtn" data-mode="ko">⚔️ 血量 KO 戰<small>歸零即勝</small></button>
+      <button class="modeBtn active" data-mode="ko">⚔️ 血量 KO 戰<small>打光對手血量即勝</small></button>
       <button class="modeBtn" data-mode="coop">🤝 雙人合作<small>合力擊敗魔王</small></button>
+      <button class="modeBtn" data-mode="solo">👤 單人挑戰<small>自己選角單挑魔王</small></button>
     </div>
+    <div id="charPick" class="hidden">
+      <div class="pickLabel">🧙 選角色（單挑魔王用）</div>
+      <div class="modeRow" id="charRow">
+        <button class="modeBtn active" data-char="0">🧙 法師<small>冰封・魔力湧動</small></button>
+        <button class="modeBtn" data-char="1">⚔️ 騎士<small>鐵壁・捨身猛擊</small></button>
+      </div>
+    </div>
+    <div class="pickLabel">📚 題類</div>
+    <div class="modeRow" id="typeRow">
+      <button class="modeBtn active" data-type="algebra">📐 代數式<small>化簡・代入・雙字母</small></button>
+      <button class="modeBtn" data-type="equation">🧮 解方程<small>求未知數的值</small></button>
+      <button class="modeBtn" data-type="both">🌗 混合<small>代數式與方程交替</small></button>
+    </div>
+    <div class="pickLabel">🎯 難度</div>
+    <div class="modeRow" id="diffRow">
+      <button class="modeBtn" data-diff="easy">🌱 簡單<small>單步・數字小</small></button>
+      <button class="modeBtn active" data-diff="mid">🌟 中等<small>兩步・要化簡</small></button>
+      <button class="modeBtn" data-diff="hard">🔥 困難<small>多步・未知數兩邊</small></button>
+    </div>
+    <div class="pickInfo" id="pickInfo">本局：代數式・中等 · 不限題數（打到 KO 為止）</div>
     <div class="rules" id="rulesBox">
-      ⚡ 每題<b>同時顯示</b>給兩人，各自在自己的作答區選答案，<b>誰先答對誰攻擊對方</b>，然後進入下一題！<br />
-      💥 答對：對手 <b>-10 HP</b>（連擊 -14 HP）；答錯：自己 <b>-4 HP</b>，本題鎖定（對方仍可繼續答）。<br />
-      🌗 闖關模式：<b>一定先玩完階段一，再進入階段二</b>，題目全部玩完後比血量決勝負。<br />
-      🏆 血 KO 戰：先把對手 HP 打到 0 即獲勝；題目也都會出完。<br />
-      🤝 雙人合作：兩人各自拿到<b>不同題目</b>、獨立作答，答完立即出下一題！<b>答對→魔王扣血 ＋ 隊伍回血</b>、<b>答錯→隊伍扣血</b>，合力把魔王血打歸零即獲勝！<br />
-      ✨ <b>主動技能</b>：每人每題可釋放 1 個技能（有冷卻）——❄️冰封（凍結對手／使魔王反擊失效）、⚡蓄力（本題傷害×1.5）、🛡️守護（抵擋／減免下一次受擊）。
+      ⚡ 每題同時給兩人作答，<b>誰先答對誰攻擊對手</b>，然後換下一題。<br />
+      💥 答對：對手 <b>-10HP</b>（連擊 -14）；答錯：自己 <b>-4HP</b> 並鎖定本題。<br />
+      ⚔️ KO 戰：<b>打到 0 即勝</b>，題目不限題數、邊玩邊出。<br />
+      👤 單人單挑（自選角色）｜🤝 雙人合作（各自作答、題目不同）<br />
+      👹 魔王共 <b>5 關</b>逐關變強（雙人更厚更痛）：贏一關就 <b>升級</b>，輸了可重打本關。<br />
+      ✨ 技能（冷卻只算自己答過的題）：🧙 冰封術 3／魔力湧動 4 · ⚔️ 鐵壁 3／捨身猛擊 4
     </div>
     <button class="btn" id="startBtn">開始對戰 🔥</button>
-  </div>
-</div>
-
-<!-- 階段過場 -->
-<div class="overlay hidden" id="bannerOv">
-  <div class="card banner">
-    <div class="big" id="bannerBig">階段二</div>
-    <div class="sub" id="bannerSub">解方程</div>
   </div>
 </div>
 
@@ -2059,9 +2148,16 @@
       <div class="s" id="winStat2"></div>
       <div class="s" id="winStatRounds"></div>
     </div>
-    <button class="btn" id="againBtn">再戰一場 🔁</button>
+    <div class="btnRow">
+      <button class="btn" id="nextBtn">進入第 2 關 ▶</button>
+      <button class="btn" id="againBtn">再戰一場 🔁</button>
+    </div>
+    <button class="btn ghost" id="backBtn">返回選單 / 更改題類 ⚙️</button>
   </div>
 </div>
+
+<!-- 例外錯誤提示條（只有真的出錯才會出現，方便回報問題） -->
+<div id="errBar"></div>
 
 <script>
 /* ══════════ 工具 ══════════ */
@@ -2070,16 +2166,44 @@ const pick = arr => arr[Math.floor(Math.random()*arr.length)];
 const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; };
 const $ = id => document.getElementById(id);
 
+/* 任何未捕捉的錯誤都顯示在底部（而不是讓畫面默默卡住或跳回選單） */
+window.addEventListener("error", ev => {
+  const bar = document.getElementById("errBar");
+  if(!bar) return;
+  bar.style.display = "block";
+  bar.textContent = "⚠️ 程式錯誤：" + (ev.message || "未知錯誤") +
+    "（第 " + (ev.lineno || "?") + " 行，請截圖回報）";
+});
+
 /* ══════════ 題目生成器 ══════════ */
 /* 每局隨機生成，數字與字母都隨機化；若與已出題重複則自動改數字 / 字母 */
-const LETTERS = ["x","y","m","n","a","t","p","q"];
-const seen = new Set();               // 本局已出題指紋，避免重複
-function fingerprint(q, ch){ return q + "::" + ch.join("|"); }
+const LETTERS = ["x","y","m","n","a","b","t","p","q","r","s","k"];
+/* 已出過的題目指紋：只保留最近 500 題（環狀），避免長局無限膨脹 */
+const recent = [];
+const recentSet = new Set();
+function fingerprint(q){ return q.replace(/\s+/g, ""); }   // 以題幹去重：同一題目不再出現兩次（選項順序不影響判定）
 function newLetter(){ return pick(LETTERS); }
+/* 一次取兩個「不同」的字母，用來出「不同代數符號不能合併」的化簡題 */
+function twoLetters(){
+  const a = pick(LETTERS);
+  let b = pick(LETTERS);
+  while(b === a) b = pick(LETTERS);
+  return [a, b];
+}
+
+/* 係數是 1 時省略不寫：1x → x、-1x → -x、1(x+2) → (x+2)
+   （10x、21x 這種前面還有數字的 1 不動） */
+function omitOne(s){ return String(s).replace(/(^|[^\d])1(?=[a-zA-Z(])/g, "$1"); }
 
 /* 把 choices 打散並記錄正確答案索引；同時確保 4 個選項互不相同 */
 function makeQ(q, choices, ansIdx, ex){
-  const out = choices.map(String);
+  /* 化簡結果的係數可能剛好是 1，一律省略：1x 寫成 x */
+  const probe = [q, ex].concat(choices.map(String)).join("｜");
+  const one = probe.match(/(^|[^\d])1([a-zA-Z])/);   // 抓實際出現的字母，用來寫提醒
+  q = omitOne(q);
+  ex = ex ? omitOne(ex) : "";
+  if(one) ex += `（係數 1 省略不寫：1${one[2]} → ${one[2]}）`;
+  const out = choices.map(c => omitOne(c));
   const seen = new Set([out[ansIdx]]);
   let salt = 1;
   for(let i=0; i<out.length; i++){
@@ -2100,171 +2224,432 @@ function makeQ(q, choices, ansIdx, ex){
 /* 數值型干擾選項：以 ans 為中心生成 3 個不同整數 */
 function numChoices(ans, spread){
   const set = new Set([ans]); const out = [ans]; let g=0;
-  while(out.length<4 && g++<200){
+  while(out.length<4 && g++<300){
     let v = ans + rnd(-spread, spread);
     if(v===ans) v = ans + (rnd(0,1)?1:-1)*rnd(1,3);
-    if(!set.has(v) && v>=-30){ set.add(v); out.push(v); }
+    if(!set.has(v) && v>=0){ set.add(v); out.push(v); }   // 五年級不出負數選項
   }
-  while(out.length<4){ out.push(ans + out.length*7 + 1); }
+  for(let k=1; k<80 && out.length<4; k++){                 // 兜底：往上遞補，避免重複
+    const v = Math.max(0, ans + k);
+    if(!set.has(v)){ set.add(v); out.push(v); }
+  }
   return out; // [ans, w, w, w]
 }
 
-/* ── 階段一：代數式 ── */
-const S1 = [
-  () => { const a=rnd(2,9), b=rnd(2,9), V=newLetter();
-    return makeQ(`化簡：${a}${V} + ${b}${V} = ?`,
-      [`${a+b}${V}`, `${(a+b+rnd(1,3))}${V}`, `${a*b}${V}`, `${a}${V} + ${b}${V}`], 0,
-      `同類項係數相加：${a} + ${b} = ${a+b}，所以是 ${a+b}${V}。`); },
-  () => { const a=rnd(2,9), b=rnd(2,9), c=rnd(2,9), V=newLetter();
-    return makeQ(`化簡：${a}${V} + ${b}${V} + ${c}${V} = ?`,
-      [`${(a+b+c)}${V}`, `${(a+b)}${V} + ${c}`, `${a+b+c}`, `${(a+c)}${V} + ${b}`], 0,
-      `三個都是 ${V} 同類項：${a}+${b}+${c} = ${a+b+c}，所以是 ${a+b+c}${V}。`); },
-  () => { let a=rnd(3,9), b=rnd(2,a-1), c=rnd(1,9), V=newLetter();
-    return makeQ(`化簡：${a}${V} - ${b}${V} + ${c} = ?`,
-      [`${(a-b)}${V} + ${c}`, `${(a+b)}${V} + ${c}`, `${(a-b)}${V}`, `${a-b+c}${V}`], 0,
-      `只合併 ${V}：${a} - ${b} = ${a-b}，後面再加 ${c}。`); },
-  () => { const n=rnd(2,9), c=rnd(2,6), d=rnd(1,9), V=newLetter();
-    const ans=c*n+d, ch=numChoices(ans,3);
-    return makeQ(`當 ${V} = ${n} 時，${c}${V} + ${d} = ?`, ch, 0,
-      `${c} × ${n} = ${c*n}，${c*n} + ${d} = ${ans}。`); },
-  () => { const n=rnd(2,9), c=rnd(2,6), d=rnd(1,9), V=newLetter();
-    const ans=c*n-d, ch=numChoices(ans,3);
-    return makeQ(`當 ${V} = ${n} 時，${c}${V} - ${d} = ?`, ch, 0,
-      `${c} × ${n} = ${c*n}，${c*n} - ${d} = ${ans}。`); },
-  () => { const k=rnd(2,9), V=newLetter();
-    return makeQ(`「比 ${V} 多 ${k} 的數」可以寫成：`,
-      [`${V}+${k}`, `${V}-${k}`, `${k}${V}`, `${k}-${V}`], 0,
-      `「比 ${V} 多 ${k}」即在 ${V} 的基礎上再加 ${k}，記作 ${V} + ${k}。`); },
-  () => { const k=rnd(2,9), V=newLetter();
-    return makeQ(`「${V} 的 ${k} 倍」可以寫成：`,
-      [`${k}${V}`, `${V}+${k}`, `${V}-${k}`, `${k}+${V}`], 0,
-      `倍數用乘法：${V} × ${k} 記作 ${k}${V}。`); },
-  () => { const k=rnd(2,6), m=rnd(1,9), V=newLetter();
-    return makeQ(`「${V} 的 ${k} 倍再減 ${m}」可以寫成：`,
-      [`${k}${V} - ${m}`, `${k}${V} + ${m}`, `${k-m}${V}`, `${m}${V} - ${k}`], 0,
-      `${V} 的 ${k} 倍是 ${k}${V}，再減 ${m} 即 ${k}${V} - ${m}。`); },
-  () => { const a=rnd(2,9), b=rnd(2,9), V=newLetter();
-    return makeQ(`化簡：${a}${V} × ${b} = ?`,
-      [`${(a*b)}${V}`, `${(a*b+rnd(1,4))}${V}`, `${a+b}${V}`, `${a}${V}${b}`], 0,
-      `數字相乘：${a} × ${b} = ${a*b}，${V} 保持不變。`); },
-  () => { let a=rnd(2,9), b=rnd(2,9), c=rnd(2,9), V=newLetter();
-    return makeQ(`化簡：${a}${V} + ${b} + ${c}${V} = ?`,
-      [`${(a+c)}${V} + ${b}`, `${(a+c+b)}${V}`, `${a+c}${V}`, `${(a+c)} + ${b}${V}`], 0,
-      `合併 ${V}：${a}${V} + ${c}${V} = ${a+c}${V}，再加 ${b}。`); },
-  () => { const c=rnd(3,9), d=rnd(1,c-1), e=rnd(1,9), n=rnd(2,9), V=newLetter();
-    return makeQ(`當 ${V} = ${n} 時，${c}${V} - ${d}${V} + ${e} = ?`, numChoices((c-d)*n+e,3), 0,
-      `${c} - ${d} = ${c-d}，${c-d} × ${n} = ${(c-d)*n}，${(c-d)*n} + ${e} = ${(c-d)*n+e}。`); },
-  () => { const a=rnd(4,9), c=rnd(1,a-1), b=rnd(1,9), V=newLetter();
-    return makeQ(`化簡：${a}${V} + ${b} - ${c}${V} = ?`,
-      [`${(a-c)}${V} + ${b}`, `${(a-c)}${V} - ${b}`, `${a+c}${V} + ${b}`, `${(a-c+b)}${V}`], 0,
-      `合併 ${V}：${a} - ${c} = ${a-c}，所以是 ${(a-c)}${V} + ${b}。`); },
-  () => { const a=rnd(2,9), b=rnd(2,9), V=newLetter();
-    return makeQ(`化簡：${a}(${V} + ${b}) = ?`,
-      [`${a}${V} + ${a*b}`, `${a+b}${V}`, `${a*b}${V}`, `${a}${V} + ${b}`], 0,
-      `乘法分配律：${a} × ${V} + ${a} × ${b} = ${a}${V} + ${a*b}。`); },
-  () => { const c=rnd(2,9), d=rnd(2,9), n=rnd(2,9), V=newLetter();
-    return makeQ(`當 ${V} = ${n} 時，${c}${V} + ${d}${V} = ?`, numChoices((c+d)*n,3), 0,
-      `${c} + ${d} = ${c+d}，${c+d} × ${n} = ${(c+d)*n}。`); },
-];
+/* ══════════ 題庫：題類 × 難度 ══════════
+   algebra  = 代數式（化簡 / 代入求值 / 文字轉式子）
+   equation = 方程（解未知數）
+   兩類各有 easy / mid / hard 三級，共 6 組模板
+   ※ 化簡題同時包含「單字母」與「雙字母（不同代數符號）」，
+     用來訓練「只有同類項才能合併」的概念。 */
+const BANKS = {
+  algebra: {
+    name: "代數式",
+    /* ── 簡單：單步、係數小、直接套規則 ── */
+    easy: [
+      () => { const a=rnd(2,9), b=rnd(2,9), V=newLetter();
+        return makeQ(`化簡：${a}${V} + ${b}${V} = ?`,
+          [`${a+b}${V}`, `${a*b}${V}`, `${a+b+1}${V}`, `${a+b-1}${V}`], 0,
+          `同類項合併：${a} + ${b} = ${a+b}，所以是 ${a+b}${V}。`); },
+      () => { const a=rnd(4,9), b=rnd(2,a-1), V=newLetter();
+        return makeQ(`化簡：${a}${V} - ${b}${V} = ?`,
+          [`${a-b}${V}`, `${a+b}${V}`, `${a*b}${V}`, `${a-b+1}${V}`], 0,
+          `同類項合併：${a} - ${b} = ${a-b}，所以是 ${a-b}${V}。`); },
+      () => { const k=rnd(2,9), V=newLetter();
+        return makeQ(`「比 ${V} 多 ${k} 的數」可以寫成：`,
+          [`${V}+${k}`, `${V}-${k}`, `${k}${V}`, `${k}-${V}`], 0,
+          `「比 ${V} 多 ${k}」就是在 ${V} 的基礎上再加 ${k}，記作 ${V} + ${k}。`); },
+      () => { const k=rnd(2,9), V=newLetter();
+        return makeQ(`「${V} 的 ${k} 倍」可以寫成：`,
+          [`${k}${V}`, `${V}+${k}`, `${V}-${k}`, `${k}+${V}`], 0,
+          `倍數用乘法：${V} × ${k} 記作 ${k}${V}。`); },
+      () => { const k=rnd(2,9), V=newLetter();
+        return makeQ(`「比 ${V} 少 ${k} 的數」可以寫成：`,
+          [`${V}-${k}`, `${V}+${k}`, `${k}-${V}`, `${k}${V}`], 0,
+          `「比 ${V} 少 ${k}」就是從 ${V} 減去 ${k}，記作 ${V} - ${k}。`); },
+      () => { const c=rnd(2,9), n=rnd(2,9), V=newLetter();
+        return makeQ(`當 ${V} = ${n} 時，${c}${V} = ?`, numChoices(c*n,3), 0,
+          `${c} × ${n} = ${c*n}。`); },
+      () => { const c=rnd(2,6), d=rnd(1,9), n=rnd(2,9), V=newLetter();
+        return makeQ(`當 ${V} = ${n} 時，${c}${V} + ${d} = ?`, numChoices(c*n+d,3), 0,
+          `${c} × ${n} = ${c*n}，${c*n} + ${d} = ${c*n+d}。`); },
+      () => { const a=rnd(2,6), b=rnd(2,9), V=newLetter();
+        return makeQ(`化簡：${a}${V} × ${b} = ?`,
+          [`${a*b}${V}`, `${a+b}${V}`, `${a*b+1}${V}`, `${a}${V}${b}`], 0,
+          `數字相乘：${a} × ${b} = ${a*b}，${V} 保持不變。`); },
+      () => { const k=rnd(2,6), V=newLetter();
+        return makeQ(`化簡：${Array(k).fill(V).join(" + ")} = ?`,
+          [`${k}${V}`, `${V}+${k}`, `${k}+${V}`, `${k*k}${V}`], 0,
+          `${V} 一共加了 ${k} 次，就是 ${k}${V}。`); },
+      /* ── 雙字母：不同代數符號不能合併 ── */
+      () => { const a=rnd(2,9), b=rnd(2,9), c=rnd(2,9), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${a}${V} + ${b}${W} + ${c}${V} = ?`,
+          [`${a+c}${V} + ${b}${W}`, `${a+b+c}${V}`, `${a+c}${V}${W}`, `${a+c}${V} - ${b}${W}`], 0,
+          `只有 ${V} 是同類項：${a} + ${c} = ${a+c}；${W} 不同類，原樣保留 → ${a+c}${V} + ${b}${W}。`); },
+      () => { const a=rnd(4,9), b=rnd(2,9), c=rnd(1,a-1), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${a}${V} + ${b}${W} - ${c}${V} = ?`,
+          [`${a-c}${V} + ${b}${W}`, `${a+c}${V} + ${b}${W}`, `${a+b-c}${V}`, `${a-c}${V}${W}`], 0,
+          `${V} 是同類項：${a} - ${c} = ${a-c}；${W} 保留 → ${a-c}${V} + ${b}${W}。`); },
+      () => { const a=rnd(2,9), b=rnd(2,9), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${b}${W} + ${a}${V} + ${b}${W} = ?`,
+          [`${a}${V} + ${2*b}${W}`, `${a+2*b}${V}`, `${a}${V} + ${b}${W}`, `${a}${V}${W} + ${2*b}`], 0,
+          `${W} 是同類項：${b} + ${b} = ${2*b}；${V} 不同類保留 → ${a}${V} + ${2*b}${W}。`); },
+      () => { const a=rnd(2,6), b=rnd(2,6), p=rnd(2,9), q=rnd(2,9), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`當 ${V} = ${p}、${W} = ${q} 時，${a}${V} + ${b}${W} = ?`, numChoices(a*p+b*q,4), 0,
+          `${a} × ${p} = ${a*p}，${b} × ${q} = ${b*q}，相加 = ${a*p+b*q}。`); },
+      () => { const k=rnd(2,6), m=rnd(2,6), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`「${V} 的 ${k} 倍再加上 ${W} 的 ${m} 倍」可以寫成：`,
+          [`${k}${V} + ${m}${W}`, `${k+m}${V}${W}`, `${k}${W} + ${m}${V}`, `${k+m}${V} + ${m}${W}`], 0,
+          `${V} 的 ${k} 倍是 ${k}${V}，${W} 的 ${m} 倍是 ${m}${W}；兩者不同類 → ${k}${V} + ${m}${W}。`); },
+    ],
+    /* ── 中等：兩步、要合併或代入 ── */
+    mid: [
+      () => { const a=rnd(2,8), b=rnd(2,8), c=rnd(2,8), V=newLetter();
+        return makeQ(`化簡：${a}${V} + ${b}${V} + ${c}${V} = ?`,
+          [`${a+b+c}${V}`, `${a+b}${V} + ${c}`, `${a+b+c}`, `${a*b*c}${V}`], 0,
+          `三個都是 ${V} 的同類項：${a} + ${b} + ${c} = ${a+b+c}，所以是 ${a+b+c}${V}。`); },
+      () => { const a=rnd(4,9), b=rnd(2,a-1), c=rnd(1,9), V=newLetter();
+        return makeQ(`化簡：${a}${V} - ${b}${V} + ${c} = ?`,
+          [`${a-b}${V} + ${c}`, `${a+b}${V} + ${c}`, `${a-b}${V}`, `${a-b+c}${V}`], 0,
+          `只合併 ${V}：${a} - ${b} = ${a-b}，常數 ${c} 保留。`); },
+      () => { const a=rnd(2,8), b=rnd(1,9), c=rnd(2,8), V=newLetter();
+        return makeQ(`化簡：${a}${V} + ${b} + ${c}${V} = ?`,
+          [`${a+c}${V} + ${b}`, `${a+c+b}${V}`, `${a+c}${V}`, `${a+c} + ${b}${V}`], 0,
+          `合併 ${V}：${a}${V} + ${c}${V} = ${a+c}${V}，再加常數 ${b}。`); },
+      () => { const a=rnd(5,9), c=rnd(1,a-1), b=rnd(1,9), V=newLetter();
+        return makeQ(`化簡：${a}${V} + ${b} - ${c}${V} = ?`,
+          [`${a-c}${V} + ${b}`, `${a-c}${V} - ${b}`, `${a+c}${V} + ${b}`, `${a-c+b}${V}`], 0,
+          `合併 ${V}：${a} - ${c} = ${a-c}，所以是 ${a-c}${V} + ${b}。`); },
+      () => { const a=rnd(2,6), b=rnd(2,8), c=rnd(1,9), V=newLetter();
+        return makeQ(`化簡：${a}${V} × ${b} + ${c} = ?`,
+          [`${a*b}${V} + ${c}`, `${a*b}${V}`, `${a+b}${V} + ${c}`, `${a*b}${V} + ${c+1}`], 0,
+          `先算乘法：${a} × ${b} = ${a*b}，得到 ${a*b}${V}，再加 ${c}。`); },
+      () => { const c=rnd(2,6), n=rnd(2,9), d=rnd(1,9), V=newLetter();
+        return makeQ(`當 ${V} = ${n} 時，${c}${V} - ${d} = ?`, numChoices(c*n-d,3), 0,
+          `${c} × ${n} = ${c*n}，${c*n} - ${d} = ${c*n-d}。`); },
+      () => { const c=rnd(2,6), d=rnd(2,6), n=rnd(2,9), V=newLetter();
+        return makeQ(`當 ${V} = ${n} 時，${c}${V} + ${d}${V} = ?`, numChoices((c+d)*n,3), 0,
+          `先合併：${c} + ${d} = ${c+d}，${c+d} × ${n} = ${(c+d)*n}。`); },
+      () => { const a=rnd(2,6), b=rnd(2,9), V=newLetter();
+        return makeQ(`化簡：${a}(${V} + ${b}) = ?`,
+          [`${a}${V} + ${a*b}`, `${a+b}${V}`, `${a*b}${V}`, `${a}${V} + ${b}`], 0,
+          `乘法分配律：${a} × ${V} + ${a} × ${b} = ${a}${V} + ${a*b}。`); },
+      () => { const k=rnd(2,6); let m=rnd(1,9); if(m===k) m = k+1; const V=newLetter();
+        return makeQ(`「${V} 的 ${k} 倍再減 ${m}」可以寫成：`,
+          [`${k}${V} - ${m}`, `${k}${V} + ${m}`, `${k-m}${V}`, `${m}${V} - ${k}`], 0,
+          `${V} 的 ${k} 倍是 ${k}${V}，再減 ${m} 即 ${k}${V} - ${m}。`); },
+      () => { const k=rnd(2,6); let m=rnd(1,9); if(m===k) m = k+1; const V=newLetter();
+        return makeQ(`「${V} 的 ${k} 倍再加 ${m}」可以寫成：`,
+          [`${k}${V} + ${m}`, `${k}${V} - ${m}`, `${k+m}${V}`, `${k}${V}${m}`], 0,
+          `${V} 的 ${k} 倍是 ${k}${V}，再加 ${m} 即 ${k}${V} + ${m}。`); },
+      /* ── 雙字母：兩組同類項分別合併 ── */
+      () => { const a=rnd(4,9), b=rnd(2,8), c=rnd(1,a-1), d=rnd(1,b-1), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${a}${V} + ${b}${W} - ${c}${V} + ${d}${W} = ?`,
+          [`${a-c}${V} + ${b+d}${W}`, `${a+c}${V} + ${b+d}${W}`, `${a-c}${V} + ${b-d}${W}`, `${a-c}${V}${W} + ${b+d}`], 0,
+          `分別合併：${V} → ${a} - ${c} = ${a-c}；${W} → ${b} + ${d} = ${b+d}。結果 ${a-c}${V} + ${b+d}${W}。`); },
+      () => { const k=rnd(2,5), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${k}(${V} + ${W}) = ?`,
+          [`${k}${V} + ${k}${W}`, `${k}${V} + ${W}`, `${k}${V}${W}`, `${k}${V} + ${k+1}${W}`], 0,
+          `乘法分配律：${k} × ${V} + ${k} × ${W} = ${k}${V} + ${k}${W}。`); },
+      () => { const a=rnd(2,6), p=rnd(2,8), q=rnd(2,8), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`當 ${V} = ${p}、${W} = ${q} 時，${a}(${V} + ${W}) = ?`, numChoices(a*(p+q),4), 0,
+          `括號內先算：${p} + ${q} = ${p+q}，再乘 ${a} = ${a*(p+q)}。`); },
+      () => { const a=rnd(3,9), b=rnd(2,9), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${a}${V} + ${b}${W} - ${b}${W} = ?`,
+          [`${a}${V}`, `${a}${V} + ${2*b}${W}`, `${a+2*b}${V}`, `${a}${V}${W}`], 0,
+          `${W} 的項一加一減剛好抵消，只剩 ${a}${V}。`); },
+      () => { const a=rnd(4,9), b=rnd(2,8), c=rnd(1,a-1), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${a}${V} - ${c}${V} + ${b}${W} = ?`,
+          [`${a-c}${V} + ${b}${W}`, `${a+c}${V} + ${b}${W}`, `${a-c}${V} - ${b}${W}`, `${a-c+b}${V}${W}`], 0,
+          `${V} 是同類項：${a} - ${c} = ${a-c}；${W} 保留 → ${a-c}${V} + ${b}${W}。`); },
+    ],
+    /* ── 困難：多步、要展開括號或代入化簡 ── */
+    hard: [
+      () => { const a=rnd(3,7), b=rnd(2,8), c=rnd(1,9), V=newLetter();
+        return makeQ(`化簡：${a}(${V} + ${b}) + ${c} = ?`,
+          [`${a}${V} + ${a*b+c}`, `${a}${V} + ${b+c}`, `${a}${V} + ${a*b}`, `${a+b}${V} + ${c}`], 0,
+          `先展開：${a}${V} + ${a*b}，再加上 ${c} → ${a}${V} + ${a*b+c}。`); },
+      () => { const a=rnd(5,9), c=rnd(1,a-1), b=rnd(2,7), V=newLetter();
+        return makeQ(`化簡：${a}(${V} + ${b}) - ${c}${V} = ?`,
+          [`${a-c}${V} + ${a*b}`, `${a-c}${V} + ${b}`, `${a+c}${V} + ${a*b}`, `${a-c}${V}`], 0,
+          `展開得 ${a}${V} + ${a*b}，再減 ${c}${V}：${a} - ${c} = ${a-c}，所以是 ${a-c}${V} + ${a*b}。`); },
+      () => { const a=rnd(2,5), b=rnd(2,5), c=rnd(1,6), n=rnd(2,6), V=newLetter();
+        return makeQ(`當 ${V} = ${n} 時，${a}${V} + ${b}${V} - ${c} = ?`, numChoices((a+b)*n-c,3), 0,
+          `先合併：${a} + ${b} = ${a+b}，${a+b} × ${n} = ${(a+b)*n}，再減 ${c} = ${(a+b)*n-c}。`); },
+      () => { const a=rnd(2,5), b=rnd(2,6), n=rnd(2,6), V=newLetter();
+        return makeQ(`當 ${V} = ${n} 時，${a}(${V} + ${b}) = ?`, numChoices(a*(n+b),3), 0,
+          `括號內先算：${n} + ${b} = ${n+b}，再乘 ${a}：${a} × ${n+b} = ${a*(n+b)}。`); },
+      () => { const k=rnd(5,9), m=rnd(1,k-1), n=rnd(2,5), V=newLetter();
+        return makeQ(`化簡：${k}${V} - ${m}${V} + ${n}${V} = ?`,
+          [`${k-m+n}${V}`, `${k-m}${V}`, `${k+m+n}${V}`, `${k-m+n}`], 0,
+          `同類項一起算：${k} - ${m} + ${n} = ${k-m+n}，所以是 ${k-m+n}${V}。`); },
+      () => { const a=rnd(2,6), b=rnd(1,5), c=rnd(1,9), V=newLetter();
+        return makeQ(`化簡：${a}(${V} - ${b}) + ${c} = ?`,
+          [`${a}${V} - ${a*b} + ${c}`, `${a}${V} - ${b} + ${c}`, `${a}${V} + ${a*b} + ${c}`, `${a}${V} - ${a*b+c}`], 0,
+          `展開得 ${a}${V} - ${a*b}，再加 ${c}，常數不能合併 → ${a}${V} - ${a*b} + ${c}。`); },
+      () => { const a=rnd(2,5), b=rnd(1,9), c=rnd(2,4), V=newLetter();
+        return makeQ(`化簡：(${a}${V} + ${b}) × ${c} = ?`,
+          [`${a*c}${V} + ${b*c}`, `${a*c}${V} + ${b}`, `${a+c}${V} + ${b*c}`, `${a*c}${V} - ${b*c}`], 0,
+          `分配律：${a}${V} × ${c} = ${a*c}${V}，${b} × ${c} = ${b*c}。`); },
+      () => { const a=rnd(2,4), b=rnd(2,4), c=rnd(1,4), V=newLetter();
+        return makeQ(`化簡：${a}${V} + ${b}(${V} + ${c}) = ?`,
+          [`${a+b}${V} + ${b*c}`, `${a+b}${V} + ${c}`, `${a*b}${V} + ${b*c}`, `${a+b+c}${V}`], 0,
+          `先展開：${b}${V} + ${b*c}，再與 ${a}${V} 合併 → ${a+b}${V} + ${b*c}。`); },
+      () => { const a=rnd(5,9), b=rnd(1,a-1), c=rnd(1,6), n=rnd(2,6), V=newLetter();
+        return makeQ(`當 ${V} = ${n} 時，${a}${V} - ${b}${V} + ${c} = ?`, numChoices((a-b)*n+c,3), 0,
+          `先合併：${a} - ${b} = ${a-b}，${a-b} × ${n} = ${(a-b)*n}，再加 ${c} = ${(a-b)*n+c}。`); },
+      /* ── 雙字母：展開後仍有兩種字母 ── */
+      () => { const a=rnd(3,6), c=rnd(2,5), d=rnd(1,2), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${a}(${V} + ${c}${W}) - ${d}${V} = ?`,
+          [`${a-d}${V} + ${a*c}${W}`, `${a-d}${V} + ${c}${W}`, `${a+d}${V} + ${a*c}${W}`, `${a*c}${V}${W} - ${d}${V}`], 0,
+          `先展開：${a}${V} + ${a*c}${W}，再減 ${d}${V} → ${a-d}${V} + ${a*c}${W}。`); },
+      () => { const a=rnd(3,6), b=rnd(2,4), c=rnd(2,5), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${a}${V} + ${b}(${V} + ${c}${W}) = ?`,
+          [`${a+b}${V} + ${b*c}${W}`, `${a+b}${V} + ${c}${W}`, `${a*b}${V} + ${b*c}${W}`, `${a+b+c}${V}${W}`], 0,
+          `展開 ${b}(${V} + ${c}${W}) = ${b}${V} + ${b*c}${W}，與 ${a}${V} 合併 → ${a+b}${V} + ${b*c}${W}。`); },
+      () => { const a=rnd(3,6), b=rnd(1,a-1), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`化簡：${a}(${V} + 2${W}) - ${b}(${V} + ${W}) = ?`,
+          [`${a-b}${V} + ${2*a-b}${W}`, `${a-b}${V} + ${2*a+b}${W}`, `${a+b}${V} + ${2*a-b}${W}`, `${a-b}${V} + ${2*a}${W}`], 0,
+          `展開：${a}${V} + ${2*a}${W} - ${b}${V} - ${b}${W} → ${a-b}${V} + ${2*a-b}${W}。`); },
+      () => { const a=rnd(2,5), b=rnd(2,5), c=rnd(1,4), p=rnd(2,7), q=rnd(2,7), VW=twoLetters(), V=VW[0], W=VW[1];
+        return makeQ(`當 ${V} = ${p}、${W} = ${q} 時，${a}${V} + ${b}${W} - ${c} = ?`, numChoices(a*p+b*q-c,4), 0,
+          `${a} × ${p} = ${a*p}，${b} × ${q} = ${b*q}，相加再減 ${c} = ${a*p+b*q-c}。`); },
+    ],
+  },
 
-/* ── 階段二：解方程 ── */
-const S2 = [
-  () => { const a=rnd(2,9), b=rnd(a+1,18), V=newLetter();
-    return makeQ(`解方程：${V} + ${a} = ${b}`, numChoices(b-a,3), 0,
-      `兩邊同減 ${a}：${V} = ${b} - ${a} = ${b-a}。`); },
-  () => { const a=rnd(2,9), b=rnd(2,15), V=newLetter();
-    return makeQ(`解方程：${V} - ${a} = ${b}`, numChoices(b+a,3), 0,
-      `兩邊同加 ${a}：${V} = ${b} + ${a} = ${b+a}。`); },
-  () => { const a=rnd(2,9), x0=rnd(2,12), V=newLetter();
-    return makeQ(`解方程：${a}${V} = ${a*x0}`, numChoices(x0,3), 0,
-      `兩邊同除以 ${a}：${V} = ${a*x0} ÷ ${a} = ${x0}。`); },
-  () => { const a=rnd(2,9), b=rnd(2,9), V=newLetter();
-    return makeQ(`解方程：${V} ÷ ${a} = ${b}`, numChoices(a*b,3), 0,
-      `兩邊同乘 ${a}：${V} = ${b} × ${a} = ${a*b}。`); },
-  () => { const a=rnd(2,6), x0=rnd(2,9), b=rnd(1,9), c=a*x0+b, V=newLetter();
-    return makeQ(`解方程：${a}${V} + ${b} = ${c}`, numChoices(x0,3), 0,
-      `先減 ${b}：${a}${V} = ${c-b}；再除以 ${a}：${V} = ${(c-b)/a}。`); },
-  () => { const a=rnd(2,6), x0=rnd(2,9), b=rnd(1,9), c=a*x0-b, V=newLetter();
-    return makeQ(`解方程：${a}${V} - ${b} = ${c}`, numChoices(x0,3), 0,
-      `先加 ${b}：${a}${V} = ${c+b}；再除以 ${a}：${V} = ${(c+b)/a}。`); },
-  () => { let a=rnd(4,9), d=rnd(1,3), b=a-d, c=d*rnd(2,9), V=newLetter();
-    return makeQ(`解方程：${a}${V} = ${b}${V} + ${c}`, numChoices(c/d,3), 0,
-      `兩邊同減 ${b}${V}：${d}${V} = ${c}，所以 ${V} = ${c/d}。`); },
-  () => { const d=rnd(1,3), b=d+1, a=d*rnd(2,9), V=newLetter();
-    return makeQ(`解方程：${V} + ${a} = ${b}${V}`, numChoices(a/d,3), 0,
-      `兩邊同減 ${V}：${a} = ${d}${V}，所以 ${V} = ${a/d}。`); },
-  () => { const a=rnd(2,6), x0=rnd(2,9), b=rnd(1,5), c=a*(x0+b), V=newLetter();
-    return makeQ(`解方程：${a}(${V} + ${b}) = ${c}`, numChoices(x0,3), 0,
-      `兩邊同除以 ${a}：${V} + ${b} = ${c/a}，所以 ${V} = ${x0}。`); },
-  () => { let x0=rnd(2,9), m=rnd(1,3), b=m*x0, a=rnd(m+2,9), c=a-m, V=newLetter();
-    return makeQ(`解方程：${a}${V} - ${b} = ${c}${V}`, numChoices(x0,3), 0,
-      `兩邊同減 ${c}${V}：${(a-c)}${V} - ${b} = 0，所以 ${(a-c)}${V} = ${b}，${V} = ${x0}。`); },
-  () => { const a=rnd(2,9), b=rnd(2,9), c=a*b, V=newLetter();
-    return makeQ(`解方程：${c} ÷ ${V} = ${a}`, numChoices(b,3), 0,
-      `兩邊同乘 ${V}：${c} = ${a}${V}，所以 ${V} = ${b}。`); },
-  () => { const a=rnd(2,9), b=rnd(2,9), x0=rnd(2,9), c=(a+b)*x0, V=newLetter();
-    return makeQ(`解方程：${a}${V} + ${b}${V} = ${c}`, numChoices(x0,3), 0,
-      `合併同類項：${(a+b)}${V} = ${c}，所以 ${V} = ${x0}。`); },
-  () => { const a=rnd(3,9), b=rnd(1,a-1), x0=rnd(2,9), c=(a-b)*x0, V=newLetter();
-    return makeQ(`解方程：${a}${V} - ${b}${V} = ${c}`, numChoices(x0,3), 0,
-      `合併同類項：${(a-b)}${V} = ${c}，所以 ${V} = ${x0}。`); },
-  () => { const a=rnd(2,6), b=rnd(1,5), x0=rnd(b+1,12), c=a*(x0-b), V=newLetter();
-    return makeQ(`解方程：${a}(${V} - ${b}) = ${c}`, numChoices(x0,3), 0,
-      `兩邊同除以 ${a}：${V} - ${b} = ${x0-b}，所以 ${V} = ${x0}。`); },
-];
+  equation: {
+    name: "方程",
+    /* ── 簡單：一步方程 ── */
+    easy: [
+      () => { const a=rnd(2,9), x0=rnd(2,15), V=newLetter();
+        return makeQ(`解方程：${V} + ${a} = ${a+x0}`, numChoices(x0,3), 0,
+          `兩邊同減 ${a}：${V} = ${a+x0} - ${a} = ${x0}。`); },
+      () => { const a=rnd(2,9), x0=rnd(2,15), V=newLetter();
+        return makeQ(`解方程：${V} - ${a} = ${x0}`, numChoices(a+x0,3), 0,
+          `兩邊同加 ${a}：${V} = ${x0} + ${a} = ${a+x0}。`); },
+      () => { const a=rnd(2,9), x0=rnd(2,12), V=newLetter();
+        return makeQ(`解方程：${a}${V} = ${a*x0}`, numChoices(x0,3), 0,
+          `兩邊同除以 ${a}：${V} = ${a*x0} ÷ ${a} = ${x0}。`); },
+      () => { const a=rnd(2,9), b=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${V} ÷ ${a} = ${b}`, numChoices(a*b,3), 0,
+          `兩邊同乘 ${a}：${V} = ${b} × ${a} = ${a*b}。`); },
+      () => { const a=rnd(2,9), x0=rnd(2,15), V=newLetter();
+        return makeQ(`解方程：${a} + ${V} = ${a+x0}`, numChoices(x0,3), 0,
+          `加法交換律不影響結果，兩邊同減 ${a}：${V} = ${x0}。`); },
+      () => { const a=rnd(2,9), x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${V} × ${a} = ${a*x0}`, numChoices(x0,3), 0,
+          `兩邊同除以 ${a}：${V} = ${a*x0} ÷ ${a} = ${x0}。`); },
+      () => { const a=rnd(2,9), x0=rnd(1,9), V=newLetter();
+        return makeQ(`解方程：${a+x0} - ${V} = ${a}`, numChoices(x0,3), 0,
+          `${V} 前面是減號，先移項：${V} = ${a+x0} - ${a} = ${x0}。`); },
+      () => { const x0=rnd(1,9), a=rnd(x0+1,16), V=newLetter();
+        return makeQ(`解方程：${a} - ${V} = ${a-x0}`, numChoices(x0,3), 0,
+          `把 ${V} 移到右邊：${V} = ${a} - ${a-x0} = ${x0}。`); },
+      () => { const k=rnd(2,9), x0=rnd(2,12), V=newLetter();
+        return makeQ(`「${V} 的 ${k} 倍等於 ${k*x0}」，求 ${V}。`, numChoices(x0,3), 0,
+          `列式 ${k}${V} = ${k*x0}，兩邊同除以 ${k}：${V} = ${x0}。`); },
+    ],
+    /* ── 中等：兩步方程 ── */
+    mid: [
+      () => { const a=rnd(2,6), b=rnd(1,9), x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${a}${V} + ${b} = ${a*x0+b}`, numChoices(x0,3), 0,
+          `兩邊同減 ${b}：${a}${V} = ${a*x0}；再同除以 ${a}：${V} = ${x0}。`); },
+      () => { const a=rnd(2,6), b=rnd(1,9), x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${a}${V} - ${b} = ${a*x0-b}`, numChoices(x0,3), 0,
+          `兩邊同加 ${b}：${a}${V} = ${a*x0}；再同除以 ${a}：${V} = ${x0}。`); },
+      () => { const a=rnd(2,6), b=rnd(1,5), x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${a}(${V} + ${b}) = ${a*(x0+b)}`, numChoices(x0,3), 0,
+          `兩邊同除以 ${a}：${V} + ${b} = ${x0+b}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(2,7), b=rnd(2,7), x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${a}${V} + ${b}${V} = ${(a+b)*x0}`, numChoices(x0,3), 0,
+          `合併同類項：${a+b}${V} = ${(a+b)*x0}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(5,9), b=rnd(1,a-1), x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${a}${V} - ${b}${V} = ${(a-b)*x0}`, numChoices(x0,3), 0,
+          `合併同類項：${a-b}${V} = ${(a-b)*x0}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(2,9), b=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${a*b} ÷ ${V} = ${a}`, numChoices(b,3), 0,
+          `兩邊同乘 ${V}：${a*b} = ${a}${V}，所以 ${V} = ${b}。`); },
+      () => { const a=rnd(2,6), b=rnd(1,5), x0=rnd(b+1,12), V=newLetter();
+        return makeQ(`解方程：${a}(${V} - ${b}) = ${a*(x0-b)}`, numChoices(x0,3), 0,
+          `兩邊同除以 ${a}：${V} - ${b} = ${x0-b}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(2,6), b=rnd(1,8), x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${V} ÷ ${a} + ${b} = ${x0+b}`, numChoices(a*x0,3), 0,
+          `兩邊同減 ${b}：${V} ÷ ${a} = ${x0}；再同乘 ${a}：${V} = ${a*x0}。`); },
+      () => { const a=rnd(2,6), b=rnd(1,5), x0=rnd(b+1,9), V=newLetter();
+        return makeQ(`解方程：${V} ÷ ${a} - ${b} = ${x0-b}`, numChoices(a*x0,3), 0,
+          `兩邊同加 ${b}：${V} ÷ ${a} = ${x0}；再同乘 ${a}：${V} = ${a*x0}。`); },
+      () => { const a=rnd(2,6), b=rnd(1,9), x0=rnd(2,9), V=newLetter();
+        return makeQ(`「${V} 的 ${a} 倍再加 ${b}」等於 ${a*x0+b}，求 ${V}。`, numChoices(x0,3), 0,
+          `列式 ${a}${V} + ${b} = ${a*x0+b}；兩邊同減 ${b} → ${a}${V} = ${a*x0}，${V} = ${x0}。`); },
+    ],
+    /* ── 困難：未知數在兩邊／多步整理 ── */
+    hard: [
+      () => { const a=rnd(4,9), d=rnd(1,3), b=a-d, x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${a}${V} = ${b}${V} + ${d*x0}`, numChoices(x0,3), 0,
+          `兩邊同減 ${b}${V}：${d}${V} = ${d*x0}，所以 ${V} = ${x0}。`); },
+      () => { const d=rnd(1,3), b=d+1, x0=rnd(2,9), V=newLetter();
+        return makeQ(`解方程：${V} + ${d*x0} = ${b}${V}`, numChoices(x0,3), 0,
+          `兩邊同減 ${V}：${d*x0} = ${d}${V}，所以 ${V} = ${x0}。`); },
+      () => { const d=rnd(1,3), x0=rnd(2,9), c=rnd(2,6), a=c+d, V=newLetter();
+        return makeQ(`解方程：${a}${V} - ${d*x0} = ${c}${V}`, numChoices(x0,3), 0,
+          `兩邊同減 ${c}${V}：${d}${V} - ${d*x0} = 0，所以 ${d}${V} = ${d*x0}，${V} = ${x0}。`); },
+      () => { const d=rnd(1,3), x0=rnd(2,8), a=rnd(2,5), c=a+d, b=d*(x0-1), V=newLetter();
+        return makeQ(`解方程：${a}${V} + ${b} = ${c}${V} - ${d}`, numChoices(x0,3), 0,
+          `移項整理：${b} + ${d} = ${c-a}${V}，即 ${b+d} = ${d}${V}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(2,5), b=rnd(2,5), c=rnd(1,9), x0=rnd(2,8), V=newLetter();
+        return makeQ(`解方程：${a}${V} + ${b}${V} + ${c} = ${(a+b)*x0+c}`, numChoices(x0,3), 0,
+          `先合併：${a+b}${V} + ${c} = ${(a+b)*x0+c}；兩邊同減 ${c}：${a+b}${V} = ${(a+b)*x0}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(2,6), c=rnd(1,9), x0=rnd(2,9), b=a*x0+c, V=newLetter();
+        return makeQ(`解方程：${b} - ${a}${V} = ${c}`, numChoices(x0,3), 0,
+          `兩邊同減 ${b}：-${a}${V} = ${c-b}；兩邊同乘 -1：${a}${V} = ${b-c}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(4,9), b=rnd(1,a-1), c=rnd(1,9), x0=rnd(2,8), V=newLetter();
+        return makeQ(`解方程：${a}${V} - ${b}${V} + ${c} = ${(a-b)*x0+c}`, numChoices(x0,3), 0,
+          `先合併：${a-b}${V} + ${c} = ${(a-b)*x0+c}；兩邊同減 ${c}：${a-b}${V} = ${(a-b)*x0}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(1,4), b=rnd(2,4), c=rnd(1,4), x0=rnd(2,8), V=newLetter();
+        return makeQ(`解方程：${a}${V} + ${b}(${V} + ${c}) = ${(a+b)*x0+b*c}`, numChoices(x0,3), 0,
+          `展開：${a+b}${V} + ${b*c} = ${(a+b)*x0+b*c}；兩邊同減 ${b*c}：${a+b}${V} = ${(a+b)*x0}，所以 ${V} = ${x0}。`); },
+      () => { const a=rnd(2,5), b=rnd(1,4), c=rnd(1,4), x0=rnd(2,8), V=newLetter();
+        return makeQ(`解方程：${a}(${V} - ${b}) + ${c}${V} = ${(a+c)*x0 - a*b}`, numChoices(x0,3), 0,
+          `展開：${a}${V} - ${a*b} + ${c}${V} = ${a+c}${V} - ${a*b}；移項 ${a+c}${V} = ${(a+c)*x0}，所以 ${V} = ${x0}。`); },
+    ],
+  },
+};
 
-/* 生成不重複題目：撞題就重抽數字 / 字母 */
-function generate(bank, count){
-  const out = []; let guard = 0;
-  while(out.length < count && guard++ < 600){
-    const q = pick(bank)();
-    if(!/[a-zA-Z]/.test(q.q)) continue;  // 防呆：題幹必須含未知數字母，拒絕純數字運算題
-    const fp = fingerprint(q.q, q.ch);
-    if(seen.has(fp)) continue;          // 重複 → 換數字 / 字母重抽
-    seen.add(fp); out.push(q);
+/* ══════════ 出題引擎：不限題數，邊玩邊生成 ══════════
+   ① 每題都重新隨機「數字 + 字母」
+   ② 與最近 500 題比對題幹指紋，重複就重抽（換數字 / 換字母）
+   ③ 不預先組牌，玩到哪生成到哪，所以題數不設上限 */
+const RECENT_MAX = 500;
+let altFlip = 0;                 // 混合模式：代數式 / 方程 交替出現
+
+function remember(fp){
+  recent.push(fp); recentSet.add(fp);
+  if(recent.length > RECENT_MAX) recentSet.delete(recent.shift());
+}
+function resetQuestions(){ recent.length = 0; recentSet.clear(); altFlip = 0; }
+
+function newQuestion(){
+  const t = qType === "both" ? (altFlip++ % 2 === 0 ? "algebra" : "equation") : qType;
+  const bank = BANKS[t][qDiff];
+  let spare = null;
+  for(let i=0; i<80; i++){
+    const item = pick(bank)();
+    if(!/[a-zA-Z]/.test(item.q)) continue;      // 防呆：題幹必須含未知數字母，拒絕純數字題
+    if(!spare) spare = item;
+    const fp = fingerprint(item.q);
+    if(recentSet.has(fp)) continue;             // 近期出過 → 換數字 / 字母重抽
+    remember(fp); item.type = t; return item;
   }
-  return out;
+  const item = spare || pick(bank)();           // 模板空間用盡（極少見）→ 仍給一題
+  remember(fingerprint(item.q)); item.type = t; return item;
 }
 
 /* ══════════ 對戰模式 ══════════ */
 const MODES = {
-  campaign: { name:"闖關模式", hp:260, hit:10, combo:14, miss:4, ko:false,
-    hint:"答對：對手 -10HP（連擊 -14HP）· 答錯：自己 -4HP 並鎖定本題 · 全部玩完比血量（保證進入階段二）" },
-  ko:       { name:"血量 KO 戰", hp:140, hit:18, combo:22, miss:5, ko:true,
-    hint:"答對：對手 -18HP（連擊 -22HP）· 答錯：自己 -5HP 並鎖定本題 · 歸零即勝（快節奏）" },
-  coop:     { name:"雙人合作打Boss", hp:120, coop:true,
-    hint:"🤝 兩人題目不同、各自獨立作答：答對→魔王 -12（蓄力×1.5／冰封 -20）且隊伍 +3；答錯→隊伍 -10（守護免傷）。打光魔王血即勝！" }
+  ko:   { name:"血量 KO 戰", hit:10, combo:14, miss:4, ko:true,
+    hint:"答對：對手 -10HP（連擊 -14HP）· 答錯：自己 -4HP 並鎖定本題 · 先把對手血量打到 0 即獲勝（不限題數）" },
+  coop: { name:"雙人合作打Boss", coop:true,
+    hint:"🤝 兩人各自拿到不同題目、獨立作答：答對→魔王扣血、隊伍回血；答錯→隊伍扣血。共 5 關，魔王逐關變強（雙人魔王比單人更厚更痛），打贏一關就升級！" },
+  solo: { name:"單人挑戰魔王", coop:true, solo:true,
+    hint:"👤 你單挑魔王：答對→魔王扣血、自己回血；答錯→魔王反擊。共 5 關，魔王逐關變強，打贏一關就升級（單人魔王比雙人溫和一些）！" }
 };
-const TEAM_MAX = 120, BOSS_MAX = 260;
-/* 主動技能：兩人共用同一套，各有獨立冷卻 */
-const SKILLS = [
-  { id:"freeze", icon:"❄️", name:"冰封", cd:3 },
-  { id:"power",  icon:"⚡", name:"蓄力", cd:4 },
-  { id:"shield", icon:"🛡️", name:"守護", cd:5 }
+const HP_MAX = 300;                   // 血量 KO 戰：雙方固定血量
+
+/* ══════════ 魔王 5 關卡：逐關變強、過關升級 ══════════
+   hpS / atkS → 單人強度（一個人進攻，魔王較薄、反擊較輕）
+   hpC / atkC → 雙人強度（兩人各自進攻，魔王更厚、反擊更痛）
+   也所以「單人和雙人魔王強度不一樣」。 */
+const STAGE_COUNT = 5;
+const STAGES = [
+  { boss:"見習魔王", hpS:  90, hpC: 170, atkS:  8, atkC: 11 },
+  { boss:"狂暴魔王", hpS: 130, hpC: 240, atkS: 11, atkC: 14 },
+  { boss:"鋼鐵魔王", hpS: 175, hpC: 315, atkS: 15, atkC: 18 },
+  { boss:"暗影魔王", hpS: 225, hpC: 395, atkS: 19, atkC: 22 },
+  { boss:"魔王之王", hpS: 285, hpC: 485, atkS: 24, atkC: 27 }
 ];
-/* 開局進場冷卻（題數）：技能一開始全部鎖住，需等 2 題（第 3 題起）才能使用 */
-const SKILL_START_CD = 2;
-let mode = MODES.campaign;
+/* 玩家等級 1→5：每打贏一關升一級，血更多、打更痛、回血更多 */
+const LV_NAME = ["見習", "熟練", "進階", "精英", "傳說"];
+function lvStats(lv, solo){
+  return {
+    hp:   solo ? 90 + lv * 25 : 140 + lv * 40,
+    dmg:  12 + (lv - 1) * 3,
+    heal: 3 + Math.floor((lv - 1) / 2)
+  };
+}
+/* 主動技能：依角色特色設計，每人 2 招、四招互不重複。
+   冷卻配置：同一職業的兩招不同（3 / 4），但兩個職業對應招式一致（法師3↔騎士3、法師4↔騎士4） */
+const SKILLSETS = [
+  [ /* 🧙 1P 藍隊法師：遠程法術・控場＋爆發 */
+    { id:"freeze", icon:"❄️", name:"冰封術", cd:3,
+      desc:"凍結對手 3 秒無法作答｜合作：本題答對重擊魔王 -22" },
+    { id:"power",  icon:"⚡", name:"魔力湧動", cd:4,
+      desc:"本題傷害 ×1.6｜合作：對魔王傷害 ×1.6" }
+  ],
+  [ /* ⚔️ 2P 紅隊騎士：重甲防禦・以血換攻 */
+    { id:"guard",   icon:"🛡️", name:"鐵壁", cd:3,
+      desc:"本題免疫所有傷害｜合作：答錯隊伍不扣血" },
+    { id:"berserk", icon:"💥", name:"捨身猛擊", cd:4,
+      desc:"本題傷害 ×2，但立刻自損 10 HP" }
+  ]
+];
+/* 目前使用的技能表：單人模式會把「所選角色」的兩招放到 1P 位置 */
+let SKILLS = SKILLSETS;
+let mode = MODES.ko;
+
+/* ── 題類 / 難度選擇 ── */
+let qType = "algebra";   // algebra 代數式 / equation 方程 / both 混合
+let qDiff = "mid";       // easy 簡單 / mid 中等 / hard 困難
+const TYPE_NAME = { algebra:"代數式", equation:"方程", both:"混合" };
+const DIFF_NAME = { easy:"簡單", mid:"中等", hard:"困難" };
+const typeName = () => TYPE_NAME[qType];
 
 /* ══════════ 遊戲狀態 ══════════ */
 const LET = ["A","B","C","D"];
-let deck = [], qIndex = 0, stageNo = 1, STAGE1_COUNT = 0;
-let hp = [200, 200];
+let deck = [], qIndex = 0;
+let hp = [200, 200], hpMax = 260;
 let streak = [0, 0];
 let stats = [{ok:0, no:0}, {ok:0, no:0}];
 let answered = [false, false];
 let lastPick = [null, null];
 let locked = false, gameOver = false;
+/* 新題出現後的短暫「作答鎖」：避免上一題的連點 / 觸控殘留點擊
+   直接命中剛長出來的選項（會變成誤答，害玩家一路掉血提早結束） */
+let inputLock = false, lockTimer = null;
+function lockInput(ms){
+  inputLock = true;
+  if(lockTimer) clearTimeout(lockTimer);
+  lockTimer = setTimeout(() => { inputLock = false; lockTimer = null; }, ms);
+}
+/* 卡片按鈕先不收點擊：卡片彈出的位置常常正好在玩家的滑鼠 / 手指下，
+   連點作答時下一擊就會誤觸「再戰一場」或「返回選單」，看起來像自己彈回選單 */
+function lockTap(ms, ...btns){
+  btns.forEach(b => b && b.classList.add("lockTap"));
+  setTimeout(() => btns.forEach(b => b && b.classList.remove("lockTap")), ms);
+}
 const P = [
   {name:"🧙 1P 藍隊法師", short:"1P 藍隊法師"},
   {name:"⚔️ 2P 紅隊騎士", short:"2P 紅隊騎士"}
 ];
+/* 單人挑戰：自己選角色（0 法師 / 1 騎士） */
+let soloChar = 0;
+const CHAR = [
+  { label:"法師", hud:"藍隊法師", sym:"#char-mage" },
+  { label:"騎士", hud:"紅隊騎士", sym:"#char-knight" }
+];
 
-/* 技能 / 合作模式狀態 */
-let teamHP = TEAM_MAX, bossHP = BOSS_MAX;
-let skillCD = [[0,0,0],[0,0,0]];      // 每位玩家每個技能的剩餘冷卻（題數）
-let powerActive = [false, false];     // ⚡ 本題增傷
-let shieldActive = [false, false];    // 🛡️ 抵擋下次受擊
+/* 技能 / 魔王模式狀態 */
+let teamHP = 180, bossHP = 170, bossMax = 170;
+let teamMax = 180;                    // 隊伍（單人時＝你）最大 HP：依等級變動
+let stage = 0, playerLv = 1;          // 目前關卡 0..4 ／ 玩家等級 1..5
+let baseDmg = 12;                     // 本關答對的基礎傷害（依等級）
+let bossAtkDmg = 11;                  // 本關魔王反擊傷害（依關卡＋單/雙人）
+let healNow = 3;                      // 本關答對回血量（依等級）
+let totalOk = 0, totalNo = 0;         // 整輪（跨關）累計作答
+let againAction = "restart";          // 結算卡「再來一次」的行為：restart / retry
+let skillCD = [[0,0],[0,0]];          // 每位玩家每個技能的剩餘冷卻（題數）
+let powerActive = [false, false];     // ⚡ 法師：本題增傷 ×1.6
+let guardActive = [false, false];     // 🛡️ 騎士：本題免疫傷害
+let berserkActive = [false, false];   // 💥 騎士：本題傷害 ×2（已先自損 10）
 let freezeTeam = false;               // 合作：本題魔王反擊失效
 let frozenFoe = [null, null];        // PvP：凍結對手的計時器
 let qToken = 0;                       // 題目編號（用於凍結失效判斷）
@@ -2278,109 +2663,244 @@ let coopStage = [1, 1];   // 各自階段（1=代數式 / 2=解方程）
 let coopAnswered = [false, false];
 let freezeActive = [false, false];  // ❄️ 合作：本題答對重擊魔王
 
-/* ══════════ 模式選擇 ══════════ */
-document.querySelectorAll(".modeBtn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".modeBtn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+/* ══════════ 開始畫面的三組選擇（對戰模式 / 題類 / 難度） ══════════ */
+function bindPickRow(rowId, onPick){
+  const row = $(rowId);
+  row.querySelectorAll(".modeBtn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      row.querySelectorAll(".modeBtn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      onPick(btn);
+      updatePickInfo();
+    });
   });
-});
+}
+bindPickRow("modeRow", () => updateCharRow());
+bindPickRow("typeRow", btn => { qType = btn.dataset.type; });
+bindPickRow("diffRow", btn => { qDiff = btn.dataset.diff; });
+bindPickRow("charRow", btn => { soloChar = Number(btn.dataset.char); });
+
+function currentModeKey(){
+  return document.querySelector("#modeRow .modeBtn.active").dataset.mode;
+}
+/* 只有「單人挑戰魔王」才顯示選角色 */
+function updateCharRow(){
+  const solo = currentModeKey() === "solo";
+  $("charPick").classList.toggle("hidden", !solo);
+  $("startOv").classList.toggle("solo", solo);
+  updatePickInfo();
+}
+function updatePickInfo(){
+  const m = currentModeKey();
+  const goal = m === "ko" ? "打到 KO 為止" : `魔王共 ${STAGE_COUNT} 關、逐關變強`;
+  $("pickInfo").textContent = `本局：${typeName()}・${DIFF_NAME[qDiff]} · 不限題數（${goal}）`;
+}
+updateCharRow();
+
 $("startBtn").addEventListener("click", newGame);
-$("againBtn").addEventListener("click", newGame);
+$("againBtn").addEventListener("click", () => {
+  if(againAction === "retry") retryStage();   // 魔王模式失敗 → 重打本關（等級保留）
+  else newGame();                             // 其他 → 從第 1 關重新開始
+});
+$("nextBtn").addEventListener("click", nextStage);   // 過關 → 下一關（同時升級）
+$("backBtn").addEventListener("click", () => {   // 回開始畫面重選題類 / 難度
+  if(lockTimer){ clearTimeout(lockTimer); lockTimer = null; }
+  inputLock = false;
+  if(frozenFoe[0]){ clearTimeout(frozenFoe[0]); frozenFoe[0] = null; }
+  if(frozenFoe[1]){ clearTimeout(frozenFoe[1]); frozenFoe[1] = null; }
+  $("winOv").classList.add("hidden");
+  $("startOv").classList.remove("hidden");
+  lockTap(650, $("startBtn"));   // 回到選單的同一擊不要順手又開局
+  updatePickInfo();
+});
 buildSkillButtons();   // 初始化技能按鈕（僅一次）
 
-function newGame(){
-  const chosen = document.querySelector(".modeBtn.active").dataset.mode;
-  mode = MODES[chosen];
-  seen.clear();
-  const s1 = generate(S1, 16);
-  const s2 = generate(S2, 16);
-  STAGE1_COUNT = s1.length;
-  deck = shuffle(s1).concat(shuffle(s2));
-  qIndex = 0; stageNo = 1;
-  hp = [mode.hp, mode.hp]; streak = [0,0];
-  stats = [{ok:0,no:0},{ok:0,no:0}];
-  teamHP = mode.hp; bossHP = BOSS_MAX;
-  gameOver = false; locked = false; answered = [false,false]; lastPick = [null,null];
-  coopQ = [0,0]; coopStage = [1,1]; coopAnswered = [false,false];
-  skillCD = [[SKILL_START_CD,SKILL_START_CD,SKILL_START_CD],[SKILL_START_CD,SKILL_START_CD,SKILL_START_CD]];
-  powerActive = [false,false]; shieldActive = [false,false]; freezeActive = [false,false];
-  const battle = $("battle");
-  const p2hud = document.querySelector(".pHud.p2");
-  if(mode.coop){
-    battle.classList.add("coop");
-    $("answerArea").classList.add("coop");
-    p2hud.classList.add("boss");
-    document.querySelector(".pHud.p1 .pHudTop b").textContent = "🤝 合作隊伍";
-    document.querySelector(".pHud.p2 .pHudTop b").textContent = "👹 代數魔王";
-    $("vs").textContent = "🤝";
-    $("stageName").textContent = "🤝 雙人合作打Boss";
-    seen.clear();
-    const d1 = shuffle(generate(S1,16)).concat(shuffle(generate(S2,16)));
-    const d2 = shuffle(generate(S1,16)).concat(shuffle(generate(S2,16)));
-    coopDeck = [d1, d2]; coopQ = [0,0]; coopStage = [1,1];
-  }else{
-    battle.classList.remove("coop");
-    $("answerArea").classList.remove("coop");
-    p2hud.classList.remove("boss");
-    document.querySelector(".pHud.p1 .pHudTop b").textContent = "🧙 1P 藍隊法師";
-    document.querySelector(".pHud.p2 .pHudTop b").textContent = "⚔️ 2P 紅隊騎士";
-    $("vs").textContent = "VS";
-  }
-  $("hintLine").textContent = mode.hint;
+/* 開新局：先把兩張覆蓋層收起來，再建立場景。
+   這樣即使建立場景的過程中出錯，玩家也不會被留在（或彈回）選擇頁 */
+function launch(fn, failMsg){
   $("startOv").classList.add("hidden");
   $("winOv").classList.add("hidden");
-  showQuestion();
+  const eb = $("errBar"); if(eb) eb.style.display = "none";
+  try{
+    fn();
+  }catch(err){
+    console.error(err);
+    $("startOv").classList.remove("hidden");
+    $("pickInfo").textContent = "⚠️ " + failMsg + "：" + (err && err.message ? err.message : err) + "（請再按一次開始）";
+  }
 }
+
+/* 全新一輪：回到第 1 關、等級 1 */
+function newGame(){
+  stage = 0; playerLv = 1; totalOk = 0; totalNo = 0; againAction = "restart";
+  launch(setupGame, "開局失敗");
+}
+/* 打贏魔王 → 進下一關，同時升一級（血量、傷害都變強） */
+function nextStage(){
+  if(stage >= STAGE_COUNT - 1) return;
+  stage++; playerLv = Math.min(playerLv + 1, STAGE_COUNT);
+  againAction = "retry";
+  launch(setupGame, "進入下一關失敗");
+}
+/* 打輸 → 同一關重打，等級與已過關卡保留 */
+function retryStage(){
+  againAction = "retry";
+  launch(setupGame, "重打本關失敗");
+}
+
+function setupGame(){
+  mode = MODES[currentModeKey()];
+  resetQuestions();
+
+  qIndex = 0;
+  gameOver = false; locked = false; answered = [false,false]; lastPick = [null,null];
+  streak = [0,0]; stats = [{ok:0,no:0},{ok:0,no:0}];
+  coopQ = [0,0]; coopStage = [1,1]; coopAnswered = [false,false];
+  coopDeck = [[],[]]; deck = [];        // 題目邊玩邊生成，不預先組牌
+
+  // 單人模式：把所選角色的兩招放到 1P 位置，並重建技能按鈕
+  SKILLS = mode.solo ? [SKILLSETS[soloChar], SKILLSETS[soloChar]] : SKILLSETS;
+  buildSkillButtons();
+  // 開局進場冷卻：每招按自己的冷卻題數起算（各招不同，不會一開場就能放）
+  skillCD = SKILLS.map(list => list.map(sk => sk.cd));
+  powerActive = [false,false]; guardActive = [false,false]; berserkActive = [false,false]; freezeActive = [false,false];
+
+  if(mode.coop){
+    const st = STAGES[stage];
+    const ls = lvStats(playerLv, mode.solo);
+    teamMax    = ls.hp;
+    baseDmg    = ls.dmg;
+    healNow    = ls.heal;
+    bossAtkDmg = mode.solo ? st.atkS : st.atkC;   // 單人 / 雙人魔王強度不同
+    bossMax    = mode.solo ? st.hpS : st.hpC;
+    teamHP = teamMax;
+    bossHP = bossMax;
+  }else{
+    hpMax = HP_MAX;
+    hp = [hpMax, hpMax];
+  }
+
+  const battle = $("battle"), area = $("answerArea");
+  const p2hud = document.querySelector(".pHud.p2");
+  const fb3 = $("f3");
+  if(mode.coop){
+    battle.classList.add("coop");
+    battle.classList.toggle("solo", !!mode.solo);
+    area.classList.add("coop");
+    area.classList.toggle("solo", !!mode.solo);
+    p2hud.classList.add("boss");
+    const st = STAGES[stage];
+    document.querySelector(".pHud.p2 .pHudTop b").textContent = `👹 ${st.boss}`;
+    $("stageBannerName").textContent = st.boss;
+    if(fb3) fb3.classList.toggle("boss-elite", stage >= 2);   // 第 3 關起魔王發光強化
+    $("f1").querySelector("use").setAttribute("href", CHAR[soloChar].sym);
+    if(mode.solo){
+      P[0].name = `${CHAR[soloChar].label}`; P[0].short = CHAR[soloChar].label;
+      document.querySelector(".pHud.p1 .pHudTop b").textContent = `👤 ${CHAR[soloChar].hud}`;
+      document.querySelector(".p1col .zoneTitle").textContent = "👤 你的作答區";
+      $("vs").textContent = "⚔️";
+      $("stageName").textContent = `👤 第 ${stage+1} / ${STAGE_COUNT} 關｜${st.boss}`;
+    }else{
+      P[0].name = "🧙 1P 藍隊法師"; P[0].short = "1P 藍隊法師";
+      document.querySelector(".pHud.p1 .pHudTop b").textContent = `🤝 合作隊伍`;
+      document.querySelector(".p1col .zoneTitle").textContent = "📝 1P 作答區";
+      $("vs").textContent = "🤝";
+      $("stageName").textContent = `🤝 第 ${stage+1} / ${STAGE_COUNT} 關｜${st.boss}`;
+    }
+  }else{
+    battle.classList.remove("coop","solo");
+    area.classList.remove("coop","solo");
+    p2hud.classList.remove("boss");
+    if(fb3) fb3.classList.remove("boss-elite");
+    P[0].name = "🧙 1P 藍隊法師"; P[0].short = "1P 藍隊法師";
+    $("f1").querySelector("use").setAttribute("href", "#char-mage");
+    document.querySelector(".pHud.p1 .pHudTop b").textContent = "🧙 1P 藍隊法師";
+    document.querySelector(".pHud.p2 .pHudTop b").textContent = "⚔️ 2P 紅隊騎士";
+    document.querySelector(".p1col .zoneTitle").textContent = "📝 1P 作答區";
+    $("vs").textContent = "VS";
+    $("stageName").textContent = stageTitle();
+  }
+  $("hintLine").textContent = mode.hint;
+  showQuestion();
+  if(mode.coop) showStageBanner();   // 進場時提示「第 N 關 / 魔王名 / 目前等級」
+}
+
+/* 進入新關卡時的橫幅：「第 2 關 ▶ 狂暴魔王」 */
+let bannerTimer = null;
+function showStageBanner(){
+  const el = $("stageBanner"); if(!el) return;
+  $("stageBannerNo").textContent = `第 ${stage+1} 關`;
+  $("stageBannerLv").textContent = `Lv.${playerLv} ${LV_NAME[playerLv-1]}`;
+  el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
+  if(bannerTimer) clearTimeout(bannerTimer);
+  bannerTimer = setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+/* 目前題類 / 難度的文字標籤（混合模式顯示「這一題」的類別） */
+function curType(){
+  const it = mode.coop ? coopDeck[0][coopQ[0]] : deck[qIndex];
+  return (it && it.type) ? it.type : (qType === "both" ? "algebra" : qType);
+}
+function stageLabel(){ return `${TYPE_NAME[curType()]}・${DIFF_NAME[qDiff]}`; }
+function stageTitle(){ return stageLabel(); }
 
 /* ══════════ 畫面更新 ══════════ */
 function render(){
   if(mode.coop){
-    $("hp1").style.width = (teamHP/TEAM_MAX*100) + "%";
-    $("hp2").style.width = (bossHP/BOSS_MAX*100) + "%";
-    $("hp1").className = teamHP <= TEAM_MAX*0.3 ? "low" : teamHP <= TEAM_MAX*0.6 ? "mid" : "";
-    $("hp2").className = bossHP <= BOSS_MAX*0.3 ? "low" : bossHP <= BOSS_MAX*0.6 ? "mid" : "";
-    $("hp1num").textContent = `隊伍 HP ${teamHP} / ${TEAM_MAX}`;
-    $("hp2num").textContent = `魔王 HP ${bossHP} / ${BOSS_MAX}`;
+    $("hp1").style.width = (teamHP/teamMax*100) + "%";
+    $("hp2").style.width = (bossHP/bossMax*100) + "%";
+    $("hp1").className = teamHP <= teamMax*0.3 ? "low" : teamHP <= teamMax*0.6 ? "mid" : "";
+    $("hp2").className = bossHP <= bossMax*0.3 ? "low" : bossHP <= bossMax*0.6 ? "mid" : "";
+    $("hp1num").textContent = `HP ${teamHP} / ${teamMax}`;
+    $("hp2num").textContent = `HP ${bossHP} / ${bossMax}`;
     $("ok1").textContent = `1P✔${stats[0].ok}`; $("no1").textContent = `2P✔${stats[1].ok}`;
     $("streak1").textContent = ""; $("streak2").textContent = "";
   }else{
-    $("hp1").style.width = (hp[0]/mode.hp*100) + "%";
-    $("hp2").style.width = (hp[1]/mode.hp*100) + "%";
-    $("hp1").className = hp[0] <= mode.hp*0.3 ? "low" : hp[0] <= mode.hp*0.6 ? "mid" : "";
-    $("hp2").className = hp[1] <= mode.hp*0.3 ? "low" : hp[1] <= mode.hp*0.6 ? "mid" : "";
-    $("hp1num").textContent = `HP ${hp[0]} / ${mode.hp}`;
-    $("hp2num").textContent = `HP ${hp[1]} / ${mode.hp}`;
+    $("hp1").style.width = (hp[0]/hpMax*100) + "%";
+    $("hp2").style.width = (hp[1]/hpMax*100) + "%";
+    $("hp1").className = hp[0] <= hpMax*0.3 ? "low" : hp[0] <= hpMax*0.6 ? "mid" : "";
+    $("hp2").className = hp[1] <= hpMax*0.3 ? "low" : hp[1] <= hpMax*0.6 ? "mid" : "";
+    $("hp1num").textContent = `HP ${hp[0]} / ${hpMax}`;
+    $("hp2num").textContent = `HP ${hp[1]} / ${hpMax}`;
     $("ok1").textContent = stats[0].ok; $("no1").textContent = stats[0].no;
     $("ok2").textContent = stats[1].ok; $("no2").textContent = stats[1].no;
     $("streak1").textContent = streak[0] >= 2 ? `🔥 ${streak[0]} 連擊` : "";
     $("streak2").textContent = streak[1] >= 2 ? `🔥 ${streak[1]} 連擊` : "";
   }
   if(mode.coop){
-    $("roundPill").textContent = `1P 第 ${Math.min(coopQ[0]+1, coopDeck[0].length)} 題 · 2P 第 ${Math.min(coopQ[1]+1, coopDeck[1].length)} 題`;
-    $("stageChip").textContent = "🤝 雙人合作";
+    const st = STAGES[stage];
+    $("roundPill").textContent = mode.solo
+      ? `第 ${stage+1} 關 · Lv.${playerLv} · 第 ${coopQ[0]+1} 題`
+      : `第 ${stage+1} 關 · Lv.${playerLv} · 1P 第 ${coopQ[0]+1} 題 / 2P 第 ${coopQ[1]+1} 題`;
+    $("stageChip").textContent = (mode.solo ? "👤 單人" : "🤝 雙人") + `｜${typeName()}・${DIFF_NAME[qDiff]}｜魔王反擊 -${bossAtkDmg}`;
+    $("stageName").textContent = (mode.solo ? "👤 第 " : "🤝 第 ") + `${stage+1} / ${STAGE_COUNT} 關｜${st.boss}`;
   }else{
-    $("roundPill").textContent = `第 ${Math.min(qIndex+1, deck.length)} 題 / 共 ${deck.length} 題`;
-    const stageLabel = stageNo===1 ? "階段一・代數式" : "階段二・解方程";
-    $("stageChip").textContent = stageLabel;
-    $("stageName").textContent = stageNo===1 ? "第一階段：代數式" : "第二階段：解方程";
+    $("roundPill").textContent = `第 ${qIndex+1} 題（打到 KO 為止）`;
+    $("stageChip").textContent = stageLabel();
+    $("stageName").textContent = stageTitle();
   }
   renderSkills();
+}
+
+/* 判斷某玩家某技能是否「已掛上、等待生效」 */
+function armedOf(p, id){
+  if(id === "power")   return powerActive[p];
+  if(id === "guard")   return guardActive[p];
+  if(id === "berserk") return berserkActive[p];
+  if(id === "freeze")  return mode.coop ? freezeActive[p] : false;
+  return false;
 }
 
 /* 刷新技能按鈕：冷卻中顯示剩餘題數，可用時高亮 */
 function renderSkills(){
   for(let p=0; p<2; p++){
-    for(let i=0; i<SKILLS.length; i++){
+    const list = SKILLS[p];
+    for(let i=0; i<list.length; i++){
       const b = skillBtns[p][i]; if(!b) continue;
-      const sk = SKILLS[i];
+      const sk = list[i];
       const cd = skillCD[p][i];
       const ready = !gameOver && cd <= 0;
-      // 已掛上、等待生效的 buff
-      const armed = sk.id === "power"  ? powerActive[p]
-                  : sk.id === "shield" ? shieldActive[p]
-                  : sk.id === "freeze" ? (mode.coop ? freezeActive[p] : false)
-                  : false;
+      const armed = armedOf(p, sk.id);
       b.disabled = !ready;
       b.classList.toggle("ready", ready && !armed);
       b.classList.toggle("armed", armed);
@@ -2389,14 +2909,15 @@ function renderSkills(){
   }
 }
 
-/* 初始化技能按鈕（僅一次） */
+/* 初始化技能按鈕（僅一次）：每人只有屬於自己角色的 2 招 */
 function buildSkillButtons(){
   for(let p=0; p<2; p++){
     const box = $(p===0 ? "skills1" : "skills2");
     box.innerHTML = ""; skillBtns[p] = [];
-    SKILLS.forEach((sk, i) => {
+    SKILLS[p].forEach((sk, i) => {
       const b = document.createElement("button");
       b.className = "skillBtn"; b.type = "button";
+      b.title = `${sk.name}（冷卻 ${sk.cd} 題）：${sk.desc}`;
       b.innerHTML = `<span class="si">${sk.icon}</span><span class="sn">${sk.name}</span><span class="sc"></span>`;
       b.addEventListener("click", () => useSkill(p, i));
       box.appendChild(b); skillBtns[p].push(b);
@@ -2409,14 +2930,17 @@ let btns = [[],[]];
 function showQuestion(){
   if(mode.coop){
     $("question").textContent = "";
-    $("explain").innerHTML = "🤝 兩人各自拿到<b>不同題目</b>、獨立作答，答完立即出下一題！答對打魔王、答錯隊伍扣血。";
+    $("explain").innerHTML = mode.solo
+      ? `👤 第 <b>${stage+1}</b> 關「<b>${STAGES[stage].boss}</b>」：答對打魔王（-${baseDmg}）、答錯被反擊（-${bossAtkDmg}）。打光魔王血就過關！`
+      : `🤝 第 <b>${stage+1}</b> 關「<b>${STAGES[stage].boss}</b>」：兩人各自作答，答對打魔王（-${baseDmg}）、答錯隊伍被反擊（-${bossAtkDmg}）。打光魔王血就過關！`;
     $("explain").className = "explain";
     $("raceTip").style.display = "none";
     showCoopQuestion(0);
-    showCoopQuestion(1);
+    if(!mode.solo) showCoopQuestion(1);
     render();
     return;
   }
+  while(deck.length <= qIndex) deck.push(newQuestion());   // 題目邊玩邊生成
   qToken++;
   locked = false; answered = [false, false]; lastPick = [null, null];
   if(frozenFoe[0]){ clearTimeout(frozenFoe[0]); frozenFoe[0] = null; }
@@ -2441,6 +2965,7 @@ function showQuestion(){
     const st = $(p===0 ? "st1" : "st2");
     st.textContent = ""; st.className = "pstat";
   }
+  lockInput(450);            // 新題剛出現 → 先鎖 0.45 秒，擋掉連點與觸控殘留
   render();
 }
 
@@ -2449,16 +2974,10 @@ function showCoopQuestion(p){
   const qEl = $(p===0 ? "q1" : "q2");
   const box = $(p===0 ? "zone1" : "zone2");
   const st = $(p===0 ? "st1" : "st2");
-  if(coopQ[p] >= coopDeck[p].length){
-    coopAnswered[p] = true;
-    qEl.innerHTML = `<span class="qdone">本輪題目已完成 🎉</span>`;
-    box.innerHTML = ""; btns[p] = [];
-    st.textContent = "等待隊友…"; st.className = "pstat";
-    return;
-  }
+  while(coopDeck[p].length <= coopQ[p]) coopDeck[p].push(newQuestion());   // 邊玩邊生成，不限題數
   coopAnswered[p] = false;
   const item = coopDeck[p][coopQ[p]];
-  coopStage[p] = coopQ[p] < 16 ? 1 : 2;
+  coopStage[p] = item.type === "equation" ? 2 : 1;
   box.innerHTML = ""; btns[p] = [];
   item.ch.forEach((c, i) => {
     const b = document.createElement("button");
@@ -2470,11 +2989,12 @@ function showCoopQuestion(p){
   });
   qEl.innerHTML = item.q.replace(/([0-9]+[a-zA-Z]+|[a-zA-Z]+[0-9]*|[=＋\-×÷])/g, m => `<span class="hl">${m}</span>`);
   st.textContent = ""; st.className = "pstat";
+  lockInput(450);            // 新題剛出現 → 先鎖 0.45 秒，擋掉連點與觸控殘留
 }
 function coopNext(p){
   coopQ[p]++;
   // 合作模式各自獨立作答，答完一題扣自己技能冷卻 1 題
-  for(let i=0; i<SKILLS.length; i++) if(skillCD[p][i] > 0) skillCD[p][i]--;
+  for(let i=0; i<SKILLS[p].length; i++) if(skillCD[p][i] > 0) skillCD[p][i]--;
   showCoopQuestion(p);
   renderSkills();
   checkDeckEnd();
@@ -2482,7 +3002,7 @@ function coopNext(p){
 
 /* ══════════ 作答結算 ══════════ */
 function answer(p, pick){
-  if(gameOver) return;
+  if(gameOver || inputLock) return;      // 新題剛出現的 0.45 秒內不接受點擊
   const item = deck[qIndex];
 
   /* ── 合作模式：兩人獨立作答，各自答完立即結算 ── */
@@ -2498,30 +3018,31 @@ function answer(p, pick){
     });
     const st = $(p===0 ? "st1" : "st2");
     if(good){
-      stats[p].ok++;
-      let dmg = 12;
-      if(powerActive[p]){ dmg = Math.round(dmg * 1.5); powerActive[p] = false; }   // ⚡ 蓄力增傷
-      if(freezeActive[p]){ dmg = 20; freezeActive[p] = false; }                     // ❄️ 冰封重擊
+      stats[p].ok++; totalOk++;
+      let dmg = baseDmg;
+      if(freezeActive[p]){ dmg = 22 + (playerLv - 1) * 3; freezeActive[p] = false; }  // ❄️ 冰封術重擊
+      if(powerActive[p]){ dmg = Math.round(dmg * 1.6); powerActive[p] = false; }      // ⚡ 魔力湧動
+      if(berserkActive[p]){ dmg = dmg * 2; berserkActive[p] = false; }                // 💥 捨身猛擊
       bossHP = Math.max(0, bossHP - dmg);
       playerAttackBoss(p);
       const d = $("dmg3"); d.textContent = "-" + dmg; d.classList.remove("show"); void d.offsetWidth; d.classList.add("show");
-      teamHP = Math.min(TEAM_MAX, teamHP + 3);                                      // 答對隊伍回血
-      const dT = $("dmg1"); dT.textContent = "+3"; dT.classList.remove("show"); void dT.offsetWidth; dT.classList.add("show");
-      st.textContent = `✅ 答對！魔王 -${dmg}，隊伍 +3`;
+      teamHP = Math.min(teamMax, teamHP + healNow);                                 // 答對隊伍回血
+      const dT = $("dmg1"); dT.textContent = "+" + healNow; dT.classList.remove("show"); void dT.offsetWidth; dT.classList.add("show");
+      st.textContent = `✅ 答對！魔王 -${dmg}，隊伍 +${healNow}`;
       st.className = "pstat good";
-      $("explain").innerHTML = `✅ <b>${P[p].short}</b> 答對！對魔王造成 <b>${dmg}</b> 傷害，隊伍回復 3 HP！<br>${item.ex}`;
+      $("explain").innerHTML = `✅ <b>${P[p].short}</b> 答對！對魔王造成 <b>${dmg}</b> 傷害，隊伍回復 ${healNow} HP！<br>${item.ex}`;
       $("explain").className = "explain ok";
     }else{
-      stats[p].no++;
-      let dmg = 10, shielded = false;
-      if(shieldActive[p]){ shielded = true; shieldActive[p] = false; dmg = 0; }      // 🛡️ 守護免傷
+      stats[p].no++; totalNo++;
+      let dmg = bossAtkDmg, shielded = false;
+      if(guardActive[p]){ shielded = true; guardActive[p] = false; dmg = 0; }        // 🛡️ 鐵壁免傷
       if(dmg > 0) teamHP = Math.max(0, teamHP - dmg);
       bossAttack();
       playersHurt();
       const d = $("dmg1"); d.textContent = shielded ? "🛡️" : ("-" + dmg); d.classList.remove("show"); void d.offsetWidth; d.classList.add("show");
-      st.textContent = shielded ? "🛡️ 守護抵擋！" : `❌ 答錯，隊伍 -${dmg}`;
+      st.textContent = shielded ? "🛡️ 鐵壁抵擋！" : `❌ 答錯，隊伍 -${dmg}`;
       st.className = "pstat " + (shielded ? "good" : "bad");
-      $("explain").innerHTML = `❌ <b>${P[p].short}</b> 答錯，魔王反擊，隊伍 <b>-${dmg} HP</b>${shielded ? "（🛡️守護抵擋）" : ""}<br>正確答案：<b>${LET[item.ans]}. ${item.ch[item.ans]}</b><br>${item.ex}`;
+      $("explain").innerHTML = `❌ <b>${P[p].short}</b> 答錯，魔王反擊，隊伍 <b>-${dmg} HP</b>${shielded ? "（🛡️鐵壁抵擋）" : ""}<br>正確答案：<b>${LET[item.ans]}. ${item.ch[item.ans]}</b><br>${item.ex}`;
       $("explain").className = "explain no";
     }
     render();
@@ -2546,7 +3067,8 @@ function answer(p, pick){
     streak[p]++;
     const combo = streak[p] >= 2;
     let dmg = combo ? mode.combo : mode.hit;
-    if(powerActive[p]){ dmg = Math.round(dmg * 1.5); powerActive[p] = false; }   // ⚡ 蓄力增傷
+    if(powerActive[p]){ dmg = Math.round(dmg * 1.6); powerActive[p] = false; }   // ⚡ 魔力湧動
+    if(berserkActive[p]){ dmg = dmg * 2; berserkActive[p] = false; }             // 💥 捨身猛擊
     const foe = 1 - p;
     locked = true;
     btns[foe].forEach((b, i) => { b.disabled = true; if(i === item.ans) b.classList.add("correct"); });
@@ -2592,7 +3114,7 @@ function attack(atk, def, dmg){
   setTimeout(() => bolt.remove(), 600);
   setTimeout(() => {
     let actual = dmg, blocked = false;
-    if(shieldActive[def]){ shieldActive[def] = false; actual = 0; blocked = true; }   // 🛡️ 守護抵擋
+    if(guardActive[def]){ guardActive[def] = false; actual = 0; blocked = true; }   // 🛡️ 鐵壁抵擋
     hp[def] = Math.max(0, hp[def] - actual);
     const fl = $(def===0 ? "flash1" : "flash2");
     fl.classList.add("hit");
@@ -2600,7 +3122,7 @@ function attack(atk, def, dmg){
     d.textContent = blocked ? "🛡️" : ("-" + actual);
     d.classList.remove("show"); void d.offsetWidth; d.classList.add("show");
     if(blocked){
-      $("explain").innerHTML += `<br>🛡️ ${P[def].short} 的「守護」抵擋了傷害！`;
+      $("explain").innerHTML += `<br>🛡️ ${P[def].short} 的「鐵壁」抵擋了傷害！`;
     }else{
       fd.classList.add("hurt");
     }
@@ -2645,7 +3167,8 @@ function playerAttackBoss(p){
   }, 240);
 }
 function playersHurt(){
-  ["f1","f2"].forEach(id => {
+  const ids = mode.solo ? ["f1"] : ["f1","f2"];   // 單人只有自己會受傷
+  ids.forEach(id => {
     const f = $(id); f.classList.add("hurt");
     setTimeout(() => f.classList.remove("hurt"), 500);
   });
@@ -2668,22 +3191,38 @@ function bossAttack(){
   }, 600);
 }
 
-/* ══════════ 主動技能釋放 ══════════ */
+/* ══════════ 主動技能釋放（每人 2 招，依角色特色） ══════════ */
+function payHp(p, amount){   // 捨身猛擊的代價：立刻自損，但不會把自己打到 0
+  if(mode.coop){
+    teamHP = Math.max(1, teamHP - amount);
+    const d = $("dmg1"); d.textContent = "-" + amount; d.classList.remove("show"); void d.offsetWidth; d.classList.add("show");
+  }else{
+    hp[p] = Math.max(1, hp[p] - amount);
+    const d = $(p===0 ? "dmg1" : "dmg2");
+    d.textContent = "-" + amount; d.classList.remove("show"); void d.offsetWidth; d.classList.add("show");
+  }
+  render();
+}
+
 function useSkill(p, i){
   if(gameOver || skillCD[p][i] > 0) return;
-  const sk = SKILLS[i];
+  const sk = SKILLS[p][i];
+
   if(mode.coop){
-    if(sk.id === "freeze"){ freezeActive[p] = true; skillFx(p, "❄️ 冰封！本題答對重擊魔王"); }
-    else if(sk.id === "power"){ powerActive[p] = true; skillFx(p, "⚡ 蓄力！本題傷害×1.5"); }
-    else if(sk.id === "shield"){ shieldActive[p] = true; skillFx(p, "🛡️ 守護！答錯免傷"); }
+    if(sk.id === "freeze"){ freezeActive[p] = true; skillFx(p, "❄️ 冰封術！本題答對重擊魔王"); }
+    else if(sk.id === "power"){ powerActive[p] = true; skillFx(p, "⚡ 魔力湧動！本題傷害 ×1.6"); }
+    else if(sk.id === "guard"){ guardActive[p] = true; skillFx(p, "🛡️ 鐵壁！答錯隊伍免傷"); }
+    else if(sk.id === "berserk"){ payHp(p, 10); berserkActive[p] = true; skillFx(p, "💥 捨身猛擊！傷害 ×2（自損 10）"); }
   }else{
-    const foe = 1 - p;
-    if(sk.id === "freeze"){ freezeFoe(p); skillFx(p, "❄️ 冰封！對手無法作答 3 秒"); }
-    else if(sk.id === "power"){ powerActive[p] = true; skillFx(p, "⚡ 蓄力！本題增傷"); }
-    else if(sk.id === "shield"){ shieldActive[p] = true; skillFx(p, "🛡️ 守護！抵擋下次受擊"); }
+    if(sk.id === "freeze"){ freezeFoe(p); skillFx(p, "❄️ 冰封術！對手 3 秒無法作答"); }
+    else if(sk.id === "power"){ powerActive[p] = true; skillFx(p, "⚡ 魔力湧動！本題傷害 ×1.6"); }
+    else if(sk.id === "guard"){ guardActive[p] = true; skillFx(p, "🛡️ 鐵壁！本題免疫傷害"); }
+    else if(sk.id === "berserk"){ payHp(p, 10); berserkActive[p] = true; skillFx(p, "💥 捨身猛擊！傷害 ×2（自損 10）"); }
   }
+
   skillCD[p][i] = sk.cd;
   renderSkills();
+  render();
 }
 function freezeFoe(p){
   const foe = 1 - p;
@@ -2701,37 +3240,24 @@ function skillFx(p, text){
   el.classList.remove("show"); void el.offsetWidth; el.classList.add("show");
 }
 
-/* ══════════ 題目推進 / 階段切換 ══════════ */
+/* ══════════ 題目推進（不限題數：只以血量歸零結束） ══════════ */
 function checkDeckEnd(){
   if(mode.coop){
     if(bossHP <= 0 || teamHP <= 0){ showWin(); return true; }
-    if(coopQ[0] >= coopDeck[0].length && coopQ[1] >= coopDeck[1].length){ showWin(); return true; }
     return false;
   }
-  if(hp[0] <= 0 && hp[1] <= 0){ showWin(); return true; }
-  if(qIndex >= deck.length - 1){ showWin(); return true; }   // 題目全部玩完 → 比結果
+  if(hp[0] <= 0 || hp[1] <= 0){ showWin(); return true; }
   return false;
 }
 
 function advance(){
-  for(let p=0; p<2; p++)                                   // 技能冷卻遞減
-    for(let i=0; i<SKILLS.length; i++) if(skillCD[p][i] > 0) skillCD[p][i]--;
-  qIndex++;
-  if(qIndex === STAGE1_COUNT && stageNo === 1){   // 進入階段二
-    stageNo = 2;
-    render();
-    showBanner("階段二", "解方程", () => showQuestion());
-  }else{
-    showQuestion();
+  // 技能冷卻只算「自己真的作答過的題」：某人先答對時，未作答的一方不扣冷卻
+  for(let p=0; p<2; p++){
+    if(!answered[p]) continue;
+    for(let i=0; i<SKILLS[p].length; i++) if(skillCD[p][i] > 0) skillCD[p][i]--;
   }
-}
-
-function showBanner(big, sub, done){
-  $("bannerBig").textContent = big;
-  $("bannerSub").textContent = sub;
-  const ov = $("bannerOv");
-  ov.classList.remove("hidden");
-  setTimeout(() => { ov.classList.add("hidden"); done && done(); }, 1800);
+  qIndex++;
+  showQuestion();
 }
 
 /* ══════════ 勝負 ══════════ */
@@ -2741,22 +3267,38 @@ function showWin(){
   if(coopTimer){ clearTimeout(coopTimer); coopTimer = null; }
 
   if(mode.coop){
+    const st = STAGES[stage];
+    const done  = stats[0].ok + stats[0].no + (mode.solo ? 0 : stats[1].ok + stats[1].no);
+    const okAll = stats[0].ok + (mode.solo ? 0 : stats[1].ok);
+    const won   = bossHP <= 0;
+    const last  = stage >= STAGE_COUNT - 1;
+
+    $("winSvg1").querySelector("use").setAttribute("href", mode.solo ? CHAR[soloChar].sym : "#char-mage");
     $("winSvg1").style.display = "block";
-    $("winSvg2").style.display = "block";
-    if(bossHP <= 0){
-      $("winTitle").textContent = "🎉 合作成功！擊敗代數魔王！";
-      $("winDesc").textContent = "兩位配合無間，太強了！";
-    }else if(teamHP <= 0){
-      $("winTitle").textContent = "💀 合作失敗…";
-      $("winDesc").textContent = "隊伍被魔王擊潰了，再試一次吧！";
-    }else{
-      $("winTitle").textContent = "⏳ 任務未竟";
-      $("winDesc").textContent = `魔王還剩 ${bossHP} HP，下次再接再厲！`;
+    $("winSvg2").style.display = mode.solo ? "none" : "block";
+    $("winImg").classList.toggle("duo", !mode.solo);   // 雙人：兩個角色並排
+
+    if(won && last){                       // 🏆 打穿全部 5 關
+      $("winTitle").textContent = "🏆 恭喜通關！魔王之王被擊敗！";
+      $("winDesc").innerHTML = `你打穿了全部 <b>${STAGE_COUNT}</b> 關魔王，最終等級 <b>Lv.${playerLv} ${LV_NAME[playerLv-1]}</b>！<br>這局共作答 ${totalOk + totalNo} 題、答對 ${totalOk} 題。`;
+      setResultButtons("restart");
+      againAction = "restart";
+    }else if(won){                          // 🎉 過關 → 升級 → 下一關
+      const nl = Math.min(playerLv + 1, STAGE_COUNT);
+      $("winTitle").textContent = `🎉 擊敗${st.boss}！第 ${stage+1} 關完成`;
+      $("winDesc").innerHTML = `升到 <b>Lv.${nl} ${LV_NAME[nl-1]}</b>：血量上限提高、傷害變強、回血更多。<br>下一關是「${STAGES[stage+1].boss}」，比這隻更兇！`;
+      setResultButtons("next");
+    }else{                                  // 💀 失敗 → 重打本關
+      $("winTitle").textContent = mode.solo ? "💀 單挑失敗…" : "💀 合作失敗…";
+      $("winDesc").innerHTML = `敗在「${st.boss}」手上，它還剩 <b>${bossHP}</b> HP。<br>等級 <b>Lv.${playerLv}</b> 會保留，直接重打這一關就好！`;
+      setResultButtons("retry");
+      againAction = "retry";
     }
-    $("winStat1").textContent = `🤝 隊伍剩餘 HP ${teamHP} / ${TEAM_MAX}`;
-    $("winStat2").textContent = `👹 魔王剩餘 HP ${bossHP} / ${BOSS_MAX}`;
-    $("winStatRounds").textContent = `📖 共完成 ${qIndex + 1} 題（雙人合作）`;
+    $("winStat1").textContent = `${mode.solo ? "👤 你的" : "🤝 隊伍"}剩餘 HP ${teamHP} / ${teamMax}`;
+    $("winStat2").textContent = `👹 ${st.boss}剩餘 HP ${bossHP} / ${bossMax}`;
+    $("winStatRounds").textContent = `📖 本關作答 ${done} 題 · 答對 ${okAll} 題｜第 ${stage+1} / ${STAGE_COUNT} 關`;
   }else{
+    $("winImg").classList.remove("duo");   // KO 戰只顯示獲勝者
     let winner;
     if(hp[0] <= 0 && hp[1] <= 0) winner = -1;
     else if(hp[0] <= 0) winner = 1;
@@ -2780,8 +3322,19 @@ function showWin(){
     $("winStat1").textContent = `🧙 1P：答對 ${stats[0].ok} 題 / 答錯 ${stats[0].no} 題（HP ${hp[0]}）`;
     $("winStat2").textContent = `⚔️ 2P：答對 ${stats[1].ok} 題 / 答錯 ${stats[1].no} 題（HP ${hp[1]}）`;
     $("winStatRounds").textContent = `📖 共完成 ${qIndex + 1} 題（${mode.name}）`;
+    setResultButtons("restart", "再戰一場 🔁");
   }
   $("winOv").classList.remove("hidden");
+  lockTap(900, $("nextBtn"), $("againBtn"), $("backBtn"));   // 0.9 秒內按鈕不吃點擊，擋掉連點誤觸
+}
+
+/* 結算卡片按鈕：next=下一關／retry=重打本關／restart=重新開始 */
+function setResultButtons(kind, againText){
+  const nb = $("nextBtn"), ab = $("againBtn");
+  nb.classList.toggle("hidden", kind !== "next");
+  ab.classList.toggle("hidden", kind === "next");
+  if(kind === "next") nb.textContent = `進入第 ${stage+2} 關 ▶`;
+  ab.textContent = kind === "retry" ? "重打本關 🔁" : (againText || "重新開始 🔁");
 }
 </script>
 </body>
