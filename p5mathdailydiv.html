@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小學五年級小數除法每日一練（2026年11月17日－2027年1月20日）</title>
+<style>
+  :root {
+    --primary: #2b5876;
+    --secondary: #4e4376;
+    --accent: #e67e22;
+    --bg: #f4f7f9;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --muted: #7f8c8d;
+    --border: #e1e8ed;
+    --holiday-bg: #fdf2f2;
+    --holiday-text: #c0392b;
+    --lock-bg: #f1f5f9;
+    --lock-border: #cbd5e1;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 20px;
+  }
+  .container {
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    padding: 24px 30px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 18px rgba(43, 88, 118, 0.18);
+  }
+  header h1 {
+    font-size: 1.65rem;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+  header p {
+    font-size: 0.92rem;
+    opacity: 0.92;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  .summary-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.85rem;
+  }
+  .badge {
+    background: #eef4f8;
+    color: var(--primary);
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .badge.holiday {
+    background: var(--holiday-bg);
+    color: var(--holiday-text);
+  }
+  .badge.time-status {
+    background: #e8f8f5;
+    color: #117864;
+  }
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  button {
+    cursor: pointer;
+    border: none;
+    padding: 7px 13px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .btn-toggle-all {
+    background-color: var(--primary);
+    color: white;
+  }
+  .btn-toggle-all:hover {
+    background-color: #1e4057;
+  }
+  .btn-teacher {
+    background-color: #fef5e7;
+    color: #b9770e;
+    border: 1px solid #f5cba7;
+  }
+  .btn-teacher:hover {
+    background-color: #fdebd0;
+  }
+  .btn-print {
+    background-color: #ecf0f1;
+    color: var(--text);
+  }
+  .btn-print:hover {
+    background-color: #dfe6e9;
+  }
+  .week-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+    overflow-x: auto;
+  }
+  .week-title {
+    font-size: 1.1rem;
+    color: var(--primary);
+    border-bottom: 2px solid #eef4f8;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .week-note {
+    font-size: 0.84rem;
+    color: var(--muted);
+    font-weight: normal;
+  }
+  /* 強制每個星期 4 個欄位同一行顯示 */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    background: #fafcfd;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    min-height: 168px;
+  }
+  .card:not(.locked):not(.empty-slot):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  .card.locked {
+    background: var(--lock-bg);
+    border: 1px dashed var(--lock-border);
+  }
+  .card.locked .problem-area,
+  .card.locked .action-area {
+    display: none;
+  }
+  .card.empty-slot {
+    background: #fafafa;
+    border: 1px dashed #e2e8f0;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #94a3b8;
+  }
+  .card.empty-slot.holiday-slot {
+    background: #fff8f8;
+    border-color: #f5c6cb;
+    color: #c0392b;
+  }
+  .card.empty-slot.exam-slot {
+    background: #f5eef8;
+    border-color: #d7bde2;
+    color: #6c3483;
+  }
+  .slot-icon {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+    opacity: 0.85;
+  }
+  .slot-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+  .slot-desc {
+    font-size: 0.78rem;
+    margin-top: 2px;
+    opacity: 0.9;
+  }
+  .lock-overlay {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px 4px;
+    color: #64748b;
+    margin: auto 0;
+  }
+  .card.locked .lock-overlay {
+    display: flex;
+  }
+  .lock-icon {
+    font-size: 1.6rem;
+    margin-bottom: 4px;
+  }
+  .lock-text {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #475569;
+  }
+  .lock-sub {
+    font-size: 0.76rem;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+    gap: 4px;
+  }
+  .date-tag {
+    font-weight: 700;
+    color: var(--primary);
+    background: #e6f0f7;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .card.locked .date-tag {
+    background: #e2e8f0;
+    color: #475569;
+  }
+  .day-count {
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .type-label {
+    font-size: 0.8rem;
+    color: #5d6d7e;
+    margin-bottom: 6px;
+  }
+  .problem {
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: #1a252f;
+    margin: 6px 0 12px 0;
+    font-family: "Cambria Math", "Times New Roman", serif;
+    letter-spacing: 0.3px;
+  }
+  .answer-toggle {
+    align-self: flex-start;
+    background: transparent;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    padding: 4px 9px;
+    font-size: 0.78rem;
+    border-radius: 6px;
+  }
+  .answer-toggle:hover {
+    background: #f1f5f9;
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+  .answer-box {
+    display: none;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed #cbd5e1;
+    font-size: 0.84rem;
+  }
+  .answer-box.show {
+    display: block;
+  }
+  .ans-val {
+    color: #d35400;
+    font-weight: 700;
+    font-size: 0.96rem;
+  }
+  .ans-tip {
+    color: #555;
+    margin-top: 3px;
+    font-size: 0.78rem;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.84rem;
+    margin-top: 24px;
+    padding-bottom: 20px;
+  }
+
+  /* 密碼驗證彈窗樣式 */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-backdrop.active {
+    display: flex;
+  }
+  .modal-box {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 24px 28px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: popIn 0.18s ease-out;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.94); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .modal-desc {
+    font-size: 0.86rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .modal-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    text-align: center;
+    letter-spacing: 3px;
+    margin-bottom: 8px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal-input:focus {
+    border-color: var(--primary);
+  }
+  .modal-error {
+    color: #c0392b;
+    font-size: 0.82rem;
+    min-height: 20px;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .modal-actions button {
+    flex: 1;
+    padding: 9px 0;
+  }
+  .btn-cancel {
+    background: #ecf0f1;
+    color: var(--text);
+  }
+  .btn-cancel:hover {
+    background: #dfe6e9;
+  }
+  .btn-confirm {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-confirm:hover {
+    background: #1e4057;
+  }
+
+  @media print {
+    @page { size: landscape; margin: 1cm; }
+    body { background: #fff; padding: 0; }
+    .container { max-width: 100%; }
+    .controls, .answer-toggle, .modal-backdrop { display: none !important; }
+    /* 修正列印時鎖住的題目：保持隱藏不外泄，並顯示鎖定提示 */
+    .card.locked .problem-area, .card.locked .action-area { display: none !important; }
+    .card.locked .lock-overlay { display: flex !important; }
+    .card.locked { background: #f8fafc; border: 1px dashed #cbd5e1; }
+    .week-section { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; padding: 12px 14px; margin-bottom: 14px; }
+    .grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .card { break-inside: avoid; border: 1px solid #bbb; background: #fff; min-height: auto; padding: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>📐 小學五年級數學：小數除法「每日一練」（考試1 總複習版）</h1>
+    <p>實施日期：2026年11月17日（二）至 2027年1月20日（三）｜ 逢星期一、二、三、五上課日練習（每天 08:00 自動解鎖）</p>
+  </header>
+
+  <div class="controls">
+    <div class="summary-badges">
+      <span class="badge">📅 數學上課日：共 28 天（每週 4 格對齊）</span>
+      <span class="badge">🚫 排除：週四、聖誕及元旦假期（12/20－1/3）</span>
+      <span class="badge time-status" id="clockDisplay">🕒 系統時間檢測中...</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn-teacher" id="teacherUnlockBtn" onclick="handleTeacherBtnClick()">🔑 老師預覽（需輸入密碼）</button>
+      <button class="btn-toggle-all" onclick="toggleAllAnswers()">👁️ 顯示 / 隱藏已解鎖答案</button>
+      <button class="btn-print" onclick="window.print()">🖨️ 列印</button>
+    </div>
+  </div>
+
+  <!-- 第 12 週：11/16(空)、11/17、11/18、11/20 -->
+  <div class="week-section">
+    <div class="week-title">
+      <span>第 12 週（2026年11月16日 － 11月20日）</span>
+      <span class="week-note">階段一：除數是整數的基礎運算與末尾添 0（11月17日起開始練習）</span>
+    </div>
+    <div class="grid">
+      <div class="card empty-slot">
+        <div class="slot-icon">📅</div>
+        <div class="slot-title">11月16日（一）</div>
+        <div class="slot-desc">每日一練尚未開始</div>
+      </div>
+
+      <div class="card" data-unlock="2026-11-17T08:00:00">
+        <div class="card-header"><span class="date-tag">11月17日（二）</span><span class="day-count">第 1 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">11月17日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">基礎除盡（小數點對齊）</div>
+          <div class="problem">25.2 ÷ 6 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">4.2</span></div>
+            <div class="ans-tip">提示：商的小數點要與被除數的小數點對齊。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-11-18T08:00:00">
+        <div class="card-header"><span class="date-tag">11月18日（三）</span><span class="day-count">第 2 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">11月18日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">兩位數除數（數位對齊）</div>
+          <div class="problem">34.5 ÷ 15 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">2.3</span></div>
+            <div class="ans-tip">提示：先用 34 除以 15 商 2 餘 4，落下 5 變成 45 個十分之一。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-11-20T08:00:00">
+        <div class="card-header"><span class="date-tag">11月20日（五）</span><span class="day-count">第 3 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">11月20日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">被除數末尾添 0 繼續除</div>
+          <div class="problem">18.9 ÷ 6 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">3.15</span></div>
+            <div class="ans-tip">提示：除到十分位餘 3，要在末尾添 0 變成 30 個百分之一繼續除。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第 13 週：11/23、11/24、11/25、11/27 -->
+  <div class="week-section">
+    <div class="week-title">
+      <span>第 13 週（2026年11月23日 － 11月27日）</span>
+      <span class="week-note">階段一：整數除得小數與不夠商 1 補 0 佔位</span>
+    </div>
+    <div class="grid">
+      <div class="card" data-unlock="2026-11-23T08:00:00">
+        <div class="card-header"><span class="date-tag">11月23日（一）</span><span class="day-count">第 4 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">11月23日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">整數除以整數得小數</div>
+          <div class="problem">72 ÷ 15 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">4.8</span></div>
+            <div class="ans-tip">提示：72 除以 15 商 4 餘 12，需先在商的個位右下角點小數點再添 0。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-11-24T08:00:00">
+        <div class="card-header"><span class="date-tag">11月24日（二）</span><span class="day-count">第 5 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">11月24日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">整數部分不夠商 1</div>
+          <div class="problem">5.04 ÷ 6 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">0.84</span></div>
+            <div class="ans-tip">提示：個位 5 &lt; 6 不夠商 1，必須在個位寫 0 佔位並點上小數點。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-11-25T08:00:00">
+        <div class="card-header"><span class="date-tag">11月25日（三）</span><span class="day-count">第 6 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">11月25日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">商中間有 0（極易漏寫 0）</div>
+          <div class="problem">32.8 ÷ 16 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">2.05</span></div>
+            <div class="ans-tip">提示：十分位 8 &lt; 16 不夠商 1，要在十分位商 0 佔位，再添 0 除。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-11-27T08:00:00">
+        <div class="card-header"><span class="date-tag">11月27日（五）</span><span class="day-count">第 7 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">11月27日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">連續補 0 與末尾添 0</div>
+          <div class="problem">1.26 ÷ 28 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">0.045</span></div>
+            <div class="ans-tip">提示：個位和十分位都不夠商 1，需連續寫兩個 0（0.0...）。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第 14 週：11/30、12/1、12/2、12/4 -->
+  <div class="week-section">
+    <div class="week-title">
+      <span>第 14 週（2026年11月30日 － 12月4日）</span>
+      <span class="week-note">階段二：一個數除以小數（商不變性質轉化）</span>
+    </div>
+    <div class="grid">
+      <div class="card" data-unlock="2026-11-30T08:00:00">
+        <div class="card-header"><span class="date-tag">11月30日（一）</span><span class="day-count">第 8 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">11月30日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">純小數除以兩位整數</div>
+          <div class="problem">0.416 ÷ 32 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">0.013</span></div>
+            <div class="ans-tip">提示：注意數位對齊，個位與十分位均補 0。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-12-01T08:00:00">
+        <div class="card-header"><span class="date-tag">12月1日（二）</span><span class="day-count">第 9 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月1日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">兩位小數除以兩位小數</div>
+          <div class="problem">7.65 ÷ 0.85 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">9</span></div>
+            <div class="ans-tip">提示：除數與被除數小數點同時向右移動兩位，轉化為 765 ÷ 85。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-12-02T08:00:00">
+        <div class="card-header"><span class="date-tag">12月2日（三）</span><span class="day-count">第 10 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月2日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">被除數末尾需補 0（高頻易錯）</div>
+          <div class="problem">12.6 ÷ 0.28 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">45</span></div>
+            <div class="ans-tip">提示：除數有兩位小數，被除數只有一位，移動時被除數末尾補 0 變成 1260 ÷ 28。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-12-04T08:00:00">
+        <div class="card-header"><span class="date-tag">12月4日（五）</span><span class="day-count">第 11 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月4日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">三位小數除以兩位小數</div>
+          <div class="problem">0.544 ÷ 0.16 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">3.4</span></div>
+            <div class="ans-tip">提示：以除數為準同時向右移動兩位，轉化為 54.4 ÷ 16。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第 15 週：12/7、12/8(假期)、12/9、12/11 -->
+  <div class="week-section">
+    <div class="week-title">
+      <span>第 15 週（2026年12月7日 － 12月11日）</span>
+      <span class="week-note">階段二：整數除以小數與連除簡便運算（含 12/8 公眾假期）</span>
+    </div>
+    <div class="grid">
+      <div class="card" data-unlock="2026-12-07T08:00:00">
+        <div class="card-header"><span class="date-tag">12月7日（一）</span><span class="day-count">第 12 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月7日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">整數除以一位小數</div>
+          <div class="problem">21 ÷ 1.4 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">15</span></div>
+            <div class="ans-tip">提示：整數 21 末尾補一個 0，轉化為 210 ÷ 14。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card empty-slot holiday-slot">
+        <div class="slot-icon">🏖️</div>
+        <div class="slot-title">12月8日（二）公眾假期</div>
+        <div class="slot-desc">聖母無原罪瞻禮（停練一天）</div>
+      </div>
+
+      <div class="card" data-unlock="2026-12-09T08:00:00">
+        <div class="card-header"><span class="date-tag">12月9日（三）</span><span class="day-count">第 13 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月9日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">除以純小數（商中間有 0）</div>
+          <div class="problem">6.21 ÷ 0.03 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">207</span></div>
+            <div class="ans-tip">提示：轉化為 621 ÷ 3，注意十位不夠商 1 要寫 0 佔位。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-12-11T08:00:00">
+        <div class="card-header"><span class="date-tag">12月11日（五）</span><span class="day-count">第 14 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月11日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">小數連除簡便運算</div>
+          <div class="problem">4.8 ÷ 0.25 ÷ 4 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">4.8</span></div>
+            <div class="ans-tip">提示：運用除法的性質：4.8 ÷ (0.25 × 4) = 4.8 ÷ 1 = 4.8。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第 16 週：12/14、12/15、12/16、12/18(聖誕活動) -->
+  <div class="week-section">
+    <div class="week-title">
+      <span>第 16 週（2026年12月14日 － 12月18日）</span>
+      <span class="week-note">階段三：商的近似數與被除數小於除數（12/18 迎聖誕活動暫停）</span>
+    </div>
+    <div class="grid">
+      <div class="card" data-unlock="2026-12-14T08:00:00">
+        <div class="card-header"><span class="date-tag">12月14日（一）</span><span class="day-count">第 15 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月14日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">商的近似數（保留一位小數）</div>
+          <div class="problem">19.4 ÷ 12 ≈</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">1.6</span></div>
+            <div class="ans-tip">提示：保留一位小數需除到百分位（1.61...），再四捨五入。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-12-15T08:00:00">
+        <div class="card-header"><span class="date-tag">12月15日（二）</span><span class="day-count">第 16 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月15日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">商的近似數（保留兩位小數）</div>
+          <div class="problem">45.5 ÷ 38 ≈</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">1.20</span></div>
+            <div class="ans-tip">提示：除到千分位為 1.197...，四捨五入後末尾的 0 不能去掉！</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2026-12-16T08:00:00">
+        <div class="card-header"><span class="date-tag">12月16日（三）</span><span class="day-count">第 17 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">12月16日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">被除數小於除數（轉化後補 0）</div>
+          <div class="problem">1.08 ÷ 4.5 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">0.24</span></div>
+            <div class="ans-tip">提示：轉化為 10.8 ÷ 45，個位不夠商 1 補 0。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card empty-slot">
+        <div class="slot-icon">🎄</div>
+        <div class="slot-title">12月18日（五）迎聖誕活動</div>
+        <div class="slot-desc">上午迎聖誕活動（停練一天）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第 19 週（2027年1月4日 － 1月8日）：元旦假期後復課 -->
+  <div class="week-section">
+    <div class="week-title">
+      <span>第 19 週（2027年1月4日 － 1月8日）</span>
+      <span class="week-note">階段四：聖誕元旦假期後熱身與小數巧算（12/20－1/3 假期結束復課）</span>
+    </div>
+    <div class="grid">
+      <div class="card" data-unlock="2027-01-04T08:00:00">
+        <div class="card-header"><span class="date-tag">1月4日（一）</span><span class="day-count">第 18 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月4日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">假期後手感恢復（除數是小數）</div>
+          <div class="problem">5.4 ÷ 1.2 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">4.5</span></div>
+            <div class="ans-tip">提示：轉化為 54 ÷ 12，餘 6 後點小數點添 0 繼續除盡。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2027-01-05T08:00:00">
+        <div class="card-header"><span class="date-tag">1月5日（二）</span><span class="day-count">第 19 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月5日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">特殊小數巧算（÷ 0.125）</div>
+          <div class="problem">7.2 ÷ 0.125 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">57.6</span></div>
+            <div class="ans-tip">提示：豎式轉化為 7200 ÷ 125，或利用商不變性質同時乘以 8（7.2 × 8 = 57.6）。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2027-01-06T08:00:00">
+        <div class="card-header"><span class="date-tag">1月6日（三）</span><span class="day-count">第 20 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月6日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">兩步小數連除混合運算</div>
+          <div class="problem">10.8 ÷ 0.45 ÷ 2.4 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">10</span></div>
+            <div class="ans-tip">提示：從左至右依次計算：10.8 ÷ 0.45 = 24，再算 24 ÷ 2.4 = 10。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2027-01-08T08:00:00">
+        <div class="card-header"><span class="date-tag">1月8日（五）</span><span class="day-count">第 21 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月8日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">被除數補 0 且商中間有 0</div>
+          <div class="problem">18.3 ÷ 0.06 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">305</span></div>
+            <div class="ans-tip">提示：移動兩位小數點補 0 變成 1830 ÷ 6，十位 3 &lt; 6 必須商 0 佔位。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第 20 週（2027年1月11日 － 1月15日）：考前兩週綜合強化 -->
+  <div class="week-section">
+    <div class="week-title">
+      <span>第 20 週（2027年1月11日 － 1月15日）</span>
+      <span class="week-note">階段五：考前兩週綜合強化（小數四則混合與分配律巧算）</span>
+    </div>
+    <div class="grid">
+      <div class="card" data-unlock="2027-01-11T08:00:00">
+        <div class="card-header"><span class="date-tag">1月11日（一）</span><span class="day-count">第 22 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月11日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">小數乘除同級混合運算</div>
+          <div class="problem">3.6 ÷ 0.4 × 2.5 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">22.5</span></div>
+            <div class="ans-tip">提示：同級運算從左至右！切勿先算 0.4 × 2.5，應先算 3.6 ÷ 0.4 = 9，再乘 2.5。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2027-01-12T08:00:00">
+        <div class="card-header"><span class="date-tag">1月12日（二）</span><span class="day-count">第 23 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月12日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">極小純小數除法（連續補 0）</div>
+          <div class="problem">0.054 ÷ 0.36 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">0.15</span></div>
+            <div class="ans-tip">提示：同時向右移動兩位，轉化為 5.4 ÷ 36，個位不夠商 1 寫 0。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2027-01-13T08:00:00">
+        <div class="card-header"><span class="date-tag">1月13日（三）</span><span class="day-count">第 24 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月13日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">同除數小數除法簡便運算</div>
+          <div class="problem">(16.8 + 4.2) ÷ 0.7 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">30</span></div>
+            <div class="ans-tip">提示：先算括號內 21 ÷ 0.7 = 30，或拆開算 16.8 ÷ 0.7 + 4.2 ÷ 0.7 = 24 + 6 = 30。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2027-01-15T08:00:00">
+        <div class="card-header"><span class="date-tag">1月15日（五）</span><span class="day-count">第 25 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月15日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">商的近似數（保留整數）</div>
+          <div class="problem">28.6 ÷ 4.5 ≈</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">6</span></div>
+            <div class="ans-tip">提示：轉化為 286 ÷ 45，除到十分位為 6.3...，四捨五入保留整數得 6。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第 21 週（2027年1月18日 － 1月21日）：考試1 衝刺週 -->
+  <div class="week-section">
+    <div class="week-title">
+      <span>第 21 週（2027年1月18日 － 1月21日）</span>
+      <span class="week-note">階段六：考試 1 考前最後衝刺（1月21日 考試1 正式開考）</span>
+    </div>
+    <div class="grid">
+      <div class="card" data-unlock="2027-01-18T08:00:00">
+        <div class="card-header"><span class="date-tag">1月18日（一）</span><span class="day-count">第 26 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月18日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">考前易錯總檢閱（一）</div>
+          <div class="problem">14.28 ÷ 1.4 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">10.2</span></div>
+            <div class="ans-tip">提示：轉化為 142.8 ÷ 14，個位 2 &lt; 14 必須商 0 佔位再點小數點！</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2027-01-19T08:00:00">
+        <div class="card-header"><span class="date-tag">1月19日（二）</span><span class="day-count">第 27 練</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月19日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">考前易錯總檢閱（二）</div>
+          <div class="problem">8.4 ÷ 0.035 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">240</span></div>
+            <div class="ans-tip">提示：除數有三位小數，被除數末尾需補兩個 0 變成 8400 ÷ 35。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" data-unlock="2027-01-20T08:00:00">
+        <div class="card-header"><span class="date-tag">1月20日（三）</span><span class="day-count">第 28 練（收官）</span></div>
+        <div class="lock-overlay">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-text">尚未開放</div>
+          <div class="lock-sub">2027年1月20日 08:00 解鎖</div>
+        </div>
+        <div class="problem-area">
+          <div class="type-label">考前最後一練（綜合應用）</div>
+          <div class="problem">9.6 ÷ 0.8 + 1.25 =</div>
+        </div>
+        <div class="action-area">
+          <button class="answer-toggle" onclick="toggleAnswer(this)">查看答案與解析</button>
+          <div class="answer-box">
+            <div>答案：<span class="ans-val">13.25</span></div>
+            <div class="ans-tip">提示：先算除法 9.6 ÷ 0.8 = 12，再加 1.25 = 13.25。祝明天考試順利！</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card empty-slot exam-slot">
+        <div class="slot-icon">📝</div>
+        <div class="slot-title">1月21日（四）考試 1</div>
+        <div class="slot-desc">第一學段考試正式開始，加油！</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    註：依據《聖若瑟教區中學第五校 2026/2027 學年行事曆》，已排除所有星期四、12/8 聖母無原罪瞻禮、12/18 迎聖誕活動及 12/20－1/3 聖誕元旦假期。每日題目將於當天上午 08:00 自動解鎖。
+  </footer>
+</div>
+
+<!-- 老師預覽密碼輸入彈窗 -->
+<div class="modal-backdrop" id="pwdModal">
+  <div class="modal-box">
+    <div class="modal-title">🔑 老師預覽驗證</div>
+    <div class="modal-desc">請輸入老師密碼以暫時解鎖所有日期的題目</div>
+    <input type="password" id="pwdInput" class="modal-input" placeholder="••••••" maxlength="20" onkeydown="if(event.key==='Enter') verifyTeacherPwd()">
+    <div class="modal-error" id="pwdError"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePwdModal()">取消</button>
+      <button class="btn-confirm" onclick="verifyTeacherPwd()">確認解鎖</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TEACHER_PWD = "202627";
+  let teacherPreview = false;
+
+  function updateLocks() {
+    const now = new Date();
+    const clockEl = document.getElementById('clockDisplay');
+    const pad = n => String(n).padStart(2, '0');
+    clockEl.textContent = `🕒 目前時間：${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+    const cards = document.querySelectorAll('.card[data-unlock]');
+    cards.forEach(card => {
+      if (teacherPreview) {
+        card.classList.remove('locked');
+        return;
+      }
+      const unlockStr = card.getAttribute('data-unlock');
+      const unlockTime = new Date(unlockStr);
+      if (now >= unlockTime) {
+        card.classList.remove('locked');
+      } else {
+        card.classList.add('locked');
+      }
+    });
+  }
+
+  function handleTeacherBtnClick() {
+    if (teacherPreview) {
+      teacherPreview = false;
+      const btn = document.getElementById('teacherUnlockBtn');
+      btn.textContent = '🔑 老師預覽（需輸入密碼）';
+      btn.style.backgroundColor = '#fef5e7';
+      updateLocks();
+    } else {
+      const modal = document.getElementById('pwdModal');
+      const input = document.getElementById('pwdInput');
+      const err = document.getElementById('pwdError');
+      input.value = '';
+      err.textContent = '';
+      modal.classList.add('active');
+      setTimeout(() => input.focus(), 50);
+    }
+  }
+
+  function closePwdModal() {
+    document.getElementById('pwdModal').classList.remove('active');
+  }
+
+  function verifyTeacherPwd() {
+    const input = document.getElementById('pwdInput');
+    const err = document.getElementById('pwdError');
+    if (input.value === TEACHER_PWD) {
+      teacherPreview = true;
+      closePwdModal();
+      const btn = document.getElementById('teacherUnlockBtn');
+      btn.textContent = '🔒 結束老師預覽（恢復鎖定）';
+      btn.style.backgroundColor = '#fdebd0';
+      updateLocks();
+    } else {
+      err.textContent = '❌ 密碼錯誤，請重新輸入';
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  document.getElementById('pwdModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closePwdModal();
+    }
+  });
+
+  function toggleAnswer(btn) {
+    const box = btn.nextElementSibling;
+    const isShown = box.classList.contains('show');
+    if (isShown) {
+      box.classList.remove('show');
+      btn.textContent = '查看答案與解析';
+    } else {
+      box.classList.add('show');
+      btn.textContent = '隱藏答案';
+    }
+  }
+
+  let allShown = false;
+  function toggleAllAnswers() {
+    allShown = !allShown;
+    const unlockedCards = document.querySelectorAll('.card:not(.locked):not(.empty-slot)');
+    unlockedCards.forEach(card => {
+      const box = card.querySelector('.answer-box');
+      const btn = card.querySelector('.answer-toggle');
+      if (box && btn) {
+        if (allShown) {
+          box.classList.add('show');
+          btn.textContent = '隱藏答案';
+        } else {
+          box.classList.remove('show');
+          btn.textContent = '查看答案與解析';
+        }
+      }
+    });
+  }
+
+  updateLocks();
+  setInterval(updateLocks, 30000);
+</script>
+
+</body>
+</html>
