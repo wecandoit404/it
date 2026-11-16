@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古詩拼音練習｜計時挑戰 · 50首</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Noto Serif TC', 'Microsoft JhengHei', 'PingFang TC', 'KaiTi', serif;
+            background: #f8f4e8;
+            background-image: linear-gradient(145deg, #f2ebd9 0%, #e8dfcc 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(255, 250, 240, 0.85);
+            backdrop-filter: blur(6px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 40px -12px rgba(80, 60, 30, 0.35),
+                        0 0 0 1px rgba(210, 180, 140, 0.5) inset;
+            padding: 2.2rem 2rem 2.5rem;
+            margin: 1rem 0;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            letter-spacing: 0.15rem;
+            color: #3e2e1b;
+            text-align: center;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        h1 span {
+            font-size: 1.1rem;
+            background: #d9c7a8;
+            color: #2d241a;
+            padding: 0.25rem 1rem;
+            border-radius: 40px;
+            letter-spacing: 0.1rem;
+            font-weight: 400;
+            box-shadow: 0 2px 6px rgba(100, 70, 30, 0.15);
+        }
+
+        .subhead {
+            text-align: center;
+            color: #7a6a55;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            font-size: 0.98rem;
+            border-bottom: 1px dashed #ccb99e;
+            padding-bottom: 1rem;
+        }
+
+        /* 下拉選擇列表 */
+        .selector-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+            background: #f0e8dc;
+            padding: 0.7rem 1.2rem;
+            border-radius: 60px;
+            box-shadow: inset 0 1px 4px rgba(120, 90, 50, 0.1);
+            border: 1px solid #ddcfbc;
+            flex-wrap: wrap;
+        }
+
+        .selector-bar label {
+            font-size: 0.95rem;
+            color: #5a4b38;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .poem-select {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.6rem 1.2rem;
+            font-size: 1rem;
+            font-family: inherit;
+            background: #fffdf8;
+            border: 1.5px solid #cbb89b;
+            border-radius: 40px;
+            color: #3e2e1b;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238e7b63' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+            letter-spacing: 0.03rem;
+        }
+
+        .poem-select:hover {
+            border-color: #ad9276;
+            background-color: #fffefb;
+        }
+
+        .poem-select:focus {
+            border-color: #a58d72;
+            box-shadow: 0 0 0 4px rgba(180, 150, 110, 0.15);
+        }
+
+        .poem-count-badge {
+            font-size: 0.8rem;
+            color: #7a6a55;
+            background: #e9ddcc;
+            padding: 0.25rem 0.9rem;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+
+        /* 計時設定列 */
+        .timer-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: #f0e8dc;
+            padding: 0.7rem 1.2rem;
+            border-radius: 60px;
+            box-shadow: inset 0 1px 4px rgba(120, 90, 50, 0.1);
+            border: 1px solid #ddcfbc;
+            flex-wrap: wrap;
+        }
+
+        .timer-bar label {
+            font-size: 0.95rem;
+            color: #5a4b38;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .timer-options {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .timer-option {
+            background: #fffdf8;
+            border: 1.5px solid #cbb89b;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            color: #5a4b38;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-weight: 500;
+        }
+
+        .timer-option:hover {
+            background: #f5ede1;
+            border-color: #ad9276;
+        }
+
+        .timer-option.active {
+            background: #7c6a52;
+            border-color: #5e4e3a;
+            color: #fcf7ef;
+            box-shadow: 0 3px 6px rgba(70, 50, 20, 0.25);
+        }
+
+        .timer-option:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .timer-display {
+            margin-left: auto;
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', monospace;
+            color: #3b2c1a;
+            background: #fffdf8;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            border: 1.5px solid #cbb89b;
+            letter-spacing: 0.05rem;
+            min-width: 110px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .timer-display.warning {
+            color: #c0392b;
+            border-color: #e6a5a5;
+            background: #fdf2f2;
+            animation: pulse 1s infinite;
+        }
+
+        .timer-display.running {
+            border-color: #7c6a52;
+            background: #f5ede1;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        /* 空白提示 */
+        .empty-prompt {
+            background: #fffdf8;
+            border-radius: 2rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            color: #a18d77;
+            font-size: 1.05rem;
+            box-shadow: 0 10px 20px -8px rgba(80, 60, 30, 0.2),
+                        0 0 0 1px #ede3d4 inset;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .empty-prompt .icon {
+            font-size: 3rem;
+            opacity: 0.7;
+        }
+
+        .empty-prompt .hint-text {
+            font-style: italic;
+        }
+
+        /* 主內容區 */
+        .practice-area {
+            background: #fffdf8;
+            border-radius: 2rem;
+            padding: 1.8rem 1.6rem 1.6rem;
+            box-shadow: 0 10px 20px -8px rgba(80, 60, 30, 0.2),
+                        0 0 0 1px #ede3d4 inset;
+            display: none;
+        }
+
+        .practice-area.visible {
+            display: block;
+        }
+
+        .poem-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #3b2c1a;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.8rem;
+            border-left: 6px solid #b39b7c;
+            padding-left: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .poem-title small {
+            font-size: 0.9rem;
+            color: #8e7b63;
+            font-weight: 400;
+            margin-left: auto;
+            font-style: italic;
+        }
+
+        /* 每一行區塊 */
+        .line-block {
+            background: #f6f0e4;
+            border-radius: 1.2rem;
+            padding: 0.8rem 1rem 0.9rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddcfbc;
+            box-shadow: inset 0 1px 4px rgba(160, 130, 90, 0.08);
+            transition: all 0.2s;
+        }
+
+        .line-block.active {
+            border-color: #b39b7c;
+            box-shadow: 0 0 0 3px rgba(180, 150, 110, 0.2), inset 0 1px 4px rgba(160, 130, 90, 0.08);
+        }
+
+        /* 上方顯示：每個字 + 拼音 + 顏色反饋 */
+        .line-display {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 0.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .char-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 2.2rem;
+            flex: 0 0 auto;
+        }
+
+        .char-cell .hanzi {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #2a1f12;
+            font-family: 'KaiTi', 'Noto Serif TC', 'Times New Roman', serif;
+            line-height: 1.2;
+            transition: color 0.15s;
+        }
+
+        /* 拼音字體放大 */
+        .char-cell .pinyin {
+            font-size: 0.95rem;
+            color: #7e6b52;
+            text-transform: lowercase;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: #efe5d7;
+            padding: 0.12rem 0.4rem;
+            border-radius: 10px;
+            white-space: nowrap;
+            font-weight: 500;
+            margin-top: 0.15rem;
+            border: 1px solid #dfd1be;
+            text-align: center;
+            transition: all 0.15s;
+        }
+
+        /* 顏色反饋 */
+        .char-cell.correct .hanzi {
+            color: #1e7b3c;
+        }
+        .char-cell.correct .pinyin {
+            background: #d4edda;
+            border-color: #8fc99e;
+            color: #1e5a2e;
+        }
+
+        .char-cell.wrong .hanzi {
+            color: #c0392b;
+        }
+        .char-cell.wrong .pinyin {
+            background: #f8d7da;
+            border-color: #e6a5a5;
+            color: #a12b2b;
+        }
+
+        .char-cell.pending .hanzi {
+            color: #2a1f12;
+        }
+
+        /* 下方：整行輸入框 */
+        .line-input-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+
+        .line-input {
+            width: 100%;
+            max-width: 100%;
+            padding: 0.6rem 1rem;
+            font-size: 1.3rem;
+            font-family: 'KaiTi', 'Noto Serif TC', 'Microsoft JhengHei', monospace;
+            background: #ffffff;
+            border: 1.5px solid #d6c6b2;
+            border-radius: 30px;
+            outline: none;
+            color: #2f2418;
+            transition: all 0.15s;
+            text-align: center;
+            letter-spacing: 0.1rem;
+            line-height: 1.5;
+        }
+
+        .line-input:focus {
+            border-color: #a58d72;
+            box-shadow: 0 0 0 3px rgba(180, 150, 110, 0.2);
+            background: #fffefb;
+        }
+
+        .line-input::placeholder {
+            color: #cfc1ad;
+            font-size: 0.85rem;
+            letter-spacing: 0.02rem;
+            font-style: italic;
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+        }
+
+        .line-input:disabled {
+            background: #f0ebe3;
+            color: #8c7a63;
+            cursor: not-allowed;
+        }
+
+        /* 輸入提示 */
+        .input-hint {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.2rem;
+            font-size: 0.85rem;
+            color: #8c7a63;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .clear-btn, .submit-btn {
+            background: transparent;
+            border: 1px solid #d0bea8;
+            padding: 0.45rem 1.2rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #6c5b46;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .clear-btn:hover {
+            background: #e9ddcc;
+            border-color: #b8a48c;
+            color: #3e2e1b;
+        }
+
+        .submit-btn {
+            background: #7c6a52;
+            border-color: #5e4e3a;
+            color: #fcf7ef;
+        }
+
+        .submit-btn:hover {
+            background: #6a5a44;
+            border-color: #4a3d2c;
+        }
+
+        .submit-btn:disabled, .clear-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .keyboard-tip {
+            background: #e9e0d2;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            color: #5a4b38;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .keyboard-tip kbd {
+            background: #fff7ec;
+            border-radius: 8px;
+            padding: 0.1rem 0.5rem;
+            font-weight: 600;
+            border: 1px solid #bfae98;
+            font-size: 0.75rem;
+            box-shadow: 0 1px 0 #bfae98;
+            color: #3a2d1d;
+            font-family: monospace;
+        }
+
+        /* 結果面板 */
+        .result-panel {
+            margin-top: 1.8rem;
+            background: #f9f4ea;
+            border-radius: 1.5rem;
+            padding: 1.5rem 1.4rem;
+            border: 1px solid #ddcfbc;
+            box-shadow: 0 8px 16px -6px rgba(100, 70, 30, 0.15);
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-panel.visible {
+            display: block;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3b2c1a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-score {
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 0.3rem 1.2rem;
+            border-radius: 30px;
+            background: #e9ddcc;
+            color: #3e2e1b;
+        }
+
+        .result-score.perfect {
+            background: #d4edda;
+            color: #1e7b3c;
+        }
+        .result-score.good {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .result-score.poor {
+            background: #f8d7da;
+            color: #a12b2b;
+        }
+
+        /* 計分摘要 */
+        .score-summary {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .score-card {
+            flex: 1;
+            min-width: 100px;
+            background: #fffdf8;
+            border-radius: 12px;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #e2d5c5;
+            text-align: center;
+        }
+
+        .score-card .sc-label {
+            font-size: 0.75rem;
+            color: #8c7a63;
+            margin-bottom: 0.2rem;
+        }
+
+        .score-card .sc-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #3b2c1a;
+        }
+
+        .score-card .sc-value.highlight {
+            color: #1e7b3c;
+        }
+
+        /* 結果顯示：按照詩詞格式，每行一區塊 */
+        .result-poem-lines {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-line {
+            background: #fffdf8;
+            border-radius: 12px;
+            padding: 0.6rem 1rem 0.7rem;
+            border: 1px solid #e2d5c5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .result-line .rline-chars {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.15rem;
+        }
+
+        .result-line .rchar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 2.1rem;
+        }
+
+        .result-line .rchar .r-target {
+            font-size: 1.45rem;
+            font-weight: 600;
+            font-family: 'KaiTi', 'Noto Serif TC', serif;
+            line-height: 1.2;
+        }
+
+        .result-line .rchar .r-input {
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: 'KaiTi', 'Noto Serif TC', serif;
+            margin-top: 0.1rem;
+            min-height: 1.2rem;
+        }
+
+        .result-line .rchar.correct .r-target {
+            color: #1e7b3c;
+        }
+        .result-line .rchar.correct .r-input {
+            color: #1e7b3c;
+        }
+        .result-line .rchar.wrong .r-target {
+            color: #c0392b;
+        }
+        .result-line .rchar.wrong .r-input {
+            color: #c0392b;
+        }
+        .result-line .rchar.pending .r-target {
+            color: #3b2c1a;
+        }
+        .result-line .rchar.pending .r-input {
+            color: #a18d77;
+        }
+
+        .result-line .rchar .r-icon {
+            font-size: 0.65rem;
+            margin-top: 0.05rem;
+        }
+
+        .result-line .rchar.correct .r-icon {
+            color: #1e7b3c;
+        }
+        .result-line .rchar.wrong .r-icon {
+            color: #c0392b;
+        }
+
+        /* 圖例 */
+        .result-legend {
+            font-size: 0.8rem;
+            color: #8c7a63;
+            text-align: center;
+        }
+
+        /* 歷史記錄 */
+        .history-section {
+            margin-top: 1.8rem;
+            background: #faf6ee;
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.4rem;
+            border: 1px solid #e2d5c5;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.9rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .history-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4d3a24;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .clear-history-btn {
+            background: transparent;
+            border: 1px solid #d0bea8;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            color: #7a6a55;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+
+        .clear-history-btn:hover {
+            background: #f0e8dc;
+            border-color: #b8a48c;
+            color: #3e2e1b;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 0.3rem;
+        }
+
+        .history-list::-webkit-scrollbar {
+            width: 5px;
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: #ede3d4;
+            border-radius: 10px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: #c2ad93;
+            border-radius: 10px;
+        }
+
+        .history-entry {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: #fffdf8;
+            border-radius: 12px;
+            padding: 0.6rem 1rem;
+            border: 1px solid #ede3d4;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .history-entry .he-title {
+            font-weight: 600;
+            color: #3b2c1a;
+            min-width: 100px;
+        }
+
+        .history-entry .he-score {
+            padding: 0.1rem 0.7rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .he-score.perfect {
+            background: #d4edda;
+            color: #1e7b3c;
+        }
+        .he-score.good {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .he-score.poor {
+            background: #f8d7da;
+            color: #a12b2b;
+        }
+
+        .history-entry .he-detail {
+            font-size: 0.75rem;
+            color: #8c7a63;
+        }
+
+        .history-entry .he-time {
+            color: #a18d77;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        .empty-history {
+            color: #a18d77;
+            font-size: 0.85rem;
+            font-style: italic;
+            text-align: center;
+            padding: 0.8rem 0;
+        }
+
+        .footer-note {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #a18d77;
+            letter-spacing: 0.03rem;
+            border-top: 1px solid #e2d5c5;
+            padding-top: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.2rem 0.8rem;
+            }
+
+            h1 {
+                font-size: 1.7rem;
+            }
+
+            .char-cell {
+                min-width: 1.9rem;
+            }
+
+            .char-cell .hanzi {
+                font-size: 1.3rem;
+            }
+
+            .char-cell .pinyin {
+                font-size: 0.78rem;
+                padding: 0.08rem 0.3rem;
+            }
+
+            .line-input {
+                font-size: 1.1rem;
+                padding: 0.5rem 0.8rem;
+            }
+
+            .poem-title {
+                font-size: 1.3rem;
+            }
+
+            .selector-bar, .timer-bar {
+                padding: 0.6rem 0.8rem;
+            }
+
+            .poem-select {
+                font-size: 0.9rem;
+                padding: 0.5rem 2rem 0.5rem 1rem;
+            }
+
+            .result-line .rchar .r-target {
+                font-size: 1.2rem;
+            }
+
+            .timer-display {
+                font-size: 1rem;
+                min-width: 85px;
+                padding: 0.15rem 0.7rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0.6; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .practice-area {
+            animation: fadeIn 0.25s ease;
+        }
+
+        /* 提示訊息 */
+        .toast-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #c0392b;
+            color: #fff;
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            z-index: 9999;
+            animation: toastIn 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .toast-message.success {
+            background: #1e7b3c;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        📜 古詩拼音練習
+        <span>計時挑戰 · 50首</span>
+    </h1>
+    <div class="subhead">請先選擇古詩與時間（順序不拘），兩者都選好後即可開始輸入。開始輸入時自動計時，隨時可送出結果。</div>
+
+    <!-- 下拉選擇列表 -->
+    <div class="selector-bar">
+        <label for="poemSelect">📖 選擇古詩：</label>
+        <select class="poem-select" id="poemSelect">
+            <option value="">請選擇一首古詩…</option>
+        </select>
+        <span class="poem-count-badge" id="poemCountBadge">共 50 首</span>
+    </div>
+
+    <!-- 計時設定列 -->
+    <div class="timer-bar">
+        <label>⏱️ 計時選擇：</label>
+        <div class="timer-options" id="timerOptions">
+            <button class="timer-option" data-minutes="3">3 分鐘</button>
+            <button class="timer-option" data-minutes="5">5 分鐘</button>
+            <button class="timer-option" data-minutes="8">8 分鐘</button>
+            <button class="timer-option" data-minutes="10">10 分鐘</button>
+        </div>
+        <div class="timer-display" id="timerDisplay">--:--</div>
+    </div>
+
+    <!-- 空白提示 -->
+    <div class="empty-prompt" id="emptyPrompt">
+        <div class="icon">📖</div>
+        <div>請從上方下拉選單選擇一首古詩</div>
+        <div class="hint-text">選好古詩與時間後，點擊輸入框開始練習（自動計時）</div>
+    </div>
+
+    <!-- 練習區 -->
+    <div class="practice-area" id="practiceArea">
+        <div class="poem-title" id="poemTitle"></div>
+
+        <!-- 逐行輸入區 -->
+        <div id="linesContainer"></div>
+
+        <!-- 輸入提示 -->
+        <div class="input-hint">
+            <div class="keyboard-tip">
+                ⌨️ 開始輸入即自動計時 · 打完一行按 <kbd>Enter</kbd> 切換
+            </div>
+            <div class="btn-group">
+                <button class="clear-btn" id="clearBtn">
+                    🧹 清空全部
+                </button>
+                <button class="submit-btn" id="submitBtn">
+                    ✅ 送出結果
+                </button>
+            </div>
+        </div>
+
+        <!-- 結果面板 -->
+        <div class="result-panel" id="resultPanel">
+            <div class="result-header">
+                <div class="result-title">
+                    📊 練習結果
+                </div>
+                <div class="result-score" id="resultScore">0 / 0</div>
+            </div>
+            <!-- 計分摘要 -->
+            <div class="score-summary" id="scoreSummary"></div>
+            <div class="result-poem-lines" id="resultPoemLines"></div>
+            <div class="result-legend">
+                ✅ 綠色 = 正確 &nbsp;|&nbsp; ❌ 紅色 = 錯誤 &nbsp;|&nbsp; ⬜ 灰色 = 未輸入
+            </div>
+        </div>
+    </div>
+
+    <!-- 歷史記錄 -->
+    <div class="history-section">
+        <div class="history-header">
+            <div class="history-title">
+                📚 練習記錄
+            </div>
+            <button class="clear-history-btn" id="clearHistoryBtn">
+                🗑️ 清除記錄
+            </button>
+        </div>
+        <div class="history-list" id="historyList">
+            <div class="empty-history">尚無練習記錄</div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        ⚡ 選擇古詩與時間（順序不拘）→ 開始輸入自動計時 → 隨時可送出結果
+    </div>
+</div>
+
+<script>
+    // ---------- 古詩資料庫 (50首) ----------
+    const poems = [
+        { id: 'p1', title: '靜夜思', author: '李白', lines: [
+            { text: '床前明月光', pinyin: 'chuang qian ming yue guang' },
+            { text: '疑是地上霜', pinyin: 'yi shi di shang shuang' },
+            { text: '舉頭望明月', pinyin: 'ju tou wang ming yue' },
+            { text: '低頭思故鄉', pinyin: 'di tou si gu xiang' }
+        ]},
+        { id: 'p2', title: '春曉', author: '孟浩然', lines: [
+            { text: '春眠不覺曉', pinyin: 'chun mian bu jue xiao' },
+            { text: '處處聞啼鳥', pinyin: 'chu chu wen ti niao' },
+            { text: '夜來風雨聲', pinyin: 'ye lai feng yu sheng' },
+            { text: '花落知多少', pinyin: 'hua luo zhi duo shao' }
+        ]},
+        { id: 'p3', title: '登鸛雀樓', author: '王之渙', lines: [
+            { text: '白日依山盡', pinyin: 'bai ri yi shan jin' },
+            { text: '黃河入海流', pinyin: 'huang he ru hai liu' },
+            { text: '欲窮千里目', pinyin: 'yu qiong qian li mu' },
+            { text: '更上一層樓', pinyin: 'geng shang yi ceng lou' }
+        ]},
+        { id: 'p4', title: '望廬山瀑布', author: '李白', lines: [
+            { text: '日照香爐生紫煙', pinyin: 'ri zhao xiang lu sheng zi yan' },
+            { text: '遙看瀑布掛前川', pinyin: 'yao kan pu bu gua qian chuan' },
+            { text: '飛流直下三千尺', pinyin: 'fei liu zhi xia san qian chi' },
+            { text: '疑是銀河落九天', pinyin: 'yi shi yin he luo jiu tian' }
+        ]},
+        { id: 'p5', title: '古朗月行', author: '李白', lines: [
+            { text: '小時不識月', pinyin: 'xiao shi bu shi yue' },
+            { text: '呼作白玉盤', pinyin: 'hu zuo bai yu pan' },
+            { text: '又疑瑤臺鏡', pinyin: 'you yi yao tai jing' },
+            { text: '飛在青雲端', pinyin: 'fei zai qing yun duan' }
+        ]},
+        { id: 'p6', title: '楓橋夜泊', author: '張繼', lines: [
+            { text: '月落烏啼霜滿天', pinyin: 'yue luo wu ti shuang man tian' },
+            { text: '江楓漁火對愁眠', pinyin: 'jiang feng yu huo dui chou mian' },
+            { text: '姑蘇城外寒山寺', pinyin: 'gu su cheng wai han shan si' },
+            { text: '夜半鐘聲到客船', pinyin: 'ye ban zhong sheng dao ke chuan' }
+        ]},
+        { id: 'p7', title: '早發白帝城', author: '李白', lines: [
+            { text: '朝辭白帝彩雲間', pinyin: 'zhao ci bai di cai yun jian' },
+            { text: '千里江陵一日還', pinyin: 'qian li jiang ling yi ri huan' },
+            { text: '兩岸猿聲啼不住', pinyin: 'liang an yuan sheng ti bu zhu' },
+            { text: '輕舟已過萬重山', pinyin: 'qing zhou yi guo wan chong shan' }
+        ]},
+        { id: 'p8', title: '黃鶴樓送孟浩然之廣陵', author: '李白', lines: [
+            { text: '故人西辭黃鶴樓', pinyin: 'gu ren xi ci huang he lou' },
+            { text: '煙花三月下揚州', pinyin: 'yan hua san yue xia yang zhou' },
+            { text: '孤帆遠影碧空盡', pinyin: 'gu fan yuan ying bi kong jin' },
+            { text: '唯見長江天際流', pinyin: 'wei jian chang jiang tian ji liu' }
+        ]},
+        { id: 'p9', title: '江雪', author: '柳宗元', lines: [
+            { text: '千山鳥飛絕', pinyin: 'qian shan niao fei jue' },
+            { text: '萬徑人蹤滅', pinyin: 'wan jing ren zong mie' },
+            { text: '孤舟蓑笠翁', pinyin: 'gu zhou suo li weng' },
+            { text: '獨釣寒江雪', pinyin: 'du diao han jiang xue' }
+        ]},
+        { id: 'p10', title: '相思', author: '王維', lines: [
+            { text: '紅豆生南國', pinyin: 'hong dou sheng nan guo' },
+            { text: '春來發幾枝', pinyin: 'chun lai fa ji zhi' },
+            { text: '願君多採擷', pinyin: 'yuan jun duo cai xie' },
+            { text: '此物最相思', pinyin: 'ci wu zui xiang si' }
+        ]},
+        { id: 'p11', title: '詠鵝', author: '駱賓王', lines: [
+            { text: '鵝鵝鵝', pinyin: 'e e e' },
+            { text: '曲項向天歌', pinyin: 'qu xiang xiang tian ge' },
+            { text: '白毛浮綠水', pinyin: 'bai mao fu lv shui' },
+            { text: '紅掌撥清波', pinyin: 'hong zhang bo qing bo' }
+        ]},
+        { id: 'p12', title: '憫農', author: '李紳', lines: [
+            { text: '鋤禾日當午', pinyin: 'chu he ri dang wu' },
+            { text: '汗滴禾下土', pinyin: 'han di he xia tu' },
+            { text: '誰知盤中飧', pinyin: 'shui zhi pan zhong sun' },
+            { text: '粒粒皆辛苦', pinyin: 'li li jie xin ku' }
+        ]},
+        { id: 'p13', title: '回鄉偶書', author: '賀知章', lines: [
+            { text: '少小離家老大回', pinyin: 'shao xiao li jia lao da hui' },
+            { text: '鄉音無改鬢毛衰', pinyin: 'xiang yin wu gai bin mao shuai' },
+            { text: '兒童相見不相識', pinyin: 'er tong xiang jian bu xiang shi' },
+            { text: '笑問客從何處來', pinyin: 'xiao wen ke cong he chu lai' }
+        ]},
+        { id: 'p14', title: '贈汪倫', author: '李白', lines: [
+            { text: '李白乘舟將欲行', pinyin: 'li bai cheng zhou jiang yu xing' },
+            { text: '忽聞岸上踏歌聲', pinyin: 'hu wen an shang ta ge sheng' },
+            { text: '桃花潭水深千尺', pinyin: 'tao hua tan shui shen qian chi' },
+            { text: '不及汪倫送我情', pinyin: 'bu ji wang lun song wo qing' }
+        ]},
+        { id: 'p15', title: '望天門山', author: '李白', lines: [
+            { text: '天門中斷楚江開', pinyin: 'tian men zhong duan chu jiang kai' },
+            { text: '碧水東流至此回', pinyin: 'bi shui dong liu zhi ci hui' },
+            { text: '兩岸青山相對出', pinyin: 'liang an qing shan xiang dui chu' },
+            { text: '孤帆一片日邊來', pinyin: 'gu fan yi pian ri bian lai' }
+        ]},
+        { id: 'p16', title: '別董大', author: '高適', lines: [
+            { text: '千里黃雲白日曛', pinyin: 'qian li huang yun bai ri xun' },
+            { text: '北風吹雁雪紛紛', pinyin: 'bei feng chui yan xue fen fen' },
+            { text: '莫愁前路無知己', pinyin: 'mo chou qian lu wu zhi ji' },
+            { text: '天下誰人不識君', pinyin: 'tian xia shui ren bu shi jun' }
+        ]},
+        { id: 'p17', title: '絕句', author: '杜甫', lines: [
+            { text: '兩個黃鸝鳴翠柳', pinyin: 'liang ge huang li ming cui liu' },
+            { text: '一行白鷺上青天', pinyin: 'yi hang bai lu shang qing tian' },
+            { text: '窗含西嶺千秋雪', pinyin: 'chuang han xi ling qian qiu xue' },
+            { text: '門泊東吳萬里船', pinyin: 'men bo dong wu wan li chuan' }
+        ]},
+        { id: 'p18', title: '春夜喜雨', author: '杜甫', lines: [
+            { text: '好雨知時節', pinyin: 'hao yu zhi shi jie' },
+            { text: '當春乃發生', pinyin: 'dang chun nai fa sheng' },
+            { text: '隨風潛入夜', pinyin: 'sui feng qian ru ye' },
+            { text: '潤物細無聲', pinyin: 'run wu xi wu sheng' }
+        ]},
+        { id: 'p19', title: '絕句', author: '杜甫', lines: [
+            { text: '遲日江山麗', pinyin: 'chi ri jiang shan li' },
+            { text: '春風花草香', pinyin: 'chun feng hua cao xiang' },
+            { text: '泥融飛燕子', pinyin: 'ni rong fei yan zi' },
+            { text: '沙暖睡鴛鴦', pinyin: 'sha nuan shui yuan yang' }
+        ]},
+        { id: 'p20', title: '遊子吟', author: '孟郊', lines: [
+            { text: '慈母手中線', pinyin: 'ci mu shou zhong xian' },
+            { text: '遊子身上衣', pinyin: 'you zi shen shang yi' },
+            { text: '臨行密密縫', pinyin: 'lin xing mi mi feng' },
+            { text: '意恐遲遲歸', pinyin: 'yi kong chi chi gui' }
+        ]},
+        { id: 'p21', title: '山行', author: '杜牧', lines: [
+            { text: '遠上寒山石徑斜', pinyin: 'yuan shang han shan shi jing xie' },
+            { text: '白雲生處有人家', pinyin: 'bai yun sheng chu you ren jia' },
+            { text: '停車坐愛楓林晚', pinyin: 'ting che zuo ai feng lin wan' },
+            { text: '霜葉紅於二月花', pinyin: 'shuang ye hong yu er yue hua' }
+        ]},
+        { id: 'p22', title: '清明', author: '杜牧', lines: [
+            { text: '清明時節雨紛紛', pinyin: 'qing ming shi jie yu fen fen' },
+            { text: '路上行人欲斷魂', pinyin: 'lu shang xing ren yu duan hun' },
+            { text: '借問酒家何處有', pinyin: 'jie wen jiu jia he chu you' },
+            { text: '牧童遙指杏花村', pinyin: 'mu tong yao zhi xing hua cun' }
+        ]},
+        { id: 'p23', title: '江南春', author: '杜牧', lines: [
+            { text: '千里鶯啼綠映紅', pinyin: 'qian li ying ti lv ying hong' },
+            { text: '水村山郭酒旗風', pinyin: 'shui cun shan guo jiu qi feng' },
+            { text: '南朝四百八十寺', pinyin: 'nan chao si bai ba shi si' },
+            { text: '多少樓臺煙雨中', pinyin: 'duo shao lou tai yan yu zhong' }
+        ]},
+        { id: 'p24', title: '泊船瓜洲', author: '王安石', lines: [
+            { text: '京口瓜洲一水間', pinyin: 'jing kou gua zhou yi shui jian' },
+            { text: '鐘山只隔數重山', pinyin: 'zhong shan zhi ge shu chong shan' },
+            { text: '春風又綠江南岸', pinyin: 'chun feng you lv jiang nan an' },
+            { text: '明月何時照我還', pinyin: 'ming yue he shi zhao wo huan' }
+        ]},
+        { id: 'p25', title: '題西林壁', author: '蘇軾', lines: [
+            { text: '橫看成嶺側成峰', pinyin: 'heng kan cheng ling ce cheng feng' },
+            { text: '遠近高低各不同', pinyin: 'yuan jin gao di ge bu tong' },
+            { text: '不識廬山真面目', pinyin: 'bu shi lu shan zhen mian mu' },
+            { text: '只緣身在此山中', pinyin: 'zhi yuan shen zai ci shan zhong' }
+        ]},
+        { id: 'p26', title: '飲湖上初晴後雨', author: '蘇軾', lines: [
+            { text: '水光瀲灩晴方好', pinyin: 'shui guang lian yan qing fang hao' },
+            { text: '山色空濛雨亦奇', pinyin: 'shan se kong meng yu yi qi' },
+            { text: '欲把西湖比西子', pinyin: 'yu ba xi hu bi xi zi' },
+            { text: '淡妝濃抹總相宜', pinyin: 'dan zhuang nong mo zong xiang yi' }
+        ]},
+        { id: 'p27', title: '惠崇春江晚景', author: '蘇軾', lines: [
+            { text: '竹外桃花三兩枝', pinyin: 'zhu wai tao hua san liang zhi' },
+            { text: '春江水暖鴨先知', pinyin: 'chun jiang shui nuan ya xian zhi' },
+            { text: '蔞蒿滿地蘆芽短', pinyin: 'lou hao man di lu ya duan' },
+            { text: '正是河豚欲上時', pinyin: 'zheng shi he tun yu shang shi' }
+        ]},
+        { id: 'p28', title: '示兒', author: '陸游', lines: [
+            { text: '死去元知萬事空', pinyin: 'si qu yuan zhi wan shi kong' },
+            { text: '但悲不見九州同', pinyin: 'dan bei bu jian jiu zhou tong' },
+            { text: '王師北定中原日', pinyin: 'wang shi bei ding zhong yuan ri' },
+            { text: '家祭無忘告乃翁', pinyin: 'jia ji wu wang gao nai weng' }
+        ]},
+        { id: 'p29', title: '秋夜將曉出籬門迎涼有感', author: '陸游', lines: [
+            { text: '三萬里河東入海', pinyin: 'san wan li he dong ru hai' },
+            { text: '五千仞嶽上摩天', pinyin: 'wu qian ren yue shang mo tian' },
+            { text: '遺民淚盡胡塵裡', pinyin: 'yi min lei jin hu chen li' },
+            { text: '南望王師又一年', pinyin: 'nan wang wang shi you yi nian' }
+        ]},
+        { id: 'p30', title: '四時田園雜興', author: '范成大', lines: [
+            { text: '晝出耘田夜績麻', pinyin: 'zhou chu yun tian ye ji ma' },
+            { text: '村莊兒女各當家', pinyin: 'cun zhuang er nv ge dang jia' },
+            { text: '童孫未解供耕織', pinyin: 'tong sun wei jie gong geng zhi' },
+            { text: '也傍桑陰學種瓜', pinyin: 'ye bang sang yin xue zhong gua' }
+        ]},
+        { id: 'p31', title: '小池', author: '楊萬里', lines: [
+            { text: '泉眼無聲惜細流', pinyin: 'quan yan wu sheng xi xi liu' },
+            { text: '樹陰照水愛晴柔', pinyin: 'shu yin zhao shui ai qing rou' },
+            { text: '小荷才露尖尖角', pinyin: 'xiao he cai lu jian jian jiao' },
+            { text: '早有蜻蜓立上頭', pinyin: 'zao you qing ting li shang tou' }
+        ]},
+        { id: 'p32', title: '曉出淨慈寺送林子方', author: '楊萬里', lines: [
+            { text: '畢竟西湖六月中', pinyin: 'bi jing xi hu liu yue zhong' },
+            { text: '風光不與四時同', pinyin: 'feng guang bu yu si shi tong' },
+            { text: '接天蓮葉無窮碧', pinyin: 'jie tian lian ye wu qiong bi' },
+            { text: '映日荷花別樣紅', pinyin: 'ying ri he hua bie yang hong' }
+        ]},
+        { id: 'p33', title: '春日', author: '朱熹', lines: [
+            { text: '勝日尋芳泗水濱', pinyin: 'sheng ri xun fang si shui bin' },
+            { text: '無邊光景一時新', pinyin: 'wu bian guang jing yi shi xin' },
+            { text: '等閒識得東風面', pinyin: 'deng xian shi de dong feng mian' },
+            { text: '萬紫千紅總是春', pinyin: 'wan zi qian hong zong shi chun' }
+        ]},
+        { id: 'p34', title: '觀書有感', author: '朱熹', lines: [
+            { text: '半畝方塘一鑑開', pinyin: 'ban mu fang tang yi jian kai' },
+            { text: '天光雲影共徘徊', pinyin: 'tian guang yun ying gong pai huai' },
+            { text: '問渠那得清如許', pinyin: 'wen qu na de qing ru xu' },
+            { text: '為有源頭活水來', pinyin: 'wei you yuan tou huo shui lai' }
+        ]},
+        { id: 'p35', title: '題臨安邸', author: '林升', lines: [
+            { text: '山外青山樓外樓', pinyin: 'shan wai qing shan lou wai lou' },
+            { text: '西湖歌舞幾時休', pinyin: 'xi hu ge wu ji shi xiu' },
+            { text: '暖風熏得遊人醉', pinyin: 'nuan feng xun de you ren zui' },
+            { text: '直把杭州作汴州', pinyin: 'zhi ba hang zhou zuo bian zhou' }
+        ]},
+        { id: 'p36', title: '遊園不值', author: '葉紹翁', lines: [
+            { text: '應憐屐齒印蒼苔', pinyin: 'ying lian ji chi yin cang tai' },
+            { text: '小扣柴扉久不開', pinyin: 'xiao kou chai fei jiu bu kai' },
+            { text: '春色滿園關不住', pinyin: 'chun se man yuan guan bu zhu' },
+            { text: '一枝紅杏出牆來', pinyin: 'yi zhi hong xing chu qiang lai' }
+        ]},
+        { id: 'p37', title: '鄉村四月', author: '翁卷', lines: [
+            { text: '綠遍山原白滿川', pinyin: 'lv bian shan yuan bai man chuan' },
+            { text: '子規聲裡雨如煙', pinyin: 'zi gui sheng li yu ru yan' },
+            { text: '鄉村四月閒人少', pinyin: 'xiang cun si yue xian ren shao' },
+            { text: '才了蠶桑又插田', pinyin: 'cai liao can sang you cha tian' }
+        ]},
+        { id: 'p38', title: '墨梅', author: '王冕', lines: [
+            { text: '吾家洗硯池頭樹', pinyin: 'wu jia xi yan chi tou shu' },
+            { text: '個個花開淡墨痕', pinyin: 'ge ge hua kai dan mo hen' },
+            { text: '不要人誇顏色好', pinyin: 'bu yao ren kua yan se hao' },
+            { text: '只留清氣滿乾坤', pinyin: 'zhi liu qing qi man qian kun' }
+        ]},
+        { id: 'p39', title: '石灰吟', author: '于謙', lines: [
+            { text: '千錘萬鑿出深山', pinyin: 'qian chui wan zao chu shen shan' },
+            { text: '烈火焚燒若等閒', pinyin: 'lie huo fen shao ruo deng xian' },
+            { text: '粉骨碎身渾不怕', pinyin: 'fen gu sui shen hun bu pa' },
+            { text: '要留清白在人間', pinyin: 'yao liu qing bai zai ren jian' }
+        ]},
+        { id: 'p40', title: '竹石', author: '鄭燮', lines: [
+            { text: '咬定青山不放鬆', pinyin: 'yao ding qing shan bu fang song' },
+            { text: '立根原在破岩中', pinyin: 'li gen yuan zai po yan zhong' },
+            { text: '千磨萬擊還堅勁', pinyin: 'qian mo wan ji hai jian jing' },
+            { text: '任爾東西南北風', pinyin: 'ren er dong xi nan bei feng' }
+        ]},
+        { id: 'p41', title: '所見', author: '袁枚', lines: [
+            { text: '牧童騎黃牛', pinyin: 'mu tong qi huang niu' },
+            { text: '歌聲振林樾', pinyin: 'ge sheng zhen lin yue' },
+            { text: '意欲捕鳴蟬', pinyin: 'yi yu bu ming chan' },
+            { text: '忽然閉口立', pinyin: 'hu ran bi kou li' }
+        ]},
+        { id: 'p42', title: '村居', author: '高鼎', lines: [
+            { text: '草長鶯飛二月天', pinyin: 'cao zhang ying fei er yue tian' },
+            { text: '拂堤楊柳醉春煙', pinyin: 'fu di yang liu zui chun yan' },
+            { text: '兒童散學歸來早', pinyin: 'er tong san xue gui lai zao' },
+            { text: '忙趁東風放紙鳶', pinyin: 'mang chen dong feng fang zhi yuan' }
+        ]},
+        { id: 'p43', title: '己亥雜詩', author: '龔自珍', lines: [
+            { text: '九州生氣恃風雷', pinyin: 'jiu zhou sheng qi shi feng lei' },
+            { text: '萬馬齊喑究可哀', pinyin: 'wan ma qi yin jiu ke ai' },
+            { text: '我勸天公重抖擻', pinyin: 'wo quan tian gong chong dou sou' },
+            { text: '不拘一格降人才', pinyin: 'bu ju yi ge jiang ren cai' }
+        ]},
+        { id: 'p44', title: '獄中題壁', author: '譚嗣同', lines: [
+            { text: '望門投止思張儉', pinyin: 'wang men tou zhi si zhang jian' },
+            { text: '忍死須臾待杜根', pinyin: 'ren si xu yu dai du gen' },
+            { text: '我自橫刀向天笑', pinyin: 'wo zi heng dao xiang tian xiao' },
+            { text: '去留肝膽兩崑崙', pinyin: 'qu liu gan dan liang kun lun' }
+        ]},
+        { id: 'p45', title: '望月懷遠', author: '張九齡', lines: [
+            { text: '海上生明月', pinyin: 'hai shang sheng ming yue' },
+            { text: '天涯共此時', pinyin: 'tian ya gong ci shi' },
+            { text: '情人怨遙夜', pinyin: 'qing ren yuan yao ye' },
+            { text: '竟夕起相思', pinyin: 'jing xi qi xiang si' }
+        ]},
+        { id: 'p46', title: '終南別業', author: '王維', lines: [
+            { text: '中歲頗好道', pinyin: 'zhong sui po hao dao' },
+            { text: '晚家南山陲', pinyin: 'wan jia nan shan chui' },
+            { text: '興來每獨往', pinyin: 'xing lai mei du wang' },
+            { text: '勝事空自知', pinyin: 'sheng shi kong zi zhi' }
+        ]},
+        { id: 'p47', title: '送杜少府之任蜀州', author: '王勃', lines: [
+            { text: '城闕輔三秦', pinyin: 'cheng que fu san qin' },
+            { text: '風煙望五津', pinyin: 'feng yan wang wu jin' },
+            { text: '與君離別意', pinyin: 'yu jun li bie yi' },
+            { text: '同是宦遊人', pinyin: 'tong shi huan you ren' }
+        ]},
+        { id: 'p48', title: '登幽州臺歌', author: '陳子昂', lines: [
+            { text: '前不見古人', pinyin: 'qian bu jian gu ren' },
+            { text: '後不見來者', pinyin: 'hou bu jian lai zhe' },
+            { text: '念天地之悠悠', pinyin: 'nian tian di zhi you you' },
+            { text: '獨愴然而涕下', pinyin: 'du chuang ran er ti xia' }
+        ]},
+        { id: 'p49', title: '芙蓉樓送辛漸', author: '王昌齡', lines: [
+            { text: '寒雨連江夜入吳', pinyin: 'han yin lian jiang ye ru wu' },
+            { text: '平明送客楚山孤', pinyin: 'ping ming song ke chu shan gu' },
+            { text: '洛陽親友如相問', pinyin: 'luo yang qin you ru xiang wen' },
+            { text: '一片冰心在玉壺', pinyin: 'yi pian bing xin zai yu hu' }
+        ]},
+        { id: 'p50', title: '鹿柴', author: '王維', lines: [
+            { text: '空山不見人', pinyin: 'kong shan bu jian ren' },
+            { text: '但聞人語響', pinyin: 'dan wen ren yu xiang' },
+            { text: '返景入深林', pinyin: 'fan jing ru shen lin' },
+            { text: '復照青苔上', pinyin: 'fu zhao qing tai shang' }
+        ]}
+    ];
+
+    // ---------- 狀態管理 ----------
+    let currentPoemId = '';
+    let currentLines = [];
+    let lineCorrectMaps = [];
+
+    // 計時狀態
+    let selectedMinutes = 0;
+    let timerInterval = null;
+    let remainingSeconds = 0;
+    let totalSeconds = 0;
+    let timerRunning = false;
+    let timerFinished = false;
+    let timerStarted = false;
+
+    // 歷史記錄
+    const HISTORY_KEY = 'poem_practice_history_v11';
+    let history = [];
+
+    // DOM 元素
+    const poemSelect = document.getElementById('poemSelect');
+    const poemTitle = document.getElementById('poemTitle');
+    const linesContainer = document.getElementById('linesContainer');
+    const emptyPrompt = document.getElementById('emptyPrompt');
+    const practiceArea = document.getElementById('practiceArea');
+    const clearBtn = document.getElementById('clearBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const poemCountBadge = document.getElementById('poemCountBadge');
+    const resultPanel = document.getElementById('resultPanel');
+    const resultScore = document.getElementById('resultScore');
+    const scoreSummary = document.getElementById('scoreSummary');
+    const resultPoemLines = document.getElementById('resultPoemLines');
+    const historyList = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+    // 計時 DOM
+    const timerOptions = document.getElementById('timerOptions');
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    // ---------- 提示訊息 ----------
+    function showToast(message, isSuccess = false) {
+        const existing = document.querySelector('.toast-message');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-message' + (isSuccess ? ' success' : '');
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+
+    // ---------- 輔助函數 ----------
+    function isCJKChar(ch) {
+        if (!ch) return false;
+        const code = ch.codePointAt(0);
+        return (code >= 0x4E00 && code <= 0x9FFF) ||
+               (code >= 0x3400 && code <= 0x4DBF) ||
+               (code >= 0xF900 && code <= 0xFAFF);
+    }
+
+    function extractHanzi(text) {
+        const result = [];
+        for (const ch of text) {
+            if (isCJKChar(ch)) result.push(ch);
+        }
+        return result;
+    }
+
+    function formatTime(sec) {
+        const m = Math.floor(sec / 60).toString().padStart(2, '0');
+        const s = (sec % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function updateTimerDisplay() {
+        if (timerRunning || timerFinished) {
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            if (remainingSeconds <= 30 && timerRunning) {
+                timerDisplay.classList.add('warning');
+            } else {
+                timerDisplay.classList.remove('warning');
+            }
+            if (timerRunning) {
+                timerDisplay.classList.add('running');
+            } else {
+                timerDisplay.classList.remove('running');
+            }
+        } else if (selectedMinutes > 0) {
+            timerDisplay.textContent = formatTime(selectedMinutes * 60);
+            timerDisplay.classList.remove('warning', 'running');
+        } else {
+            timerDisplay.textContent = '--:--';
+            timerDisplay.classList.remove('warning', 'running');
+        }
+    }
+
+    // ---------- 更新輸入與按鈕狀態 ----------
+    function updateInputAvailability() {
+        const canInput = currentPoemId && selectedMinutes > 0 && !timerFinished;
+        const inputs = linesContainer.querySelectorAll('.line-input');
+        inputs.forEach(inp => { inp.disabled = !canInput; });
+
+        clearBtn.disabled = !canInput;
+
+        // 送出按鈕：選了古詩與時間即可送出
+        if (currentPoemId && selectedMinutes > 0) {
+            submitBtn.disabled = false;
+        } else {
+            submitBtn.disabled = true;
+        }
+    }
+
+    function shouldStartTimer() {
+        return currentPoemId && selectedMinutes > 0 && !timerRunning && !timerFinished && !timerStarted;
+    }
+
+    // ---------- 計時器 ----------
+    function selectTimer(minutes) {
+        if (timerRunning) return;
+        if (timerFinished) {
+            timerFinished = false;
+            timerStarted = false;
+        }
+        selectedMinutes = minutes;
+        timerOptions.querySelectorAll('.timer-option').forEach(btn => {
+            if (parseInt(btn.dataset.minutes) === minutes) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+        totalSeconds = minutes * 60;
+        remainingSeconds = totalSeconds;
+        updateTimerDisplay();
+        updateInputAvailability();
+    }
+
+    function startTimer() {
+        if (timerRunning || timerFinished) return;
+        if (!currentPoemId || selectedMinutes <= 0) return;
+
+        timerRunning = true;
+        timerStarted = true;
+        timerFinished = false;
+        remainingSeconds = totalSeconds;
+        updateTimerDisplay();
+        setTimerOptionsDisabled(true);
+        updateInputAvailability();
+
+        timerInterval = setInterval(() => {
+            remainingSeconds--;
+            updateTimerDisplay();
+
+            if (remainingSeconds <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerRunning = false;
+                timerFinished = true;
+                updateTimerDisplay();
+                setTimerOptionsDisabled(false);
+                updateInputAvailability();
+                showToast('⏰ 時間到！輸入已停止，您可以送出結果了。', true);
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        timerRunning = false;
+        timerFinished = false;
+        timerStarted = false;
+        setTimerOptionsDisabled(false);
+        if (selectedMinutes > 0) {
+            remainingSeconds = totalSeconds;
+            updateTimerDisplay();
+        } else {
+            timerDisplay.textContent = '--:--';
+        }
+        updateInputAvailability();
+    }
+
+    function setTimerOptionsDisabled(disabled) {
+        timerOptions.querySelectorAll('.timer-option').forEach(btn => {
+            btn.disabled = disabled;
+        });
+        if (!disabled && selectedMinutes > 0) {
+            timerOptions.querySelectorAll('.timer-option').forEach(btn => {
+                if (parseInt(btn.dataset.minutes) === selectedMinutes) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+    }
+
+    // ---------- 輸入相關 ----------
+    function updateLineColors(lineIdx) {
+        const block = linesContainer.querySelector(`.line-block[data-line="${lineIdx}"]`);
+        if (!block) return;
+        const displayCells = block.querySelectorAll('.line-display .char-cell');
+        const inputEl = block.querySelector('.line-input');
+        const targetText = block.dataset.target;
+        const inputHanzi = extractHanzi(inputEl.value);
+
+        lineCorrectMaps[lineIdx] = [];
+        displayCells.forEach((cell, idx) => {
+            const targetChar = targetText[idx] || '';
+            const inputChar = inputHanzi[idx] || null;
+            cell.classList.remove('correct', 'wrong', 'pending');
+            if (inputChar === null) {
+                cell.classList.add('pending');
+                lineCorrectMaps[lineIdx][idx] = null;
+            } else if (inputChar === targetChar) {
+                cell.classList.add('correct');
+                lineCorrectMaps[lineIdx][idx] = true;
+            } else {
+                cell.classList.add('wrong');
+                lineCorrectMaps[lineIdx][idx] = false;
+            }
+        });
+    }
+
+    function updateLineHighlight() {
+        const blocks = linesContainer.querySelectorAll('.line-block');
+        const activeEl = document.activeElement;
+        blocks.forEach(block => {
+            if (block.contains(activeEl)) {
+                block.classList.add('active');
+            } else {
+                block.classList.remove('active');
+            }
+        });
+    }
+
+    function focusNextLine(currentLineIdx) {
+        const blocks = linesContainer.querySelectorAll('.line-block');
+        const nextIdx = currentLineIdx + 1;
+        if (nextIdx < blocks.length) {
+            const nextInput = blocks[nextIdx].querySelector('.line-input');
+            if (nextInput && !nextInput.disabled) {
+                nextInput.focus();
+                blocks[nextIdx].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    }
+
+    // ---------- 渲染古詩 ----------
+    function renderPoem(poemId) {
+        stopTimer();
+
+        if (!poemId) {
+            practiceArea.classList.remove('visible');
+            emptyPrompt.style.display = 'flex';
+            currentPoemId = '';
+            currentLines = [];
+            lineCorrectMaps = [];
+            poemTitle.innerHTML = '';
+            linesContainer.innerHTML = '';
+            resultPanel.classList.remove('visible');
+            updateInputAvailability();
+            return;
+        }
+
+        const poem = poems.find(p => p.id === poemId);
+        if (!poem) return;
+
+        currentPoemId = poem.id;
+        currentLines = poem.lines;
+        emptyPrompt.style.display = 'none';
+        practiceArea.classList.add('visible');
+
+        poemTitle.innerHTML = `${poem.title} <small>${poem.author}</small>`;
+
+        lineCorrectMaps = poem.lines.map(line => new Array(line.text.length).fill(null));
+
+        let html = '';
+        poem.lines.forEach((line, lineIdx) => {
+            const text = line.text;
+            const pinyinStr = line.pinyin;
+            const pinyinArr = pinyinStr.split(/\s+/);
+            const len = Math.min(text.length, pinyinArr.length);
+
+            let charsHtml = '';
+            for (let i = 0; i < len; i++) {
+                const hanzi = text[i];
+                const pinyin = pinyinArr[i] || '';
+                charsHtml += `
+                    <div class="char-cell pending">
+                        <span class="hanzi">${hanzi}</span>
+                        <span class="pinyin">${pinyin}</span>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="line-block" data-line="${lineIdx}" data-target="${text}">
+                    <div class="line-display">${charsHtml}</div>
+                    <div class="line-input-wrapper">
+                        <input type="text" class="line-input" 
+                               placeholder="請輸入整行文字…" 
+                               autocomplete="off" spellcheck="false"
+                               data-line="${lineIdx}" />
+                    </div>
+                </div>
+            `;
+        });
+        linesContainer.innerHTML = html;
+
+        bindInputEvents();
+        resultPanel.classList.remove('visible');
+
+        updateInputAvailability();
+    }
+
+    function bindInputEvents() {
+        const inputs = linesContainer.querySelectorAll('.line-input');
+        inputs.forEach(input => {
+            const lineIdx = parseInt(input.dataset.line);
+
+            input.addEventListener('focus', (e) => {
+                if (!currentPoemId) {
+                    e.target.blur();
+                    showToast('請先選擇一首古詩！');
+                    return;
+                }
+                if (!selectedMinutes) {
+                    e.target.blur();
+                    showToast('請先選擇計時時間！');
+                    return;
+                }
+                if (timerFinished) {
+                    e.target.blur();
+                    showToast('時間已結束，無法再輸入。請點擊「送出結果」。');
+                    return;
+                }
+                updateLineHighlight();
+                input.closest('.line-block')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                if (shouldStartTimer()) {
+                    startTimer();
+                }
+            });
+
+            input.addEventListener('click', (e) => {
+                if (!currentPoemId) {
+                    e.target.blur();
+                    showToast('請先選擇一首古詩！');
+                    return;
+                }
+                if (!selectedMinutes) {
+                    e.target.blur();
+                    showToast('請先選擇計時時間！');
+                    return;
+                }
+                if (timerFinished) {
+                    e.target.blur();
+                    showToast('時間已結束，無法再輸入。請點擊「送出結果」。');
+                    return;
+                }
+                if (shouldStartTimer()) {
+                    startTimer();
+                }
+            });
+
+            input.addEventListener('input', () => {
+                if (timerFinished) {
+                    input.value = '';
+                    return;
+                }
+                if (!currentPoemId || !selectedMinutes) return;
+
+                updateLineColors(lineIdx);
+                resultPanel.classList.remove('visible');
+
+                if (shouldStartTimer()) {
+                    startTimer();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (!timerFinished) {
+                        focusNextLine(lineIdx);
+                    }
+                }
+            });
+
+            input.addEventListener('paste', (e) => {
+                if (timerFinished) {
+                    e.preventDefault();
+                    return;
+                }
+                if (!currentPoemId || !selectedMinutes) {
+                    e.preventDefault();
+                    if (!currentPoemId) {
+                        showToast('請先選擇一首古詩！');
+                    } else if (!selectedMinutes) {
+                        showToast('請先選擇計時時間！');
+                    }
+                    return;
+                }
+                e.preventDefault();
+                const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+                const hanziOnly = extractHanzi(pasteData).join('');
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const before = input.value.slice(0, start);
+                const after = input.value.slice(end);
+                input.value = before + hanziOnly + after;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+        });
+    }
+
+    // ---------- 清空全部輸入 ----------
+    function clearAllInputs() {
+        const inputs = linesContainer.querySelectorAll('.line-input');
+        inputs.forEach(inp => { inp.value = ''; });
+        currentLines.forEach((_, lineIdx) => {
+            lineCorrectMaps[lineIdx] = new Array(currentLines[lineIdx].text.length).fill(null);
+            updateLineColors(lineIdx);
+        });
+        resultPanel.classList.remove('visible');
+    }
+
+    function clearAll() {
+        if (!currentPoemId) return;
+        if (timerRunning) {
+            if (!confirm('計時正在進行中，清空會中斷計時，確定嗎？')) return;
+            stopTimer();
+        }
+        clearAllInputs();
+        if (!timerFinished) {
+            const firstInput = linesContainer.querySelector('.line-input');
+            if (firstInput && !firstInput.disabled) firstInput.focus();
+        }
+    }
+
+    // ---------- 送出結果（隨時可送） ----------
+    function submitResult() {
+        if (!currentPoemId) {
+            showToast('請先選擇一首古詩');
+            return;
+        }
+        if (!selectedMinutes) {
+            showToast('請先選擇計時時間');
+            return;
+        }
+        const poem = poems.find(p => p.id === currentPoemId);
+        if (!poem) return;
+
+        if (timerRunning) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            setTimerOptionsDisabled(false);
+            updateInputAvailability();
+        }
+
+        let correctTotal = 0;
+        let totalChars = 0;
+
+        let linesHtml = '';
+        poem.lines.forEach((line, lineIdx) => {
+            const block = linesContainer.querySelector(`.line-block[data-line="${lineIdx}"]`);
+            if (!block) return;
+            const inputEl = block.querySelector('.line-input');
+            const inputHanzi = extractHanzi(inputEl.value);
+            const targetText = line.text;
+            totalChars += targetText.length;
+
+            let charsHtml = '';
+            for (let i = 0; i < targetText.length; i++) {
+                const targetChar = targetText[i];
+                const inputChar = inputHanzi[i] || null;
+                let status, statusIcon;
+                if (inputChar === null) {
+                    status = 'pending';
+                    statusIcon = '○';
+                } else if (inputChar === targetChar) {
+                    status = 'correct';
+                    statusIcon = '✓';
+                    correctTotal++;
+                } else {
+                    status = 'wrong';
+                    statusIcon = '✗';
+                }
+                const inputDisplay = inputChar ? inputChar : '＿';
+                charsHtml += `
+                    <div class="rchar ${status}">
+                        <span class="r-target">${targetChar}</span>
+                        <span class="r-input">${inputDisplay}</span>
+                        <span class="r-icon">${statusIcon}</span>
+                    </div>
+                `;
+            }
+            linesHtml += `
+                <div class="result-line">
+                    <div class="rline-chars">${charsHtml}</div>
+                </div>
+            `;
+        });
+
+        const correctRate = totalChars > 0 ? correctTotal / totalChars : 0;
+        let baseScore = correctTotal * 10;
+        let timeBonus = 0;
+
+        if (!timerFinished && timerStarted && remainingSeconds > 0 && correctTotal > 0) {
+            const maxBonus = Math.floor(baseScore * 0.5);
+            timeBonus = Math.min(remainingSeconds, maxBonus);
+        }
+
+        let finalScore = baseScore + timeBonus;
+        if (correctRate < 0.6 && totalChars > 0) {
+            finalScore = Math.round(finalScore * 0.8);
+        }
+
+        resultPanel.classList.add('visible');
+
+        const scoreText = `${correctTotal} / ${totalChars}`;
+        resultScore.textContent = scoreText;
+        resultScore.classList.remove('perfect', 'good', 'poor');
+        const pct = totalChars > 0 ? correctTotal / totalChars : 0;
+        if (pct === 1) {
+            resultScore.classList.add('perfect');
+        } else if (pct >= 0.6) {
+            resultScore.classList.add('good');
+        } else {
+            resultScore.classList.add('poor');
+        }
+
+        let timeUsedStr = '--';
+        if (timerFinished) {
+            timeUsedStr = formatTime(totalSeconds);
+        } else if (timerStarted) {
+            timeUsedStr = formatTime(totalSeconds - remainingSeconds);
+        } else {
+            timeUsedStr = '00:00';
+        }
+
+        scoreSummary.innerHTML = `
+            <div class="score-card">
+                <div class="sc-label">⏱️ 用時</div>
+                <div class="sc-value">${timeUsedStr}</div>
+            </div>
+            <div class="score-card">
+                <div class="sc-label">✅ 正確字數</div>
+                <div class="sc-value highlight">${correctTotal}</div>
+            </div>
+            <div class="score-card">
+                <div class="sc-label">📝 總字數</div>
+                <div class="sc-value">${totalChars}</div>
+            </div>
+            <div class="score-card">
+                <div class="sc-label">🏆 總分</div>
+                <div class="sc-value highlight">${finalScore}</div>
+            </div>
+        `;
+
+        resultPoemLines.innerHTML = linesHtml;
+
+        const record = {
+            poemId: poem.id,
+            poemTitle: poem.title,
+            author: poem.author,
+            correct: correctTotal,
+            total: totalChars,
+            score: finalScore,
+            timeUsed: timerStarted ? totalSeconds - remainingSeconds : 0,
+            totalTime: totalSeconds,
+            timestamp: Date.now()
+        };
+        history.unshift(record);
+        if (history.length > 50) history = history.slice(0, 50);
+        saveHistory();
+        renderHistory();
+
+        timerFinished = true;
+        updateInputAvailability();
+
+        setTimeout(() => {
+            resultPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+    }
+
+    // ---------- 歷史記錄 ----------
+    function loadHistory() {
+        try {
+            const raw = localStorage.getItem(HISTORY_KEY);
+            if (raw) {
+                history = JSON.parse(raw);
+                if (!Array.isArray(history)) history = [];
+            }
+        } catch (e) { history = []; }
+    }
+
+    function saveHistory() {
+        try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (e) {}
+    }
+
+    function renderHistory() {
+        if (!history.length) {
+            historyList.innerHTML = '<div class="empty-history">尚無練習記錄</div>';
+            return;
+        }
+        let html = '';
+        history.forEach((rec) => {
+            const pct = rec.total > 0 ? rec.correct / rec.total : 0;
+            let scoreClass = 'poor';
+            if (pct === 1) scoreClass = 'perfect';
+            else if (pct >= 0.6) scoreClass = 'good';
+
+            const date = new Date(rec.timestamp);
+            const timeStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
+
+            html += `
+                <div class="history-entry">
+                    <span class="he-title">${rec.poemTitle} · ${rec.author}</span>
+                    <span class="he-score ${scoreClass}">${rec.correct} / ${rec.total}</span>
+                    <span class="he-detail">得分 ${rec.score || '-'}</span>
+                    <span class="he-time">${timeStr}</span>
+                </div>
+            `;
+        });
+        historyList.innerHTML = html;
+    }
+
+    function clearHistory() {
+        if (history.length === 0) return;
+        if (confirm('確定要清除所有練習記錄嗎？')) {
+            history = [];
+            saveHistory();
+            renderHistory();
+        }
+    }
+
+    // ---------- 事件綁定 ----------
+    poemSelect.addEventListener('change', (e) => {
+        renderPoem(e.target.value);
+        updateInputAvailability();
+    });
+
+    timerOptions.addEventListener('click', (e) => {
+        const btn = e.target.closest('.timer-option');
+        if (!btn || btn.disabled) return;
+        const minutes = parseInt(btn.dataset.minutes);
+        selectTimer(minutes);
+        updateInputAvailability();
+    });
+
+    clearBtn.addEventListener('click', clearAll);
+    submitBtn.addEventListener('click', submitResult);
+    clearHistoryBtn.addEventListener('click', clearHistory);
+
+    // ---------- 初始化 ----------
+    function init() {
+        poemSelect.innerHTML = '<option value="">請選擇一首古詩…</option>';
+        poems.forEach((poem, index) => {
+            const option = document.createElement('option');
+            option.value = poem.id;
+            option.textContent = `${index + 1}. ${poem.title} · ${poem.author}`;
+            poemSelect.appendChild(option);
+        });
+        poemCountBadge.textContent = `共 ${poems.length} 首`;
+
+        loadHistory();
+        renderHistory();
+
+        timerDisplay.textContent = '--:--';
+
+        renderPoem('');
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
