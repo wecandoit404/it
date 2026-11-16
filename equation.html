@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>代數式與解方程 · 小五數學互動教室</title>
+<style>
+/* ===== 基本設定 ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  background:linear-gradient(160deg,#eaf1ff 0%,#f6efff 45%,#fff6ec 100%);
+  background-attachment:fixed;
+  color:#1e293b;min-height:100vh;padding:24px 16px 60px;line-height:1.7;
+}
+.wrap{max-width:920px;margin:0 auto}
+
+/* ===== 標題 ===== */
+header{text-align:center;margin-bottom:28px}
+header h1{
+  font-size:clamp(24px,4vw,34px);letter-spacing:1px;font-weight:900;
+  background:linear-gradient(135deg,#4f7cff,#8b5cf6 55%,#ec4899);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+header p{color:#64748b;font-size:15px;margin-top:2px}
+
+/* ===== 分頁 ===== */
+.tabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:24px}
+.tab{
+  padding:11px 22px;border-radius:999px;border:2px solid #dbe4ff;background:#fff;
+  cursor:pointer;font-size:15px;font-weight:700;color:#64748b;transition:all .25s;
+  font-family:inherit;
+}
+.tab:hover{transform:translateY(-2px);border-color:#a5bfff}
+.tab.active{
+  background:linear-gradient(135deg,#4f7cff,#8b5cf6);color:#fff;border-color:transparent;
+  box-shadow:0 8px 20px rgba(79,124,255,.35);
+}
+
+/* ===== 面板 ===== */
+.panel{display:none}
+.panel.active{display:block;animation:fadeIn .45s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ===== 卡片 ===== */
+.card{
+  background:#fff;border-radius:20px;padding:24px;margin-bottom:20px;
+  box-shadow:0 10px 30px rgba(79,124,255,.10);
+}
+.card h2{font-size:20px;margin-bottom:12px;color:#1e3a8a;display:flex;align-items:center;gap:8px}
+.card p{color:#475569;font-size:15px}
+
+/* ===== 例子格 ===== */
+.example-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.example{
+  background:linear-gradient(135deg,#f4f8ff,#faf5ff);border-radius:16px;padding:16px;
+  border:1px solid #e6edff;transition:transform .2s;
+}
+.example:hover{transform:translateY(-3px)}
+.example .emoji{font-size:26px;margin-bottom:6px}
+.example p{font-size:14.5px;color:#475569}
+.example b{color:#4f7cff;font-size:16px}
+
+/* ===== 按鈕 ===== */
+.btn-primary{
+  background:linear-gradient(135deg,#4f7cff,#8b5cf6);color:#fff;border:none;
+  padding:12px 28px;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;
+  box-shadow:0 6px 16px rgba(79,124,255,.35);transition:all .2s;font-family:inherit;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(79,124,255,.45)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{
+  background:#fff;border:2px solid #dbe4ff;color:#4f7cff;padding:11px 22px;
+  border-radius:13px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;
+}
+.btn-ghost:hover{background:#f0f5ff;border-color:#93b4ff;transform:translateY(-2px)}
+
+/* ===== 代數式選項 ===== */
+.chip-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.expr-btn{
+  padding:10px 20px;border-radius:12px;border:2px solid #dbe4ff;background:#fff;
+  color:#475569;font-weight:700;font-size:15px;cursor:pointer;transition:all .2s;font-family:inherit;
+}
+.expr-btn:hover{background:#f0f5ff;transform:translateY(-2px)}
+.expr-btn.active{
+  background:linear-gradient(135deg,#4f7cff,#8b5cf6);color:#fff;border-color:transparent;
+  box-shadow:0 6px 16px rgba(79,124,255,.35);
+}
+
+/* ===== 滑桿 ===== */
+.slider-row{display:flex;align-items:center;gap:16px;margin:20px 0;padding:0 4px}
+.slider-row label{font-weight:800;color:#4f7cff;font-size:18px;white-space:nowrap}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;height:9px;border-radius:999px;
+  background:linear-gradient(90deg,#93b4ff,#c4b5fd);outline:none;flex:1;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+  background:#fff;border:4px solid #4f7cff;cursor:pointer;
+  box-shadow:0 3px 10px rgba(79,124,255,.45);
+}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:#fff;border:4px solid #4f7cff;cursor:pointer;
+}
+.x-value{
+  min-width:52px;text-align:center;font-weight:900;font-size:22px;color:#8b5cf6;
+  background:#f3e8ff;border-radius:10px;padding:2px 0;
+}
+
+/* ===== 計算顯示 ===== */
+.calc-display{
+  margin-top:16px;padding:22px;border-radius:16px;
+  background:linear-gradient(135deg,#f0f5ff,#faf5ff);font-size:17px;color:#475569;
+  border:1px solid #e6edff;text-align:center;
+}
+.calc-display .big{
+  display:flex;justify-content:center;margin-top:14px;
+  font-size:clamp(20px,3.4vw,28px);font-weight:900;color:#4f7cff;
+  letter-spacing:1px;line-height:1.6;
+}
+
+/* 等號對齊表格（面板1用） */
+.align-table{
+  display:inline-table;border-collapse:collapse;
+  font-family:"Cambria Math",Georgia,"Times New Roman",serif;
+}
+.align-table .row{display:table-row}
+.align-table .cell{display:table-cell;padding:2px 0;vertical-align:middle}
+.align-table .eq-cell{
+  text-align:center;color:#4f7cff;font-weight:900;padding:0 10px;
+  min-width:2.8em;white-space:nowrap;
+}
+.align-table .expr-cell{
+  text-align:left;color:#8b5cf6;font-weight:800;padding-left:4px;white-space:nowrap;
+}
+
+/* ===== 方程顯示 ===== */
+.equation-show{
+  font-size:clamp(28px,5vw,42px);font-weight:900;text-align:center;letter-spacing:2px;
+  padding:26px 16px;border-radius:16px;color:#1e3a8a;margin:16px 0 8px;
+  background:linear-gradient(135deg,#eff4ff,#f7f0ff);
+  font-family:"Cambria Math",Georgia,"Times New Roman",serif;
+  border:2px dashed #c7d7ff;transition:all .3s;
+}
+.equation-show.pulse{animation:pulse .5s}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+
+.hint-line{text-align:center;color:#8b5cf6;font-weight:700;font-size:15px;min-height:26px}
+
+/* ===== 操作按鈕 ===== */
+.ops{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}
+.op-btn{
+  padding:15px 12px;border-radius:14px;border:2px solid #dbe4ff;background:#fff;
+  font-size:15px;font-weight:700;cursor:pointer;color:#3b82f6;transition:all .2s;font-family:inherit;
+}
+.op-btn:hover:not(:disabled){background:#eff4ff;border-color:#93b4ff;transform:translateY(-2px)}
+.op-btn.correct{background:#dcfce7;border-color:#22c55e;color:#15803d}
+.op-btn.wrong{background:#fee2e2;border-color:#ef4444;color:#b91c1c;animation:shake .45s}
+.op-btn:disabled{cursor:default;opacity:.75}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}50%{transform:translateX(7px)}80%{transform:translateX(-4px)}}
+
+/* ===== 解題步驟（內容置中） ===== */
+.step-block{
+  background:linear-gradient(135deg,#f0fdf4,#f0f9ff);border-left:5px solid #22c55e;
+  border-radius:12px;padding:14px 18px;margin-bottom:12px;animation:fadeIn .4s;
+  text-align:center;
+}
+.step-label{
+  font-size:13px;font-weight:800;color:#16a34a;letter-spacing:1px;margin-bottom:8px;
+  text-align:center;
+}
+.step-line{
+  font-size:clamp(18px,3vw,23px);font-weight:800;color:#1e3a8a;
+  font-family:"Cambria Math",Georgia,serif;letter-spacing:1px;line-height:2;
+  text-align:center;
+}
+.step-line.final{color:#15803d;font-size:clamp(20px,3.4vw,26px);margin-top:4px}
+.explain{font-size:14.5px;color:#475569;margin-top:8px;line-height:1.7;text-align:center}
+.check{
+  background:#fffbeb;border:1px dashed #fbbf24;color:#b45309;border-radius:12px;
+  padding:10px 16px;font-weight:700;font-size:15px;margin-top:8px;text-align:center;
+}
+.progress-tag{
+  display:inline-block;background:#eef2ff;color:#4f7cff;font-weight:800;
+  padding:5px 14px;border-radius:999px;font-size:14px;margin-bottom:10px;
+}
+
+/* ===== 練習區 ===== */
+.stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.stat{
+  flex:1;min-width:110px;text-align:center;background:linear-gradient(135deg,#f0f5ff,#faf5ff);
+  border-radius:14px;padding:12px;font-size:14px;color:#64748b;font-weight:700;
+}
+.stat b{display:block;font-size:24px;color:#4f7cff;margin-top:2px}
+
+.question-box{text-align:center;padding:10px 0}
+.q-label{color:#64748b;font-size:15px;margin-bottom:10px}
+.q-equation{
+  font-size:clamp(30px,5.5vw,46px);font-weight:900;color:#1e3a8a;letter-spacing:2px;
+  padding:22px;border-radius:18px;background:linear-gradient(135deg,#eff4ff,#f7f0ff);
+  font-family:"Cambria Math",Georgia,serif;border:2px dashed #c7d7ff;margin-bottom:22px;
+}
+.answer-row{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+.answer-row span{font-size:22px;font-weight:900;color:#4f7cff}
+#answerInput{
+  width:110px;padding:12px;font-size:22px;font-weight:800;text-align:center;
+  border:2px solid #dbe4ff;border-radius:13px;outline:none;color:#4f7cff;font-family:inherit;
+  transition:all .2s;
+}
+#answerInput:focus{border-color:#4f7cff;box-shadow:0 0 0 4px rgba(79,124,255,.15)}
+
+.feedback{
+  margin-top:18px;border-radius:14px;padding:0;max-height:0;overflow:hidden;
+  transition:all .35s;text-align:left;
+}
+.feedback.show{max-height:400px;padding:16px 18px}
+.feedback.ok{background:#f0fdf4;border:2px solid #86efac}
+.feedback.bad{background:#fef2f2;border:2px solid #fca5a5}
+.fb-title{font-weight:900;font-size:16px;margin-bottom:6px}
+.feedback.ok .fb-title{color:#15803d}
+.feedback.bad .fb-title{color:#b91c1c}
+.fb-body{font-size:15px;color:#475569;line-height:1.9}
+.fb-body b{color:#4f7cff}
+
+/* 練習區解題步驟：等號對齊、不含左側編號 */
+.fb-steps-table{
+  display:inline-table;border-collapse:collapse;margin-top:6px;
+  font-family:"Cambria Math",Georgia,serif;
+}
+.fb-steps-table .row{display:table-row}
+.fb-steps-table .cell{display:table-cell;padding:2px 0;vertical-align:middle}
+.fb-steps-table .eq-cell{
+  text-align:center;color:#16a34a;font-weight:900;padding:0 8px;
+  min-width:2.4em;white-space:nowrap;
+}
+.fb-steps-table .expr-cell{
+  text-align:left;color:#1e3a8a;font-weight:800;padding-left:4px;white-space:nowrap;
+}
+
+/* 兩步解方程專用：等號在中間對齊 */
+.steps-eq-table{
+  display:inline-table;border-collapse:collapse;
+  font-family:"Cambria Math",Georgia,"Times New Roman",serif;
+}
+.steps-eq-table .row{display:table-row}
+.steps-eq-table .cell{display:table-cell;padding:3px 0;vertical-align:middle;white-space:nowrap}
+.steps-eq-table .lhs-cell{
+  text-align:right;color:#1e3a8a;font-weight:800;padding-right:6px;
+}
+.steps-eq-table .eq-cell{
+  text-align:center;color:#4f7cff;font-weight:900;padding:0 6px;
+  min-width:1.6em;
+}
+.steps-eq-table .rhs-cell{
+  text-align:left;color:#8b5cf6;font-weight:800;padding-left:6px;
+}
+
+/* ===== 拖曳代入區 ===== */
+.drag-area{
+  background:linear-gradient(135deg,#fef3c7,#fef9c3);
+  border:2px dashed #fbbf24;
+  border-radius:16px;
+  padding:46px 20px 12px;
+  margin:16px 0;
+  text-align:center;
+  position:relative;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.drag-area .drag-instruction{
+  font-size:14px;
+  color:#92400e;
+  font-weight:700;
+  margin-bottom:14px;
+  padding:0 30px;
+}
+.drag-y-card{
+  display:inline-block;
+  background:linear-gradient(135deg,#ef4444,#dc2626);
+  color:#fff;
+  font-size:36px;
+  font-weight:900;
+  padding:10px 24px;
+  border-radius:14px;
+  cursor:grab;
+  box-shadow:0 6px 16px rgba(220,38,38,.35);
+  transition:transform .2s, box-shadow .2s;
+  font-family:"Cambria Math",Georgia,serif;
+  touch-action:none;
+  position:relative;
+  z-index:1000;
+}
+.drag-y-card:hover{transform:scale(1.05);box-shadow:0 10px 22px rgba(220,38,38,.45)}
+.drag-y-card.dragging{cursor:grabbing;transform:scale(1.1);box-shadow:0 12px 28px rgba(220,38,38,.5)}
+.drag-y-card.hidden{display:none;}
+
+/* 方程中的可放置目標（代數式） */
+.eq-token{
+  display:inline-block;
+  padding:2px 10px;
+  border-radius:10px;
+  transition:all .25s;
+  cursor:pointer;
+  position:relative;
+  border:2px solid transparent;
+}
+.eq-token.highlight{
+  background:#fee2e2;
+  border-color:#ef4444;
+  box-shadow:0 0 0 3px rgba(239,68,68,.25);
+}
+.eq-token.success{
+  background:#dcfce7;
+  border-color:#22c55e;
+  color:#15803d;
+  box-shadow:0 0 0 3px rgba(34,197,94,.25);
+}
+
+/* ===== 折疊箭頭（黃色背景右上角） ===== */
+.sub-collapse-btn{
+  position:absolute;
+  top:10px;
+  right:12px;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  border:none;
+  background:linear-gradient(135deg,#f59e0b,#d97706);
+  color:#fff;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow:0 3px 10px rgba(217,119,6,.35);
+  z-index:6;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  transition:all .2s;
+  line-height:1;
+  padding:0;
+  font-family:inherit;
+}
+.sub-collapse-btn:hover{transform:scale(1.1);box-shadow:0 5px 14px rgba(217,119,6,.45)}
+.sub-collapse-btn:active{transform:scale(1)}
+
+/* ===== 代入結果卡片（白色、向上靠、文字置中） ===== */
+.sub-result-wrap{
+  margin-top:0;
+  text-align:center;
+}
+.sub-result-box{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  border:1px solid #fde68a;
+  animation:fadeIn .4s;
+  text-align:center;
+  box-shadow:0 4px 14px rgba(217,119,6,.10);
+}
+.sub-result-box .r-title{
+  font-size:13px;
+  font-weight:900;
+  color:#b45309;
+  margin-bottom:10px;
+  letter-spacing:0.5px;
+}
+.sub-result-box .r-line{
+  font-size:clamp(17px,2.8vw,21px);
+  font-weight:800;
+  color:#78350f;
+  font-family:"Cambria Math",Georgia,serif;
+  line-height:1.9;
+  margin:4px 0;
+}
+.sub-result-box .r-line .y-highlight{
+  color:#dc2626;
+  background:#fee2e2;
+  padding:0 6px;
+  border-radius:6px;
+}
+.sub-result-box .r-step-badge{
+  display:inline-block;
+  margin-top:10px;
+  padding:8px 20px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#dcfce7,#f0fdf4);
+  border:2px dashed #22c55e;
+  color:#15803d;
+  font-size:clamp(16px,2.8vw,19px);
+  font-weight:900;
+  letter-spacing:0.5px;
+}
+
+footer{text-align:center;color:#94a3b8;font-size:13px;margin-top:30px}
+
+@media(max-width:520px){
+  .card{padding:18px}
+  .ops{grid-template-columns:repeat(2,1fr)}
+  .op-btn{font-size:13.5px;padding:13px 6px}
+  .drag-y-card{font-size:28px;padding:8px 18px}
+  .drag-area{padding-top:44px;padding-bottom:10px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🧮 代數式與解方程</h1>
+    <p>小五數學 · 互動學習教室</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="p1">① 認識代數式</button>
+    <button class="tab" data-tab="p2">② 一步解方程</button>
+    <button class="tab" data-tab="p3">③ 兩步解方程</button>
+    <button class="tab" data-tab="p4">④ 闖關練習</button>
+  </nav>
+
+  <!-- ================= 面板 1 ================= -->
+  <section id="p1" class="panel active">
+    <div class="card">
+      <h2>🤔 用字母代表未知的數</h2>
+      <p>在數學裡，我們常用英文字母（例如 <b style="color:#4f7cff">x</b>、<b style="color:#4f7cff">y</b>、<b style="color:#4f7cff">a</b>）來代表<b>未知的數</b>。含有字母的算式，就叫做<b>代數式</b>。</p>
+      <div class="example-grid">
+        <div class="example">
+          <div class="emoji">🍎</div>
+          <p>小明原有 <b>x</b> 個蘋果，媽媽再多給他 5 個，現在共有 <b>x + 5</b> 個。</p>
+        </div>
+        <div class="example">
+          <div class="emoji">📏</div>
+          <p>一條繩長 <b>y</b> 米，剪去 2 米後，剩下 <b>y − 2</b> 米。</p>
+        </div>
+        <div class="example">
+          <div class="emoji">✏️</div>
+          <p>每枝筆 <b>a</b> 元，買 3 枝要付 <b>3a</b> 元（即 a × 3）。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔢 代入求值小實驗</h2>
+      <p>選一個代數式，再拖動滑桿改變 x 的值，看看結果怎樣變化！</p>
+      <div class="chip-row" id="exprButtons"></div>
+      <div class="slider-row">
+        <label>x =</label>
+        <input type="range" id="xSlider" min="1" max="12" value="4">
+        <span class="x-value" id="xValue">4</span>
+      </div>
+      <div class="calc-display" id="calcDisplay"></div>
+    </div>
+  </section>
+
+  <!-- ================= 面板 2 ================= -->
+  <section id="p2" class="panel">
+    <div class="card">
+      <h2>⚖️ 一步解方程</h2>
+      <p><b>解方程</b>就是要找出未知數 x 的值，令等號兩邊相等。秘訣是：<b style="color:#8b5cf6">等號兩邊同時做相同的運算</b>，天平才不會失衡！</p>
+      <p style="margin-top:8px;color:#64748b;font-size:14.5px">👉 選一條方程，然後選出正確的「下一步」吧！</p>
+      <div class="chip-row" id="oneEqTabs"></div>
+      <div class="equation-show" id="oneEquation">x + 3 = 8</div>
+      <div class="hint-line" id="oneHint"></div>
+      <div class="ops" id="oneOps"></div>
+      <div id="oneResult"></div>
+    </div>
+  </section>
+
+  <!-- ================= 面板 3 ================= -->
+  <section id="p3" class="panel">
+    <div class="card">
+      <h2>🎯 兩步解方程</h2>
+      <p>兩步解方程要先後做兩個步驟，順序很重要：<b style="color:#ec4899">先處理「加／減」，再處理「乘／除以」</b>。</p>
+      <p style="margin-top:6px;color:#64748b;font-size:14.5px">含有括號的方程，可以先把括號看成一個整體，先消去括號外的數，再處理括號內的數。</p>
+      <p style="margin-top:6px;color:#b45309;font-size:14.5px;font-weight:700">💡 小技巧：把 y 卡片拖到方程中未計算的代數式上，就能把它變成一步解方程！</p>
+
+      <div class="chip-row" id="twoEqTabs"></div>
+      <div class="progress-tag" id="twoProgress"></div>
+
+      <!-- 可拖曳的方程顯示區 -->
+      <div class="equation-show" id="twoEquation" style="position:relative;">2x + 3 = 11</div>
+
+      <!-- 拖曳代入區 -->
+      <div class="drag-area" id="dragArea">
+        <button class="sub-collapse-btn" id="collapseBtn" aria-label="隱藏或顯示代入結果">▲</button>
+        <div class="drag-instruction" id="dragInstruction">🔽 把 y 卡片拖到方程中的 <b>2x</b> 上面，看看會變成什麼！</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;">
+          <div class="drag-y-card" id="dragYCard">y</div>
+        </div>
+        <div id="subResult"></div>
+      </div>
+
+      <div class="hint-line" id="twoHint">選出正確的下一步</div>
+      <div class="ops" id="twoOps"></div>
+      <div id="twoSteps"></div>
+      <div style="text-align:center;margin-top:10px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn-ghost" id="twoReset">🔄 重新示範</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 面板 4 ================= -->
+  <section id="p4" class="panel">
+    <div class="card">
+      <h2>🏆 闖關練習</h2>
+      <div class="stats">
+        <div class="stat">得分<b id="score">0</b></div>
+        <div class="stat">連續答對<b id="streak">0</b></div>
+        <div class="stat">已作答<b id="total">0</b></div>
+      </div>
+
+      <div class="question-box">
+        <div class="q-label">解下列方程，求出 x 的值：</div>
+        <div class="q-equation" id="qEquation">x + 5 = 12</div>
+        <div class="answer-row">
+          <span>x =</span>
+          <input type="number" id="answerInput" placeholder="?" autocomplete="off">
+          <button class="btn-primary" id="checkBtn">檢查</button>
+          <button class="btn-ghost" id="hintBtn">💡 提示</button>
+          <button class="btn-ghost" id="skipBtn">換一題</button>
+        </div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>小五數學 · 代數式與解方程互動教材</footer>
+</div>
+
+<script>
+/* ================= 共用工具 ================= */
+const $ = id => document.getElementById(id);
+const rand = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ================= 分頁切換 ================= */
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    $(btn.dataset.tab).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+/* ============================================================
+   面板 1：代數式（每次載入隨機生成）
+============================================================ */
+function generateExpressions() {
+  const a1 = rand(2, 12);
+  const a2 = rand(2, 9);
+  const a3 = rand(2, 6), b3 = rand(2, 9);
+  const a4 = rand(2, 6), b4 = rand(2, 9);
+  return [
+    { label: `x + ${a1}`, show: x => [`x + ${a1}`, `${x} + ${a1}`, `${x + a1}`] },
+    { label: `${a2}x`,    show: x => [`${a2}x`, `${a2} × ${x}`, `${a2 * x}`] },
+    { label: `${a3}x + ${b3}`, show: x => [`${a3}x + ${b3}`, `${a3} × ${x} + ${b3}`, `${a3 * x + b3}`] },
+    { label: `${a4}x − ${b4}`, show: x => [`${a4}x − ${b4}`, `${a4} × ${x} − ${b4}`, `${a4 * x - b4}`] }
+  ];
+}
+
+let expressions = generateExpressions();
+let currentExpr = 0;
+
+function renderExprButtons() {
+  const box = $('exprButtons');
+  box.innerHTML = '';
+  expressions.forEach((e, i) => {
+    const b = document.createElement('button');
+    b.className = 'expr-btn' + (i === currentExpr ? ' active' : '');
+    b.textContent = e.label;
+    b.onclick = () => { currentExpr = i; renderExprButtons(); updateCalc(); };
+    box.appendChild(b);
+  });
+}
+
+function renderAlignedSteps(parts) {
+  let html = '<table class="align-table">';
+  parts.forEach((part, i) => {
+    html += '<tr class="row">';
+    html += `<td class="cell eq-cell">${i === 0 ? '' : '='}</td>`;
+    html += `<td class="cell expr-cell">${part}</td>`;
+    html += '</tr>';
+  });
+  html += '</table>';
+  return html;
+}
+
+function updateCalc() {
+  const x = +$('xSlider').value;
+  $('xValue').textContent = x;
+  const parts = expressions[currentExpr].show(x);
+  $('calcDisplay').innerHTML =
+    `當 x = <b style="color:#8b5cf6">${x}</b> 時：` +
+    `<span class="big">${renderAlignedSteps(parts)}</span>`;
+}
+
+$('xSlider').addEventListener('input', updateCalc);
+renderExprButtons();
+updateCalc();
+
+/* ============================================================
+   面板 2：一步解方程（每次載入隨機生成 4 道）
+============================================================ */
+function generateOneStepData() {
+  const data = [];
+  const order = shuffle([0, 1, 2, 3]);
+  for (const t of order) {
+    if (t === 0) {
+      const a = rand(2, 12), x = rand(2, 15);
+      data.push({
+        eq: `x + ${a} = ${x + a}`,
+        ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+        correct: `減 ${a}`,
+        steps: [`x + ${a} = ${x + a}`, `x + ${a} − ${a} = ${x + a} − ${a}`, `x = ${x}`],
+        explain: `兩邊同時減 ${a}：左邊的 +${a} 和 −${a} 互相抵消，只剩下 x；右邊 ${x + a} − ${a} = ${x}。`,
+        check: `檢驗：${x} + ${a} = ${x + a} ✓`
+      });
+    } else if (t === 1) {
+      const a = rand(2, 12), x = rand(a + 2, a + 18);
+      data.push({
+        eq: `x − ${a} = ${x - a}`,
+        ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+        correct: `加 ${a}`,
+        steps: [`x − ${a} = ${x - a}`, `x − ${a} + ${a} = ${x - a} + ${a}`, `x = ${x}`],
+        explain: `兩邊同時加 ${a}：左邊的 −${a} 和 +${a} 互相抵消，只剩下 x；右邊 ${x - a} + ${a} = ${x}。`,
+        check: `檢驗：${x} − ${a} = ${x - a} ✓`
+      });
+    } else if (t === 2) {
+      const a = rand(2, 9), x = rand(2, 12);
+      data.push({
+        eq: `${a}x = ${a * x}`,
+        ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+        correct: `除以 ${a}`,
+        steps: [`${a}x = ${a * x}`, `${a}x ÷ ${a} = ${a * x} ÷ ${a}`, `x = ${x}`],
+        explain: `${a}x 即是 ${a} × x，所以兩邊同時除以 ${a}，左邊只剩下 x；右邊 ${a * x} ÷ ${a} = ${x}。`,
+        check: `檢驗：${a} × ${x} = ${a * x} ✓`
+      });
+    } else {
+      const a = rand(2, 8), q = rand(2, 9), x = a * q;
+      data.push({
+        eq: `x ÷ ${a} = ${q}`,
+        ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+        correct: `乘 ${a}`,
+        steps: [`x ÷ ${a} = ${q}`, `x ÷ ${a} × ${a} = ${q} × ${a}`, `x = ${x}`],
+        explain: `兩邊同時乘 ${a}：左邊的 ÷${a} 和 ×${a} 互相抵消，只剩下 x；右邊 ${q} × ${a} = ${x}。`,
+        check: `檢驗：${x} ÷ ${a} = ${q} ✓`
+      });
+    }
+  }
+  return data;
+}
+
+let oneStepData = generateOneStepData();
+let oneIdx = 0;
+
+function renderOneTabs() {
+  const box = $('oneEqTabs');
+  box.innerHTML = '';
+  oneStepData.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.className = 'expr-btn' + (i === oneIdx ? ' active' : '');
+    b.textContent = d.eq;
+    b.onclick = () => { oneIdx = i; initOne(); };
+    box.appendChild(b);
+  });
+}
+
+function initOne() {
+  renderOneTabs();
+  const d = oneStepData[oneIdx];
+  const eqEl = $('oneEquation');
+  eqEl.textContent = d.eq;
+  eqEl.classList.remove('pulse');
+  void eqEl.offsetWidth;
+  eqEl.classList.add('pulse');
+  $('oneHint').textContent = '想一想：要怎樣才能把 x 單獨留在等號一邊？';
+  $('oneResult').innerHTML = '';
+
+  const ops = $('oneOps');
+  ops.innerHTML = '';
+  d.ops.forEach(op => {
+    const b = document.createElement('button');
+    b.className = 'op-btn';
+    b.textContent = '兩邊同時' + op;
+    b.onclick = () => handleOneOp(b, op);
+    ops.appendChild(b);
+  });
+}
+
+function handleOneOp(btn, op) {
+  const d = oneStepData[oneIdx];
+  if (op === d.correct) {
+    btn.classList.add('correct');
+    document.querySelectorAll('#oneOps .op-btn').forEach(b => b.disabled = true);
+    $('oneHint').textContent = '✅ 完全正確！';
+    $('oneResult').innerHTML = `
+      <div class="step-block">
+        <div class="step-label">解方程步驟</div>
+        <div class="step-line">${renderStepTable(d.steps)}</div>
+        <div class="explain">${d.explain}</div>
+      </div>
+      <div class="check">${d.check}</div>`;
+  } else {
+    btn.classList.add('wrong');
+    setTimeout(() => btn.classList.remove('wrong'), 500);
+    $('oneHint').textContent = '❌ 這樣做不能把 x 單獨留下，再想想吧！';
+  }
+}
+
+/* 一步解方程步驟表：第2行前面加「解:」 */
+function renderStepTable(steps) {
+  let html = '<table class="align-table" style="display:inline-table;">';
+  steps.forEach((part, i) => {
+    let eqLabel = '';
+    if (i === 1) eqLabel = '解:';
+    else if (i >= 2) eqLabel = '=';
+    html += '<tr class="row">';
+    html += `<td class="cell eq-cell">${eqLabel}</td>`;
+    html += `<td class="cell expr-cell">${part}</td>`;
+    html += '</tr>';
+  });
+  html += '</table>';
+  return html;
+}
+
+initOne();
+
+/* ============================================================
+   面板 3：兩步解方程（每次載入隨機生成 4 道）
+============================================================ */
+function generateTwoStepData() {
+  const data = [];
+  const order = shuffle([0, 1, 2, 3]); // 加後乘、括號加、括號減、減後乘
+  for (const t of order) {
+    if (t === 0) {
+      // ax + b = c
+      const a = rand(2, 6), b = rand(2, 9), x = rand(2, 10);
+      const c = a * x + b;
+      data.push({
+        eq: `${a}x + ${b} = ${c}`,
+        target: `${a}x`,
+        steps: [
+          {
+            ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
+            correct: `減 ${b}`,
+            lines: [`${a}x + ${b} = ${c}`, `${a}x + ${b} − ${b} = ${c} − ${b}`, `${a}x = ${c - b}`],
+            explain: `先處理加減：兩邊同時減 ${b}，把左邊的 +${b} 消去，得到 ${a}x = ${c - b}。`
+          },
+          {
+            ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+            correct: `除以 ${a}`,
+            lines: [`${a}x = ${c - b}`, `${a}x ÷ ${a} = ${c - b} ÷ ${a}`, `x = ${x}`],
+            explain: `再處理乘除以：兩邊同時除以 ${a}，左邊剩下 x，右邊 ${c - b} ÷ ${a} = ${x}。`
+          }
+        ],
+        check: `檢驗：${a} × ${x} + ${b} = ${a * x} + ${b} = ${c} ✓`,
+        dragAfter: { substituted: `y + ${b} = ${c}` }
+      });
+    } else if (t === 1) {
+      // a(x + b) = c
+      const a = rand(2, 6), b = rand(2, 8), x = rand(2, 10);
+      const inner = x + b;
+      const c = a * inner;
+      data.push({
+        eq: `${a}(x + ${b}) = ${c}`,
+        target: `(x + ${b})`,
+        steps: [
+          {
+            ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+            correct: `除以 ${a}`,
+            lines: [`${a}(x + ${b}) = ${c}`, `${a}(x + ${b}) ÷ ${a} = ${c} ÷ ${a}`, `x + ${b} = ${inner}`],
+            explain: `把括號看成一個整體：兩邊同時除以 ${a}，左邊剩下 (x + ${b})，右邊 ${c} ÷ ${a} = ${inner}。`
+          },
+          {
+            ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
+            correct: `減 ${b}`,
+            lines: [`x + ${b} = ${inner}`, `x + ${b} − ${b} = ${inner} − ${b}`, `x = ${x}`],
+            explain: `再處理括號內的加減：兩邊同時減 ${b}，得到 x = ${x}。`
+          }
+        ],
+        check: `檢驗：${a} × (${x} + ${b}) = ${a} × ${inner} = ${c} ✓`,
+        dragAfter: { substituted: `${a}y = ${c}` }
+      });
+    } else if (t === 2) {
+      // a(x − b) = c
+      const a = rand(2, 6), b = rand(2, 7), x = rand(b + 2, b + 12);
+      const inner = x - b;
+      const c = a * inner;
+      data.push({
+        eq: `${a}(x − ${b}) = ${c}`,
+        target: `(x − ${b})`,
+        steps: [
+          {
+            ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+            correct: `除以 ${a}`,
+            lines: [`${a}(x − ${b}) = ${c}`, `${a}(x − ${b}) ÷ ${a} = ${c} ÷ ${a}`, `x − ${b} = ${inner}`],
+            explain: `把括號看成一個整體：兩邊同時除以 ${a}，左邊剩下 (x − ${b})，右邊 ${c} ÷ ${a} = ${inner}。`
+          },
+          {
+            ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
+            correct: `加 ${b}`,
+            lines: [`x − ${b} = ${inner}`, `x − ${b} + ${b} = ${inner} + ${b}`, `x = ${x}`],
+            explain: `再處理括號內的加減：兩邊同時加 ${b}，得到 x = ${x}。`
+          }
+        ],
+        check: `檢驗：${a} × (${x} − ${b}) = ${a} × ${inner} = ${c} ✓`,
+        dragAfter: { substituted: `${a}y = ${c}` }
+      });
+    } else {
+      // ax − b = c
+      let a, b, x, c;
+      do {
+        a = rand(2, 6); b = rand(2, 8); x = rand(2, 10);
+        c = a * x - b;
+      } while (c <= 0);
+      data.push({
+        eq: `${a}x − ${b} = ${c}`,
+        target: `${a}x`,
+        steps: [
+          {
+            ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
+            correct: `加 ${b}`,
+            lines: [`${a}x − ${b} = ${c}`, `${a}x − ${b} + ${b} = ${c} + ${b}`, `${a}x = ${c + b}`],
+            explain: `先處理加減：兩邊同時加 ${b}，把左邊的 −${b} 消去，得到 ${a}x = ${c + b}。`
+          },
+          {
+            ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+            correct: `除以 ${a}`,
+            lines: [`${a}x = ${c + b}`, `${a}x ÷ ${a} = ${c + b} ÷ ${a}`, `x = ${x}`],
+            explain: `再處理乘除以：兩邊同時除以 ${a}，左邊剩下 x，右邊 ${c + b} ÷ ${a} = ${x}。`
+          }
+        ],
+        check: `檢驗：${a} × ${x} − ${b} = ${a * x} − ${b} = ${c} ✓`,
+        dragAfter: { substituted: `y − ${b} = ${c}` }
+      });
+    }
+  }
+  return data;
+}
+
+let twoStepData = generateTwoStepData();
+let twoIdx = 0;
+let twoStepIdx = 0;
+let dragSuccess = false;
+
+function renderTwoTabs() {
+  const box = $('twoEqTabs');
+  box.innerHTML = '';
+  twoStepData.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.className = 'expr-btn' + (i === twoIdx ? ' active' : '');
+    b.textContent = d.eq;
+    b.onclick = () => { twoIdx = i; initTwo(); };
+    box.appendChild(b);
+  });
+}
+
+/* 把方程中的目標代數式用可放置的 span 包起來 */
+function renderEquationWithTarget() {
+  const d = twoStepData[twoIdx];
+  const eqEl = $('twoEquation');
+  const eq = d.eq;
+  const target = d.target;
+  const idx = eq.indexOf(target);
+  if (idx === -1) {
+    eqEl.textContent = eq;
+    return;
+  }
+  const before = eq.slice(0, idx);
+  const after = eq.slice(idx + target.length);
+  eqEl.innerHTML = `${before}<span class="eq-token" id="eqTarget">${target}</span>${after}`;
+}
+
+function initTwo() {
+  twoStepIdx = 0;
+  dragSuccess = false;
+  renderTwoTabs();
+  const d = twoStepData[twoIdx];
+
+  renderEquationWithTarget();
+  const eqEl = $('twoEquation');
+  eqEl.classList.remove('pulse');
+  void eqEl.offsetWidth;
+  eqEl.classList.add('pulse');
+
+  $('twoProgress').textContent = `第 1 步 / 共 ${d.steps.length} 步`;
+  $('twoHint').textContent = '選出正確的下一步';
+  $('twoSteps').innerHTML = '';
+  $('subResult').innerHTML = '';
+  $('dragInstruction').innerHTML = `🔽 把 y 卡片拖到方程中的 <b>${d.target}</b> 上面，看看會變成什麼！`;
+
+  const card = $('dragYCard');
+  card.classList.remove('hidden');
+  card.style.transform = 'none';
+  card.style.position = 'relative';
+  card.style.left = 'auto';
+  card.style.top = 'auto';
+
+  const targetEl = $('eqTarget');
+  if (targetEl) {
+    targetEl.classList.remove('highlight', 'success');
+  }
+
+  const collapseBtn = $('collapseBtn');
+  collapseBtn.style.display = 'none';
+  collapseBtn.textContent = '▲';
+  collapseBtn.onclick = null;
+
+  renderTwoOps();
+  setupDragEvents();
+}
+
+function renderTwoOps() {
+  const d = twoStepData[twoIdx];
+  const s = d.steps[twoStepIdx];
+  const ops = $('twoOps');
+  ops.innerHTML = '';
+  s.ops.forEach(op => {
+    const b = document.createElement('button');
+    b.className = 'op-btn';
+    b.textContent = '兩邊同時' + op;
+    b.onclick = () => handleTwoOp(b, op);
+    ops.appendChild(b);
+  });
+}
+
+function splitEq(line) {
+  const idx = line.indexOf('=');
+  if (idx === -1) return [line, ''];
+  return [line.slice(0, idx).trim(), line.slice(idx + 1).trim()];
+}
+
+/* 兩步解方程步驟表：當 isFirstStep 為真時，第2行前面加「解:」 */
+function renderStepsEqTable(lines, isFirstStep = false) {
+  let html = '<table class="steps-eq-table">';
+  lines.forEach((line, i) => {
+    const [lhs, rhs] = splitEq(line);
+    let lhsText = lhs;
+    if (isFirstStep && i === 1) {
+      lhsText = '解: ' + lhs;
+    }
+    html += '<tr class="row">';
+    html += `<td class="cell lhs-cell">${lhsText}</td>`;
+    html += `<td class="cell eq-cell">=</td>`;
+    html += `<td class="cell rhs-cell">${rhs}</td>`;
+    html += '</tr>';
+  });
+  html += '</table>';
+  return html;
+}
+
+function handleTwoOp(btn, op) {
+  const d = twoStepData[twoIdx];
+  const s = d.steps[twoStepIdx];
+
+  if (op === s.correct) {
+    btn.classList.add('correct');
+    document.querySelectorAll('#twoOps .op-btn').forEach(b => b.disabled = true);
+    $('twoHint').textContent = '✅ 做得好！';
+
+    const box = $('twoSteps');
+    const div = document.createElement('div');
+    div.className = 'step-block';
+    div.innerHTML = `
+      <div class="step-label">步驟 ${twoStepIdx + 1}</div>
+      <div class="step-line">${renderStepsEqTable(s.lines, twoStepIdx === 0)}</div>
+      <div class="explain">${s.explain}</div>`;
+    box.appendChild(div);
+
+    twoStepIdx++;
+
+    if (twoStepIdx < d.steps.length) {
+      $('twoProgress').textContent = `第 ${twoStepIdx + 1} 步 / 共 ${d.steps.length} 步`;
+      const eqEl = $('twoEquation');
+      eqEl.textContent = s.lines[s.lines.length - 1];
+      eqEl.classList.remove('pulse');
+      void eqEl.offsetWidth;
+      eqEl.classList.add('pulse');
+      setTimeout(renderTwoOps, 350);
+    } else {
+      $('twoProgress').textContent = '✅ 完成！';
+      $('twoOps').innerHTML = '';
+      $('twoHint').textContent = '🎉 方程解出來了！';
+      const check = document.createElement('div');
+      check.className = 'check';
+      check.textContent = d.check;
+      box.appendChild(check);
+    }
+  } else {
+    btn.classList.add('wrong');
+    setTimeout(() => btn.classList.remove('wrong'), 500);
+    $('twoHint').textContent = '❌ 不太對，留意「先加減、後乘除以」的次序。';
+  }
+}
+
+/* ============================================================
+   拖曳代入功能
+   ============================================================ */
+function setupDragEvents() {
+  const card = $('dragYCard');
+  if (!card) return;
+  if (card.dataset.bound === '1') return;
+  card.dataset.bound = '1';
+
+  let startX = 0, startY = 0;
+  let dragging = false;
+
+  function getPoint(e) {
+    if (e.touches && e.touches.length > 0) {
+      return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  function onStart(e) {
+    if (dragSuccess) return;
+    const pt = getPoint(e);
+    startX = pt.x;
+    startY = pt.y;
+    dragging = true;
+    card.classList.add('dragging');
+    card.style.position = 'relative';
+    card.style.zIndex = '1000';
+    if (e.preventDefault) e.preventDefault();
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    const pt = getPoint(e);
+    const dx = pt.x - startX;
+    const dy = pt.y - startY;
+    card.style.transform = `translate(${dx}px, ${dy}px) scale(1.1)`;
+
+    const targetEl = $('eqTarget');
+    if (targetEl) {
+      const tRect = targetEl.getBoundingClientRect();
+      const cRect = card.getBoundingClientRect();
+      const cCenterX = cRect.left + cRect.width / 2;
+      const cCenterY = cRect.top + cRect.height / 2;
+      const tCenterX = tRect.left + tRect.width / 2;
+      const tCenterY = tRect.top + tRect.height / 2;
+      const dist = Math.hypot(cCenterX - tCenterX, cCenterY - tCenterY);
+      if (dist < 90) {
+        targetEl.classList.add('highlight');
+      } else {
+        targetEl.classList.remove('highlight');
+      }
+    }
+    if (e.preventDefault) e.preventDefault();
+  }
+
+  function onEnd(e) {
+    if (!dragging) return;
+    dragging = false;
+    card.classList.remove('dragging');
+
+    const targetEl = $('eqTarget');
+    if (!targetEl) {
+      card.style.transform = 'none';
+      return;
+    }
+
+    const tRect = targetEl.getBoundingClientRect();
+    const cRect = card.getBoundingClientRect();
+    const cCenterX = cRect.left + cRect.width / 2;
+    const cCenterY = cRect.top + cRect.height / 2;
+    const tCenterX = tRect.left + tRect.width / 2;
+    const tCenterY = tRect.top + tRect.height / 2;
+    const dist = Math.hypot(cCenterX - tCenterX, cCenterY - tCenterY);
+
+    if (dist < 90) {
+      dragSuccess = true;
+      card.classList.add('hidden');
+      card.style.transform = 'none';
+      targetEl.classList.remove('highlight');
+      targetEl.classList.add('success');
+      targetEl.textContent = 'y';
+
+      showDragResult();
+      $('dragInstruction').innerHTML = '✅ 成功代入！看看下面的變化 👇';
+    } else {
+      card.style.transform = 'none';
+      targetEl.classList.remove('highlight');
+    }
+  }
+
+  card.addEventListener('mousedown', onStart);
+  card.addEventListener('touchstart', onStart, { passive: false });
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchend', onEnd);
+}
+
+/* 顯示代入結果：只保留「這是一條一步解方程！」 */
+function showDragResult() {
+  const d = twoStepData[twoIdx];
+  const after = d.dragAfter;
+  const box = $('subResult');
+  const collapseBtn = $('collapseBtn');
+
+  box.innerHTML = `
+    <div class="sub-result-wrap">
+      <div class="sub-result-box">
+        <div class="r-title">🔁 用 y 代表 ${d.target} 之後</div>
+        <div class="r-line">原方程：${d.eq}</div>
+        <div class="r-line">代入後：<span class="y-highlight">${after.substituted}</span></div>
+        <div class="r-step-badge">↓ 這是一條一步解方程！</div>
+      </div>
+    </div>
+  `;
+
+  collapseBtn.style.display = 'flex';
+  collapseBtn.textContent = '▲';
+  box.style.display = 'block';
+
+  collapseBtn.onclick = () => {
+    if (box.style.display === 'none') {
+      box.style.display = 'block';
+      collapseBtn.textContent = '▲';
+    } else {
+      box.style.display = 'none';
+      collapseBtn.textContent = '▼';
+    }
+  };
+}
+
+$('twoReset').addEventListener('click', initTwo);
+initTwo();
+
+/* ============================================================
+   面板 4：闖關練習
+============================================================ */
+let score = 0, streak = 0, total = 0;
+let currentQ = null;
+
+function newQuestion() {
+  const t = rand(0, 7);
+  let eq, hint, steps, answer;
+
+  if (t === 0) {
+    const a = rand(2, 12), x = rand(2, 15);
+    eq = `x + ${a} = ${x + a}`;
+    answer = x;
+    hint = `把左邊的 +${a} 消去：兩邊同時減 ${a}。`;
+    steps = [`x + ${a} = ${x + a}`, `x + ${a} − ${a} = ${x + a} − ${a}`, `x = ${x}`];
+  } else if (t === 1) {
+    const a = rand(2, 12), x = rand(a + 2, a + 18);
+    eq = `x − ${a} = ${x - a}`;
+    answer = x;
+    hint = `把左邊的 −${a} 消去：兩邊同時加 ${a}。`;
+    steps = [`x − ${a} = ${x - a}`, `x − ${a} + ${a} = ${x - a} + ${a}`, `x = ${x}`];
+  } else if (t === 2) {
+    const a = rand(2, 9), x = rand(2, 12);
+    eq = `${a}x = ${a * x}`;
+    answer = x;
+    hint = `${a}x 即是 ${a} × x，兩邊同時除以 ${a}。`;
+    steps = [`${a}x = ${a * x}`, `${a}x ÷ ${a} = ${a * x} ÷ ${a}`, `x = ${x}`];
+  } else if (t === 3) {
+    const a = rand(2, 8), q = rand(2, 9), x = a * q;
+    eq = `x ÷ ${a} = ${q}`;
+    answer = x;
+    hint = `兩邊同時乘 ${a}，把 ÷${a} 消去。`;
+    steps = [`x ÷ ${a} = ${q}`, `x ÷ ${a} × ${a} = ${q} × ${a}`, `x = ${x}`];
+  } else if (t === 4) {
+    const a = rand(2, 6), b = rand(2, 9), x = rand(2, 10);
+    eq = `${a}x + ${b} = ${a * x + b}`;
+    answer = x;
+    hint = `第一步：兩邊同時減 ${b}；第二步：兩邊同時除以 ${a}。`;
+    steps = [
+      `${a}x + ${b} = ${a * x + b}`,
+      `${a}x + ${b} − ${b} = ${a * x + b} − ${b}`,
+      `${a}x = ${a * x}`,
+      `${a}x ÷ ${a} = ${a * x} ÷ ${a}`,
+      `x = ${x}`
+    ];
+  } else if (t === 5) {
+    let a, b, x;
+    do { a = rand(2, 6); b = rand(2, 8); x = rand(2, 10); }
+    while (a * x - b <= 0);
+    eq = `${a}x − ${b} = ${a * x - b}`;
+    answer = x;
+    hint = `第一步：兩邊同時加 ${b}；第二步：兩邊同時除以 ${a}。`;
+    steps = [
+      `${a}x − ${b} = ${a * x - b}`,
+      `${a}x − ${b} + ${b} = ${a * x - b} + ${b}`,
+      `${a}x = ${a * x}`,
+      `${a}x ÷ ${a} = ${a * x} ÷ ${a}`,
+      `x = ${x}`
+    ];
+  } else if (t === 6) {
+    const a = rand(2, 6), b = rand(2, 8), x = rand(2, 10);
+    eq = `${a}(x + ${b}) = ${a * (x + b)}`;
+    answer = x;
+    hint = `把括號看成整體：兩邊同時除以 ${a}，得到 x + ${b} = ${x + b}，再兩邊同時減 ${b}。`;
+    steps = [
+      `${a}(x + ${b}) = ${a * (x + b)}`,
+      `${a}(x + ${b}) ÷ ${a} = ${a * (x + b)} ÷ ${a}`,
+      `x + ${b} = ${x + b}`,
+      `x + ${b} − ${b} = ${x + b} − ${b}`,
+      `x = ${x}`
+    ];
+  } else {
+    let a, b, x;
+    do { a = rand(2, 6); b = rand(2, 7); x = rand(b + 2, b + 12); }
+    while (a * (x - b) <= 0);
+    eq = `${a}(x − ${b}) = ${a * (x - b)}`;
+    answer = x;
+    hint = `把括號看成整體：兩邊同時除以 ${a}，得到 x − ${b} = ${x - b}，再兩邊同時加 ${b}。`;
+    steps = [
+      `${a}(x − ${b}) = ${a * (x - b)}`,
+      `${a}(x − ${b}) ÷ ${a} = ${a * (x - b)} ÷ ${a}`,
+      `x − ${b} = ${x - b}`,
+      `x − ${b} + ${b} = ${x - b} + ${b}`,
+      `x = ${x}`
+    ];
+  }
+
+  currentQ = { eq, answer, hint, steps };
+  $('qEquation').textContent = eq;
+  $('answerInput').value = '';
+  $('feedback').className = 'feedback';
+  $('feedback').innerHTML = '';
+  $('answerInput').focus();
+}
+
+function updateStats() {
+  $('score').textContent = score;
+  $('streak').textContent = streak;
+  $('total').textContent = total;
+}
+
+function renderFbStepsTable(steps) {
+  let html = '<table class="fb-steps-table">';
+  steps.forEach((part, i) => {
+    html += '<tr class="row">';
+    html += `<td class="cell eq-cell">${i === 0 ? '' : '='}</td>`;
+    html += `<td class="cell expr-cell">${part}</td>`;
+    html += '</tr>';
+  });
+  html += '</table>';
+  return html;
+}
+
+function checkAnswer() {
+  if (!currentQ) return;
+  const raw = $('answerInput').value.trim();
+  if (raw === '') {
+    $('answerInput').focus();
+    return;
+  }
+  const val = Number(raw);
+  const fb = $('feedback');
+
+  if (val === currentQ.answer) {
+    score += 10;
+    streak += 1;
+    total += 1;
+    fb.className = 'feedback show ok';
+    fb.innerHTML = `
+      <div class="fb-title">✅ 答對了！答案 x = ${currentQ.answer}</div>
+      <div class="fb-body">
+        <b>解題步驟：</b><br>
+        ${renderFbStepsTable(currentQ.steps)}
+      </div>`;
+    updateStats();
+    setTimeout(newQuestion, 1800);
+  } else {
+    streak = 0;
+    total += 1;
+    fb.className = 'feedback show bad';
+    fb.innerHTML = `
+      <div class="fb-title">❌ 再試一次！</div>
+      <div class="fb-body">💡 提示：${currentQ.hint}</div>`;
+    updateStats();
+    $('answerInput').select();
+  }
+}
+
+$('checkBtn').addEventListener('click', checkAnswer);
+$('answerInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAnswer();
+});
+$('hintBtn').addEventListener('click', () => {
+  if (!currentQ) return;
+  const fb = $('feedback');
+  fb.className = 'feedback show bad';
+  fb.style.background = '#eff6ff';
+  fb.style.borderColor = '#93c5fd';
+  fb.innerHTML = `
+    <div class="fb-title" style="color:#1d4ed8">💡 提示</div>
+    <div class="fb-body">${currentQ.hint}</div>`;
+});
+$('skipBtn').addEventListener('click', newQuestion);
+
+newQuestion();
+updateStats();
+</script>
+</body>
+</html>
