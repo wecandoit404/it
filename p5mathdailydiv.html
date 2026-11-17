@@ -423,7 +423,7 @@
 <div class="container">
   <header>
     <h1>📐 小學五年級數學：小數除法「每日一練」（考試1 總複習版）</h1>
-    <p>實施日期：2026年11月17日（二）至 2027年1月20日（三）｜ 逢星期一、二、三、五上課日練習（每天 08:00 自動解鎖）</p>
+    <p>實施日期：2026年11月17日（二）至 2027年1月20日（三）｜ 逢星期一、二、三、五上課日練習（每天 08:00 自動解鎖題目｜下午 4:00 後開放查看答案與解析）[cite: 11]</p>
   </header>
 
   <div class="controls">
@@ -1186,6 +1186,23 @@
   });
 
   function toggleAnswer(btn) {
+    // 檢查是否為老師預覽模式，若不是則需判斷當天時間是否已過下午 4:00 (16:00)
+    if (!teacherPreview) {
+      const now = new Date();
+      const card = btn.closest('.card');
+      const unlockStr = card.getAttribute('data-unlock');
+      if (unlockStr) {
+        const unlockDate = new Date(unlockStr);
+        // 設定當天下午 4:00 (16:00:00)
+        const ansOpenTime = new Date(unlockDate.getFullYear(), unlockDate.getMonth(), unlockDate.getDate(), 16, 0, 0);
+        if (now < ansOpenTime) {
+          const pad = n => String(n).padStart(2, '0');
+          alert(`⏳ 答案與解析須於當天下午 4:00 (${pad(ansOpenTime.getHours())}:${pad(ansOpenTime.getMinutes())}) 後才能查看！`);
+          return;
+        }
+      }
+    }
+
     const box = btn.nextElementSibling;
     const isShown = box.classList.contains('show');
     if (isShown) {
@@ -1199,13 +1216,30 @@
 
   let allShown = false;
   function toggleAllAnswers() {
+    if (!teacherPreview) {
+      const now = new Date();
+    }
+    
     allShown = !allShown;
     const unlockedCards = document.querySelectorAll('.card:not(.locked):not(.empty-slot)');
+    let blockedCount = 0;
+    
     unlockedCards.forEach(card => {
       const box = card.querySelector('.answer-box');
       const btn = card.querySelector('.answer-toggle');
       if (box && btn) {
         if (allShown) {
+          if (!teacherPreview) {
+            const unlockStr = card.getAttribute('data-unlock');
+            if (unlockStr) {
+              const unlockDate = new Date(unlockStr);
+              const ansOpenTime = new Date(unlockDate.getFullYear(), unlockDate.getMonth(), unlockDate.getDate(), 16, 0, 0);
+              if (new Date() < ansOpenTime) {
+                blockedCount++;
+                return; // 略過未到 16:00 的卡片
+              }
+            }
+          }
           box.classList.add('show');
           btn.textContent = '隱藏答案';
         } else {
@@ -1214,6 +1248,10 @@
         }
       }
     });
+    
+    if (blockedCount > 0 && allShown) {
+      alert(`⏳ 部分已解鎖題目的答案與解析須於當天下午 4:00 後才能查看（已自動略過未到時間的題目）。`);
+    }
   }
 
   updateLocks();
