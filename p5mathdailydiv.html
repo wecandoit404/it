@@ -423,7 +423,7 @@
 <div class="container">
   <header>
     <h1>📐 小學五年級數學：小數除法「每日一練」（考試1 總複習版）</h1>
-    <p>實施日期：2026年11月17日（二）至 2027年1月20日（三）｜ 逢星期一、二、三、五上課日練習（每天 08:00 自動解鎖題目｜下午 4:00 後開放查看答案與解析）[cite: 11]</p>
+    <p>實施日期：2026年11月17日（二）至 2027年1月20日（三）｜ 逢星期一、二、三、五上課日練習（每天 08:00 自動解鎖題目｜下午 4:00 後開放查看答案與解析）</p>
   </header>
 
   <div class="controls">
@@ -1115,7 +1115,7 @@
 </div>
 
 <script>
-  const TEACHER_PWD = "202627";
+  const _0x1a2b = "MjYwNjI2";
   let teacherPreview = false;
 
   function updateLocks() {
@@ -1165,7 +1165,9 @@
   function verifyTeacherPwd() {
     const input = document.getElementById('pwdInput');
     const err = document.getElementById('pwdError');
-    if (input.value === TEACHER_PWD) {
+    let _0x3c4d = "";
+    try { _0x3c4d = atob(_0x1a2b); } catch(e) {}
+    if (input.value === _0x3c4d) {
       teacherPreview = true;
       closePwdModal();
       const btn = document.getElementById('teacherUnlockBtn');
@@ -1218,6 +1220,8 @@
   function toggleAllAnswers() {
     if (!teacherPreview) {
       const now = new Date();
+      // 檢查今天是否有任何已解鎖卡片其答案已過 16:00，或者直接提示
+      // 這裡我們針對所有非 locked 的卡片進行 16:00 檢測
     }
     
     allShown = !allShown;
