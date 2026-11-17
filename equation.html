@@ -208,12 +208,13 @@ input[type=range]::-moz-range-thumb{
   transition:all .2s;
 }
 #answerInput:focus{border-color:#4f7cff;box-shadow:0 0 0 4px rgba(79,124,255,.15)}
+#answerInput:disabled{background:#f8fafc;color:#94a3b8;cursor:not-allowed}
 
 .feedback{
   margin-top:18px;border-radius:14px;padding:0;max-height:0;overflow:hidden;
   transition:all .35s;text-align:left;
 }
-.feedback.show{max-height:400px;padding:16px 18px}
+.feedback.show{max-height:700px;padding:16px 18px}
 .feedback.ok{background:#f0fdf4;border:2px solid #86efac}
 .feedback.bad{background:#fef2f2;border:2px solid #fca5a5}
 .fb-title{font-weight:900;font-size:16px;margin-bottom:6px}
@@ -222,20 +223,51 @@ input[type=range]::-moz-range-thumb{
 .fb-body{font-size:15px;color:#475569;line-height:1.9}
 .fb-body b{color:#4f7cff}
 
-/* 練習區解題步驟：等號對齊、不含左側編號 */
+/* 練習區解題步驟：四列結構，等號對齊、整體置中 */
+.fb-steps-wrap{
+  text-align:center;
+  margin-top:8px;
+}
 .fb-steps-table{
-  display:inline-table;border-collapse:collapse;margin-top:6px;
-  font-family:"Cambria Math",Georgia,serif;
+  display:inline-table;border-collapse:collapse;
+  font-family:"Cambria Math",Georgia,"Times New Roman",serif;
 }
 .fb-steps-table .row{display:table-row}
-.fb-steps-table .cell{display:table-cell;padding:2px 0;vertical-align:middle}
+.fb-steps-table .cell{display:table-cell;padding:3px 0;vertical-align:middle;white-space:nowrap}
+.fb-steps-table .label-cell{
+  text-align:right;color:#16a34a;font-weight:900;font-size:14px;
+  padding-right:8px;white-space:nowrap;letter-spacing:1px;
+  min-width:2.2em;
+}
+.fb-steps-table .lhs-cell{
+  text-align:right;color:#1e3a8a;font-weight:800;padding-right:6px;
+}
 .fb-steps-table .eq-cell{
-  text-align:center;color:#16a34a;font-weight:900;padding:0 8px;
-  min-width:2.4em;white-space:nowrap;
+  text-align:center;color:#16a34a;font-weight:900;padding:0 6px;
+  min-width:1.6em;
 }
-.fb-steps-table .expr-cell{
-  text-align:left;color:#1e3a8a;font-weight:800;padding-left:4px;white-space:nowrap;
+.fb-steps-table .rhs-cell{
+  text-align:left;color:#1e3a8a;font-weight:800;padding-left:6px;
 }
+
+/* 答對後的反饋卡片底部「下一題」按鈕 */
+.fb-next-btn{
+  display:block;
+  margin:16px auto 0;
+  background:linear-gradient(135deg,#4f7cff,#8b5cf6);
+  color:#fff;
+  border:none;
+  padding:12px 32px;
+  border-radius:13px;
+  font-size:16px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(79,124,255,.35);
+  transition:all .2s;
+  font-family:inherit;
+}
+.fb-next-btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(79,124,255,.45)}
+.fb-next-btn:active{transform:translateY(0)}
 
 /* 兩步解方程專用：等號在中間對齊 */
 .steps-eq-table{
@@ -244,6 +276,10 @@ input[type=range]::-moz-range-thumb{
 }
 .steps-eq-table .row{display:table-row}
 .steps-eq-table .cell{display:table-cell;padding:3px 0;vertical-align:middle;white-space:nowrap}
+.steps-eq-table .label-cell{
+  text-align:right;color:#16a34a;font-weight:900;font-size:14px;
+  padding-right:8px;white-space:nowrap;letter-spacing:1px;
+}
 .steps-eq-table .lhs-cell{
   text-align:right;color:#1e3a8a;font-weight:800;padding-right:6px;
 }
@@ -715,16 +751,26 @@ function handleOneOp(btn, op) {
   }
 }
 
-/* 一步解方程步驟表：第2行前面加「解:」 */
+/* 一步解方程步驟表：4 列結構（標籤 / 左式 / 等號 / 右式）
+   ── 第2行標籤顯示「解:」，左側不再重複顯示等號
+   ── 每行算式在中間等號處垂直對齊 */
 function renderStepTable(steps) {
-  let html = '<table class="align-table" style="display:inline-table;">';
+  let html = '<table class="steps-eq-table">';
   steps.forEach((part, i) => {
-    let eqLabel = '';
-    if (i === 1) eqLabel = '解:';
-    else if (i >= 2) eqLabel = '=';
+    const idx = part.indexOf('=');
+    let lhs = '', rhs = '';
+    if (idx !== -1) {
+      lhs = part.slice(0, idx).trim();
+      rhs = part.slice(idx + 1).trim();
+    } else {
+      lhs = part.trim();
+    }
+    const labelText = (i === 1) ? '解:' : '';
     html += '<tr class="row">';
-    html += `<td class="cell eq-cell">${eqLabel}</td>`;
-    html += `<td class="cell expr-cell">${part}</td>`;
+    html += `<td class="cell label-cell">${labelText}</td>`;
+    html += `<td class="cell lhs-cell">${lhs}</td>`;
+    html += `<td class="cell eq-cell">=</td>`;
+    html += `<td class="cell rhs-cell">${rhs}</td>`;
     html += '</tr>';
   });
   html += '</table>';
@@ -738,10 +784,9 @@ initOne();
 ============================================================ */
 function generateTwoStepData() {
   const data = [];
-  const order = shuffle([0, 1, 2, 3]); // 加後乘、括號加、括號減、減後乘
+  const order = shuffle([0, 1, 2, 3]);
   for (const t of order) {
     if (t === 0) {
-      // ax + b = c
       const a = rand(2, 6), b = rand(2, 9), x = rand(2, 10);
       const c = a * x + b;
       data.push({
@@ -765,7 +810,6 @@ function generateTwoStepData() {
         dragAfter: { substituted: `y + ${b} = ${c}` }
       });
     } else if (t === 1) {
-      // a(x + b) = c
       const a = rand(2, 6), b = rand(2, 8), x = rand(2, 10);
       const inner = x + b;
       const c = a * inner;
@@ -790,7 +834,6 @@ function generateTwoStepData() {
         dragAfter: { substituted: `${a}y = ${c}` }
       });
     } else if (t === 2) {
-      // a(x − b) = c
       const a = rand(2, 6), b = rand(2, 7), x = rand(b + 2, b + 12);
       const inner = x - b;
       const c = a * inner;
@@ -815,7 +858,6 @@ function generateTwoStepData() {
         dragAfter: { substituted: `${a}y = ${c}` }
       });
     } else {
-      // ax − b = c
       let a, b, x, c;
       do {
         a = rand(2, 6); b = rand(2, 8); x = rand(2, 10);
@@ -1227,6 +1269,8 @@ function newQuestion() {
   currentQ = { eq, answer, hint, steps };
   $('qEquation').textContent = eq;
   $('answerInput').value = '';
+  $('answerInput').disabled = false;
+  $('checkBtn').disabled = false;
   $('feedback').className = 'feedback';
   $('feedback').innerHTML = '';
   $('answerInput').focus();
@@ -1238,15 +1282,29 @@ function updateStats() {
   $('total').textContent = total;
 }
 
+/* 練習區解題步驟：四列結構（標籤 / 左式 / 等號 / 右式）
+   ── 第2行標籤顯示「解:」
+   ── 整體置中、等號對齊、刪除左側多餘等號 */
 function renderFbStepsTable(steps) {
-  let html = '<table class="fb-steps-table">';
+  let html = '<div class="fb-steps-wrap"><table class="fb-steps-table">';
   steps.forEach((part, i) => {
+    const idx = part.indexOf('=');
+    let lhs = '', rhs = '';
+    if (idx !== -1) {
+      lhs = part.slice(0, idx).trim();
+      rhs = part.slice(idx + 1).trim();
+    } else {
+      lhs = part.trim();
+    }
+    const labelText = (i === 1) ? '解:' : '';
     html += '<tr class="row">';
-    html += `<td class="cell eq-cell">${i === 0 ? '' : '='}</td>`;
-    html += `<td class="cell expr-cell">${part}</td>`;
+    html += `<td class="cell label-cell">${labelText}</td>`;
+    html += `<td class="cell lhs-cell">${lhs}</td>`;
+    html += `<td class="cell eq-cell">=</td>`;
+    html += `<td class="cell rhs-cell">${rhs}</td>`;
     html += '</tr>';
   });
-  html += '</table>';
+  html += '</table></div>';
   return html;
 }
 
@@ -1270,9 +1328,16 @@ function checkAnswer() {
       <div class="fb-body">
         <b>解題步驟：</b><br>
         ${renderFbStepsTable(currentQ.steps)}
-      </div>`;
+      </div>
+      <button class="fb-next-btn" id="nextQuestionBtn">下一題 →</button>`;
     updateStats();
-    setTimeout(newQuestion, 1800);
+
+    // 答對後鎖定輸入與檢查按鈕，避免重複加減分
+    $('answerInput').disabled = true;
+    $('checkBtn').disabled = true;
+
+    // 使用者點擊「下一題」後才換題，卡片不會自動消失
+    document.getElementById('nextQuestionBtn').addEventListener('click', newQuestion);
   } else {
     streak = 0;
     total += 1;
