@@ -134,7 +134,7 @@
         .timer-bar {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.7rem;
             margin-bottom: 1.5rem;
             background: #f0e8dc;
             padding: 0.7rem 1.2rem;
@@ -188,8 +188,44 @@
             transform: none;
         }
 
-        .timer-display {
+        /* 拼音顯示/隱藏按鈕（位於計時列中） */
+        .toggle-pinyin-btn {
             margin-left: auto;
+            background: transparent;
+            border: 1px solid #d0bea8;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: #6c5b46;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+        }
+
+        .toggle-pinyin-btn:hover {
+            background: #e9ddcc;
+            border-color: #b8a48c;
+            color: #3e2e1b;
+        }
+
+        .toggle-pinyin-btn.active {
+            background: #cdb79b;
+            border-color: #b39b7c;
+            color: #2d241a;
+        }
+
+        .toggle-pinyin-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .timer-display {
             font-size: 1.3rem;
             font-weight: 700;
             font-family: 'Segoe UI', 'Microsoft JhengHei', monospace;
@@ -342,6 +378,10 @@
             transition: all 0.15s;
         }
 
+        .pinyin.hidden {
+            display: none;
+        }
+
         /* 顏色反饋 */
         .char-cell.correct .hanzi {
             color: #1e7b3c;
@@ -363,6 +403,16 @@
 
         .char-cell.pending .hanzi {
             color: #2a1f12;
+        }
+
+        /* 標點符號 */
+        .punctuation {
+            font-size: 1.4rem;
+            color: #7e6b52;
+            margin-left: 0.1rem;
+            margin-right: 0.2rem;
+            align-self: flex-end;
+            line-height: 2rem;
         }
 
         /* 下方：整行輸入框 */
@@ -424,6 +474,7 @@
             display: flex;
             gap: 0.6rem;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .clear-btn, .submit-btn {
@@ -602,6 +653,7 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 0.15rem;
+            align-items: flex-end;
         }
 
         .result-line .rchar {
@@ -655,6 +707,14 @@
         }
         .result-line .rchar.wrong .r-icon {
             color: #c0392b;
+        }
+
+        .result-line .result-punctuation {
+            font-size: 1.2rem;
+            color: #7e6b52;
+            margin-left: 0.1rem;
+            align-self: flex-end;
+            margin-bottom: 0.2rem;
         }
 
         /* 圖例 */
@@ -846,6 +906,15 @@
                 min-width: 85px;
                 padding: 0.15rem 0.7rem;
             }
+
+            .punctuation {
+                font-size: 1.1rem;
+            }
+
+            .toggle-pinyin-btn {
+                padding: 0.3rem 0.8rem;
+                font-size: 0.78rem;
+            }
         }
 
         @keyframes fadeIn {
@@ -902,7 +971,7 @@
         <span class="poem-count-badge" id="poemCountBadge">共 50 首</span>
     </div>
 
-    <!-- 計時設定列 -->
+    <!-- 計時設定列（含拼音顯示/隱藏按鈕） -->
     <div class="timer-bar">
         <label>⏱️ 計時選擇：</label>
         <div class="timer-options" id="timerOptions">
@@ -911,6 +980,9 @@
             <button class="timer-option" data-minutes="8">8 分鐘</button>
             <button class="timer-option" data-minutes="10">10 分鐘</button>
         </div>
+        <button class="toggle-pinyin-btn active" id="togglePinyinBtn">
+            🔤 隱藏拼音
+        </button>
         <div class="timer-display" id="timerDisplay">--:--</div>
     </div>
 
@@ -1052,7 +1124,7 @@
         { id: 'p12', title: '憫農', author: '李紳', lines: [
             { text: '鋤禾日當午', pinyin: 'chu he ri dang wu' },
             { text: '汗滴禾下土', pinyin: 'han di he xia tu' },
-            { text: '誰知盤中飧', pinyin: 'shui zhi pan zhong sun' },
+            { text: '誰知盤中餐', pinyin: 'shui zhi pan zhong can' },
             { text: '粒粒皆辛苦', pinyin: 'li li jie xin ku' }
         ]},
         { id: 'p13', title: '回鄉偶書', author: '賀知章', lines: [
@@ -1289,6 +1361,7 @@
     let currentPoemId = '';
     let currentLines = [];
     let lineCorrectMaps = [];
+    let pinyinVisible = true;
 
     // 計時狀態
     let selectedMinutes = 0;
@@ -1300,7 +1373,7 @@
     let timerStarted = false;
 
     // 歷史記錄
-    const HISTORY_KEY = 'poem_practice_history_v11';
+    const HISTORY_KEY = 'poem_practice_history_v14';
     let history = [];
 
     // DOM 元素
@@ -1311,6 +1384,7 @@
     const practiceArea = document.getElementById('practiceArea');
     const clearBtn = document.getElementById('clearBtn');
     const submitBtn = document.getElementById('submitBtn');
+    const togglePinyinBtn = document.getElementById('togglePinyinBtn');
     const poemCountBadge = document.getElementById('poemCountBadge');
     const resultPanel = document.getElementById('resultPanel');
     const resultScore = document.getElementById('resultScore');
@@ -1345,6 +1419,11 @@
         return (code >= 0x4E00 && code <= 0x9FFF) ||
                (code >= 0x3400 && code <= 0x4DBF) ||
                (code >= 0xF900 && code <= 0xFAFF);
+    }
+
+    function isPunctuation(ch) {
+        const punctuationChars = '，。！？、；：,.!?;:';
+        return punctuationChars.includes(ch);
     }
 
     function extractHanzi(text) {
@@ -1390,8 +1469,8 @@
         inputs.forEach(inp => { inp.disabled = !canInput; });
 
         clearBtn.disabled = !canInput;
+        togglePinyinBtn.disabled = !currentPoemId;
 
-        // 送出按鈕：選了古詩與時間即可送出
         if (currentPoemId && selectedMinutes > 0) {
             submitBtn.disabled = false;
         } else {
@@ -1404,12 +1483,24 @@
     }
 
     // ---------- 計時器 ----------
+    // 修改：切換計時時，若為重新開始（計時已結束、已開始、或有輸入），則自動清空輸入
     function selectTimer(minutes) {
         if (timerRunning) return;
+
+        // 判斷是否需要清空（重新開始）
+        const hadInput = Array.from(linesContainer.querySelectorAll('.line-input')).some(inp => inp.value.trim() !== '');
+        const isRestart = timerFinished || timerStarted || hadInput;
+
         if (timerFinished) {
             timerFinished = false;
             timerStarted = false;
         }
+
+        // 重新開始時自動清空已打文字
+        if (isRestart) {
+            clearAllInputs();
+        }
+
         selectedMinutes = minutes;
         timerOptions.querySelectorAll('.timer-option').forEach(btn => {
             if (parseInt(btn.dataset.minutes) === minutes) {
@@ -1484,6 +1575,34 @@
                 }
             });
         }
+    }
+
+    // ---------- 長度限制與規範化 ----------
+    function getLineTargetLength(lineIdx) {
+        return currentLines[lineIdx] ? currentLines[lineIdx].text.length : 0;
+    }
+
+    function getLinePunctuation(lineIdx, totalLines) {
+        if (lineIdx === totalLines - 1) return '。';
+        return lineIdx % 2 === 0 ? '，' : '。';
+    }
+
+    // 規範化輸入值：
+    // - 保留最多 targetLength 個漢字
+    // - 若原字串末尾為標點符號，且漢字總數未超過 targetLength，則保留該標點
+    function normalizeInputValue(value, targetLength) {
+        const hanzi = extractHanzi(value);
+        const truncatedHanzi = hanzi.slice(0, targetLength).join('');
+
+        let trailingPunc = '';
+        const trimmed = value.trim();
+        if (trimmed.length > 0) {
+            const lastChar = trimmed[trimmed.length - 1];
+            if (isPunctuation(lastChar) && hanzi.length <= targetLength) {
+                trailingPunc = lastChar;
+            }
+        }
+        return truncatedHanzi + trailingPunc;
     }
 
     // ---------- 輸入相關 ----------
@@ -1580,10 +1699,15 @@
                 charsHtml += `
                     <div class="char-cell pending">
                         <span class="hanzi">${hanzi}</span>
-                        <span class="pinyin">${pinyin}</span>
+                        <span class="pinyin ${pinyinVisible ? '' : 'hidden'}">${pinyin}</span>
                     </div>
                 `;
             }
+
+            const punctuation = getLinePunctuation(lineIdx, poem.lines.length);
+            charsHtml += `<span class="punctuation">${punctuation}</span>`;
+
+            const maxCharsAttr = text.length + 10;
 
             html += `
                 <div class="line-block" data-line="${lineIdx}" data-target="${text}">
@@ -1592,7 +1716,8 @@
                         <input type="text" class="line-input" 
                                placeholder="請輸入整行文字…" 
                                autocomplete="off" spellcheck="false"
-                               data-line="${lineIdx}" />
+                               data-line="${lineIdx}" 
+                               maxlength="${maxCharsAttr}" />
                     </div>
                 </div>
             `;
@@ -1609,6 +1734,46 @@
         const inputs = linesContainer.querySelectorAll('.line-input');
         inputs.forEach(input => {
             const lineIdx = parseInt(input.dataset.line);
+            let isComposing = false;
+
+            input.addEventListener('compositionstart', () => {
+                isComposing = true;
+            });
+
+            input.addEventListener('compositionend', () => {
+                isComposing = false;
+                const targetLength = getLineTargetLength(lineIdx);
+                const normalized = normalizeInputValue(input.value, targetLength);
+                if (input.value !== normalized) {
+                    input.value = normalized;
+                }
+                updateLineColors(lineIdx);
+                if (shouldStartTimer()) {
+                    startTimer();
+                }
+            });
+
+            input.addEventListener('input', () => {
+                if (timerFinished) {
+                    input.value = '';
+                    return;
+                }
+                if (!currentPoemId || !selectedMinutes) return;
+                if (isComposing) return;
+
+                const targetLength = getLineTargetLength(lineIdx);
+                const normalized = normalizeInputValue(input.value, targetLength);
+                if (input.value !== normalized) {
+                    input.value = normalized;
+                }
+
+                updateLineColors(lineIdx);
+                resultPanel.classList.remove('visible');
+
+                if (shouldStartTimer()) {
+                    startTimer();
+                }
+            });
 
             input.addEventListener('focus', (e) => {
                 if (!currentPoemId) {
@@ -1655,21 +1820,6 @@
                 }
             });
 
-            input.addEventListener('input', () => {
-                if (timerFinished) {
-                    input.value = '';
-                    return;
-                }
-                if (!currentPoemId || !selectedMinutes) return;
-
-                updateLineColors(lineIdx);
-                resultPanel.classList.remove('visible');
-
-                if (shouldStartTimer()) {
-                    startTimer();
-                }
-            });
-
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -1695,13 +1845,17 @@
                 }
                 e.preventDefault();
                 const pasteData = (e.clipboardData || window.clipboardData).getData('text');
-                const hanziOnly = extractHanzi(pasteData).join('');
+                const targetLength = getLineTargetLength(lineIdx);
                 const start = input.selectionStart;
                 const end = input.selectionEnd;
                 const before = input.value.slice(0, start);
                 const after = input.value.slice(end);
-                input.value = before + hanziOnly + after;
-                input.dispatchEvent(new Event('input', { bubbles: true }));
+                const merged = before + pasteData + after;
+                input.value = normalizeInputValue(merged, targetLength);
+                updateLineColors(lineIdx);
+                if (shouldStartTimer()) {
+                    startTimer();
+                }
             });
         });
     }
@@ -1730,7 +1884,7 @@
         }
     }
 
-    // ---------- 送出結果（隨時可送） ----------
+    // ---------- 送出結果 ----------
     function submitResult() {
         if (!currentPoemId) {
             showToast('請先選擇一首古詩');
@@ -1788,6 +1942,10 @@
                     </div>
                 `;
             }
+
+            const punctuation = getLinePunctuation(lineIdx, poem.lines.length);
+            charsHtml += `<span class="result-punctuation">${punctuation}</span>`;
+
             linesHtml += `
                 <div class="result-line">
                     <div class="rline-chars">${charsHtml}</div>
@@ -1928,6 +2086,25 @@
         }
     }
 
+    // ---------- 拼音顯示/隱藏 ----------
+    function togglePinyin() {
+        pinyinVisible = !pinyinVisible;
+        document.querySelectorAll('.pinyin').forEach(el => {
+            if (pinyinVisible) {
+                el.classList.remove('hidden');
+            } else {
+                el.classList.add('hidden');
+            }
+        });
+        if (pinyinVisible) {
+            togglePinyinBtn.classList.add('active');
+            togglePinyinBtn.textContent = '🔤 隱藏拼音';
+        } else {
+            togglePinyinBtn.classList.remove('active');
+            togglePinyinBtn.textContent = '🔤 顯示拼音';
+        }
+    }
+
     // ---------- 事件綁定 ----------
     poemSelect.addEventListener('change', (e) => {
         renderPoem(e.target.value);
@@ -1944,6 +2121,7 @@
 
     clearBtn.addEventListener('click', clearAll);
     submitBtn.addEventListener('click', submitResult);
+    togglePinyinBtn.addEventListener('click', togglePinyin);
     clearHistoryBtn.addEventListener('click', clearHistory);
 
     // ---------- 初始化 ----------
