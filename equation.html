@@ -205,6 +205,12 @@ input[type=range]::-webkit-slider-thumb{
   border-radius:12px;padding:16px 18px;margin-bottom:12px;animation:fadeIn .4s;
   text-align:center;
 }
+.step-block.step2-compact{
+  margin-top:-14px;
+  padding-top:4px;
+  border-top-left-radius:0;
+  border-top-right-radius:0;
+}
 .step-label{
   font-size:15px;font-weight:900;color:#16a34a;letter-spacing:1px;margin-bottom:4px;
   text-align:left;
@@ -218,7 +224,7 @@ input[type=range]::-webkit-slider-thumb{
   padding:5px 14px;border-radius:999px;font-size:14px;margin-bottom:10px;
 }
 
-/* 兩步解方程專用統一對齊表格 */
+/* 兩步解方程專用統一對齊表格（步驟1） */
 .unified-steps-table{
   display:inline-table;border-collapse:collapse;
   font-family:"Cambria Math",Georgia,"Times New Roman",serif;
@@ -241,6 +247,29 @@ input[type=range]::-webkit-slider-thumb{
   min-width:80px;
 }
 
+/* 步驟2專用對齊表格：精準對齊步驟1的等號位置 */
+.unified-steps-table-step2{
+  display:inline-table;border-collapse:collapse;
+  font-family:"Cambria Math",Georgia,"Times New Roman",serif;
+  font-size:clamp(20px,3.2vw,25px);
+  text-align:center;
+  margin-top: -4px;
+}
+.unified-steps-table-step2 .row{display:table-row}
+.unified-steps-table-step2 .cell{display:table-cell;padding:2px 0;vertical-align:middle;white-space:nowrap}
+.unified-steps-table-step2 .lhs-cell{
+  text-align:right;color:#1e3a8a;font-weight:800;padding-right:8px;
+  min-width:140px;
+}
+.unified-steps-table-step2 .eq-cell{
+  text-align:center;color:#4f7cff;font-weight:900;padding:0 8px;
+  min-width:1.8em;
+}
+.unified-steps-table-step2 .rhs-cell{
+  text-align:left;color:#8b5cf6;font-weight:800;padding-left:8px;
+  min-width:80px;
+}
+
 /* ===== 自主設計方程區 ===== */
 .custom-builder{
   background:linear-gradient(135deg,#f8fafc,#f1f5f9);
@@ -258,6 +287,9 @@ input[type=range]::-webkit-slider-thumb{
 .builder-controls select, .builder-controls input{
   padding:8px 12px;border-radius:10px;border:2px solid #cbd5e1;
   font-size:14px;font-weight:700;color:#1e293b;background:#fff;outline:none;font-family:inherit;
+}
+.custom-error{
+  color:#dc2626;font-size:13px;font-weight:700;margin-top:8px;min-height:18px;
 }
 
 /* ===== 拖曳與點擊代入區 ===== */
@@ -359,7 +391,7 @@ footer{text-align:center;color:#94a3b8;font-size:13px;margin-top:30px}
         <div class="menu-card" data-target="p3">
           <div class="m-icon">🎯</div>
           <h3>③ 兩步解方程</h3>
-          <p>動態隨機生成兩步方程與括號方程，體驗互動拖曳與標準對齊解題。</p>
+          <p>動態隨機生成或自主設計題目（可選 a-z 任意字母，加法支援交換兩數），體驗互動拖曳與標準對齊解題。</p>
         </div>
         <div class="menu-card" data-target="p4">
           <div class="m-icon">🏆</div>
@@ -441,7 +473,7 @@ footer{text-align:center;color:#94a3b8;font-size:13px;margin-top:30px}
   <section id="p3" class="panel">
     <div class="card">
       <h2>🎯 兩步解方程</h2>
-      <p>兩步解方程要先後做兩個步驟，順序很重要：<b style="color:#ec4899">先處理「加／減」，再處理「乘／除以」</b>。</p>
+      <p>兩步解方程要先後做兩個步驟，順序很重要：<b style="color:#ec4899">先處理「加／減」，再處理「乘／除以」</b>（有加法的算式兩數交換也一樣！）。</p>
       
       <div class="chip-row" id="twoEqTabs"></div>
       
@@ -450,16 +482,22 @@ footer{text-align:center;color:#94a3b8;font-size:13px;margin-top:30px}
         <div class="builder-controls">
           <span>形式：</span>
           <select id="customType">
-            <option value="ax+b=c">ax + b = c</option>
-            <option value="ax-b=c">ax − b = c</option>
-            <option value="a(x+b)=c">a(x + b) = c</option>
-            <option value="a(x-b)=c">a(x − b) = c</option>
+            <option value="ax+b=c">a[字母] + b = c</option>
+            <option value="b+ax=c">b + a[字母] = c（交換兩數）</option>
+            <option value="ax-b=c">a[字母] − b = c</option>
+            <option value="a(x+b)=c">a([字母] + b) = c</option>
+            <option value="a(b+x)=c">a(b + [字母]) = c（交換兩數）</option>
+            <option value="a(x-b)=c">a([字母] − b) = c</option>
           </select>
-          <span>系數 a: <input type="number" id="customA" value="2" min="1" max="9" style="width:60px"></span>
-          <span>數值 b: <input type="number" id="customB" value="3" min="1" max="15" style="width:60px"></span>
-          <span>x 值: <input type="number" id="customX" value="4" min="1" max="20" style="width:60px"></span>
+          <span>字母：
+            <select id="customVar"></select>
+          </span>
+          <span>系數 a: <input type="number" id="customA" value="2" min="1" max="12" style="width:62px"></span>
+          <span>數值 b: <input type="number" id="customB" value="3" min="1" max="30" style="width:62px"></span>
+          <span>等號右邊的數 c: <input type="number" id="customC" value="11" min="1" max="200" style="width:72px"></span>
           <button class="btn-primary" id="customApplyBtn" style="padding:8px 16px;font-size:14px;">生成方程</button>
         </div>
+        <div class="custom-error" id="customError"></div>
       </div>
 
       <div class="progress-tag" id="twoProgress"></div>
@@ -534,6 +572,20 @@ function shuffle(arr) {
   }
   return a;
 }
+
+/* 初始化字母下拉選單 (a-z) */
+(function populateVarSelect() {
+  const sel = $('customVar');
+  if (!sel) return;
+  for (let code = 97; code <= 122; code++) {
+    const ch = String.fromCharCode(code);
+    const opt = document.createElement('option');
+    opt.value = ch;
+    opt.textContent = ch;
+    if (ch === 'x') opt.selected = true;
+    sel.appendChild(opt);
+  }
+})();
 
 /* 分頁切換功能 */
 function switchTab(tabId) {
@@ -800,105 +852,183 @@ function handleOneOp(btn, op) {
 
 $('oneReset').addEventListener('click', initOne);
 
-/* ================= 面板 3：兩步解方程（隨機生成） ================= */
-function makeTwoStepObj(type, a, b, x) {
-  let eq, target, c, steps, check, dragSub;
+/* ================= 面板 3：兩步解方程（隨機生成 + 自選題目支援 a-z 與右邊數 c + 加法交換兩數） ================= */
+function formatNum(n) {
+  return Number.isInteger(n) ? String(n) : Number(n.toFixed(2)).toString();
+}
+
+function makeTwoStepObjFromC(type, a, b, c, v = 'x') {
+  const aStr = a === 1 ? '' : `${a}`;
+  const subSymbol = v === 'y' ? 'Y' : 'y';
+  let eq, target, steps, check, dragSub, xVal;
+
   if (type === 'ax+b=c') {
-    c = a * x + b;
-    eq = `${a}x + ${b} = ${c}`;
-    target = `${a}x`;
+    const step1Right = c - b;
+    xVal = step1Right / a;
+    if (step1Right < 0 || !Number.isInteger(xVal)) {
+      return { error: `計算結果為 ${formatNum(xVal)}，請調整 b 或右邊的數 c，使 (${c} − ${b}) 能被 ${a} 整除且為正數。` };
+    }
+    eq = `${aStr}${v} + ${b} = ${c}`;
+    target = `${aStr}${v}`;
     steps = [
       {
         ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
         correct: `減 ${b}`,
-        lines: [`${a}x + ${b} = ${c}`, `${a}x + ${b} − ${b} = ${c} − ${b}`, `${a}x = ${c - b}`],
+        lines: [`${aStr}${v} + ${b} = ${c}`, `${aStr}${v} + ${b} − ${b} = ${c} − ${b}`, `${aStr}${v} = ${step1Right}`],
         explain: `步驟 1 解說：兩邊同時減 ${b}，把左邊的 +${b} 消去。`
       },
       {
         ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
         correct: `除以 ${a}`,
-        lines: [`${a}x = ${c - b}`, `${a}x ÷ ${a} = ${c - b} ÷ ${a}`, `x = ${x}`],
-        explain: `步驟 2 解說：兩邊同時除以 ${a}，使左邊只剩下 x。`
+        lines: [`${aStr}${v} ÷ ${a} = ${step1Right} ÷ ${a}`, `${v} = ${xVal}`],
+        explain: `步驟 2 解說：兩邊同時除以 ${a}，使左邊只剩下 ${v}。`
       }
     ];
-    check = `檢驗：${a} × ${x} + ${b} = ${a * x} + ${b} = ${c} ✓`;
-    dragSub = `y + ${b} = ${c}`;
+    check = `檢驗：${a} × ${xVal} + ${b} = ${a * xVal} + ${b} = ${c} ✓`;
+    dragSub = `${subSymbol} + ${b} = ${c}`;
+  } else if (type === 'b+ax=c') {
+    const step1Right = c - b;
+    xVal = step1Right / a;
+    if (step1Right < 0 || !Number.isInteger(xVal)) {
+      return { error: `計算結果為 ${formatNum(xVal)}，請調整 b 或右邊的數 c，使 (${c} − ${b}) 能被 ${a} 整除且為正數。` };
+    }
+    eq = `${b} + ${aStr}${v} = ${c}`;
+    target = `${aStr}${v}`;
+    steps = [
+      {
+        ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
+        correct: `減 ${b}`,
+        lines: [`${b} + ${aStr}${v} = ${c}`, `${b} + ${aStr}${v} − ${b} = ${c} − ${b}`, `${aStr}${v} = ${step1Right}`],
+        explain: `步驟 1 解說：加法兩數可交換，兩邊同時減 ${b}，把左邊的 ${b} 消去。`
+      },
+      {
+        ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+        correct: `除以 ${a}`,
+        lines: [`${aStr}${v} ÷ ${a} = ${step1Right} ÷ ${a}`, `${v} = ${xVal}`],
+        explain: `步驟 2 解說：兩邊同時除以 ${a}，使左邊只剩下 ${v}。`
+      }
+    ];
+    check = `檢驗：${b} + ${a} × ${xVal} = ${b} + ${a * xVal} = ${c} ✓`;
+    dragSub = `${b} + ${subSymbol} = ${c}`;
   } else if (type === 'ax-b=c') {
-    c = a * x - b;
-    if (c <= 0) c = a * x + 1;
-    eq = `${a}x − ${b} = ${c}`;
-    target = `${a}x`;
+    const step1Right = c + b;
+    xVal = step1Right / a;
+    if (!Number.isInteger(xVal)) {
+      return { error: `計算結果為 ${formatNum(xVal)}，請調整 b 或右邊的數 c，使 (${c} + ${b}) 能被 ${a} 整除。` };
+    }
+    eq = `${aStr}${v} − ${b} = ${c}`;
+    target = `${aStr}${v}`;
     steps = [
       {
         ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
         correct: `加 ${b}`,
-        lines: [`${a}x − ${b} = ${c}`, `${a}x − ${b} + ${b} = ${c} + ${b}`, `${a}x = ${c + b}`],
+        lines: [`${aStr}${v} − ${b} = ${c}`, `${aStr}${v} − ${b} + ${b} = ${c} + ${b}`, `${aStr}${v} = ${step1Right}`],
         explain: `步驟 1 解說：兩邊同時加 ${b}，把左邊的 −${b} 消去。`
       },
       {
         ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
         correct: `除以 ${a}`,
-        lines: [`${a}x = ${c + b}`, `${a}x ÷ ${a} = ${c + b} ÷ ${a}`, `x = ${x}`],
-        explain: `步驟 2 解說：兩邊同時除以 ${a}，使左邊只剩下 x。`
+        lines: [`${aStr}${v} ÷ ${a} = ${step1Right} ÷ ${a}`, `${v} = ${xVal}`],
+        explain: `步驟 2 解說：兩邊同時除以 ${a}，使左邊只剩下 ${v}。`
       }
     ];
-    check = `檢驗：${a} × ${x} − ${b} = ${a * x} − ${b} = ${c} ✓`;
-    dragSub = `y − ${b} = ${c}`;
+    check = `檢驗：${a} × ${xVal} − ${b} = ${a * xVal} − ${b} = ${c} ✓`;
+    dragSub = `${subSymbol} − ${b} = ${c}`;
   } else if (type === 'a(x+b)=c') {
-    const inner = x + b;
-    c = a * inner;
-    eq = `${a}(x + ${b}) = ${c}`;
-    target = `(x + ${b})`;
+    const step1Right = c / a;
+    xVal = step1Right - b;
+    if (!Number.isInteger(step1Right) || xVal < 0) {
+      return { error: `請確保右邊的數 c（${c}）能被系數 a（${a}）整除，且商不小於 ${b}。` };
+    }
+    eq = `${aStr}(${v} + ${b}) = ${c}`;
+    target = `(${v} + ${b})`;
     steps = [
       {
         ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
         correct: `除以 ${a}`,
-        lines: [`${a}(x + ${b}) = ${c}`, `${a}(x + ${b}) ÷ ${a} = ${c} ÷ ${a}`, `x + ${b} = ${inner}`],
+        lines: [`${aStr}(${v} + ${b}) = ${c}`, `${aStr}(${v} + ${b}) ÷ ${a} = ${c} ÷ ${a}`, `${v} + ${b} = ${step1Right}`],
         explain: `步驟 1 解說：把括號看成一個整體，兩邊同時除以 ${a}。`
       },
       {
         ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
         correct: `減 ${b}`,
-        lines: [`x + ${b} = ${inner}`, `x + ${b} − ${b} = ${inner} − ${b}`, `x = ${x}`],
+        lines: [`${v} + ${b} − ${b} = ${step1Right} − ${b}`, `${v} = ${xVal}`],
         explain: `步驟 2 解說：再處理括號內的加減，兩邊同時減 ${b}。`
       }
     ];
-    check = `檢驗：${a} × (${x} + ${b}) = ${a} × ${inner} = ${c} ✓`;
-    dragSub = `${a}y = ${c}`;
-  } else {
-    const inner = x - b;
-    if (inner <= 0) b = Math.max(1, x - 1);
-    const realInner = x - b;
-    c = a * realInner;
-    eq = `${a}(x − ${b}) = ${c}`;
-    target = `(x − ${b})`;
+    check = `檢驗：${a} × (${xVal} + ${b}) = ${a} × ${step1Right} = ${c} ✓`;
+    dragSub = `${aStr}${subSymbol} = ${c}`;
+  } else if (type === 'a(b+x)=c') {
+    const step1Right = c / a;
+    xVal = step1Right - b;
+    if (!Number.isInteger(step1Right) || xVal < 0) {
+      return { error: `請確保右邊的數 c（${c}）能被系數 a（${a}）整除，且商不小於 ${b}。` };
+    }
+    eq = `${aStr}(${b} + ${v}) = ${c}`;
+    target = `(${b} + ${v})`;
     steps = [
       {
         ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
         correct: `除以 ${a}`,
-        lines: [`${a}(x − ${b}) = ${c}`, `${a}(x − ${b}) ÷ ${a} = ${c} ÷ ${a}`, `x − ${b} = ${realInner}`],
+        lines: [`${aStr}(${b} + ${v}) = ${c}`, `${aStr}(${b} + ${v}) ÷ ${a} = ${c} ÷ ${a}`, `${b} + ${v} = ${step1Right}`],
+        explain: `步驟 1 解說：把括號看成一個整體，兩邊同時除以 ${a}。`
+      },
+      {
+        ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
+        correct: `減 ${b}`,
+        lines: [`${b} + ${v} − ${b} = ${step1Right} − ${b}`, `${v} = ${xVal}`],
+        explain: `步驟 2 解說：括號內加法可交換，兩邊同時減 ${b}。`
+      }
+    ];
+    check = `檢驗：${a} × (${b} + ${xVal}) = ${a} × ${step1Right} = ${c} ✓`;
+    dragSub = `${aStr}${subSymbol} = ${c}`;
+  } else {
+    const step1Right = c / a;
+    xVal = step1Right + b;
+    if (!Number.isInteger(step1Right)) {
+      return { error: `請確保右邊的數 c（${c}）能被系數 a（${a}）整除。` };
+    }
+    eq = `${aStr}(${v} − ${b}) = ${c}`;
+    target = `(${v} − ${b})`;
+    steps = [
+      {
+        ops: shuffle([`加 ${a}`, `減 ${a}`, `乘 ${a}`, `除以 ${a}`]),
+        correct: `除以 ${a}`,
+        lines: [`${aStr}(${v} − ${b}) = ${c}`, `${aStr}(${v} − ${b}) ÷ ${a} = ${c} ÷ ${a}`, `${v} − ${b} = ${step1Right}`],
         explain: `步驟 1 解說：把括號看成一個整體，兩邊同時除以 ${a}。`
       },
       {
         ops: shuffle([`加 ${b}`, `減 ${b}`, `乘 ${b}`, `除以 ${b}`]),
         correct: `加 ${b}`,
-        lines: [`x − ${b} = ${realInner}`, `x − ${b} + ${b} = ${realInner} + ${b}`, `x = ${x}`],
+        lines: [`${v} − ${b} + ${b} = ${step1Right} + ${b}`, `${v} = ${xVal}`],
         explain: `步驟 2 解說：再處理括號內的加減，兩邊同時加 ${b}。`
       }
     ];
-    check = `檢驗：${a} × (${x} − ${b}) = ${a} × ${realInner} = ${c} ✓`;
-    dragSub = `${a}y = ${c}`;
+    check = `檢驗：${a} × (${xVal} − ${b}) = ${a} × ${step1Right} = ${c} ✓`;
+    dragSub = `${aStr}${subSymbol} = ${c}`;
   }
-  return { eq, target, steps, check, dragAfter: { substituted: dragSub } };
+
+  return { eq, target, steps, check, variable: v, subSymbol, dragAfter: { substituted: dragSub } };
 }
 
 function generateTwoStepData() {
-  const types = ['ax+b=c', 'ax-b=c', 'a(x+b)=c', 'a(x-b)=c'];
+  const letters = ['x', 'y', 'a', 'm', 'n', 'k', 'p'];
+  const pickVar = () => letters[rand(0, letters.length - 1)];
+
+  const a1 = rand(2, 4), b1 = rand(2, 8), x1 = rand(3, 10);
+  const a2 = rand(2, 4), b2 = rand(2, 8), x2 = rand(4, 12);
+  const a3 = rand(2, 4), b3 = rand(2, 6), x3 = rand(3, 10);
+  const a4 = rand(2, 4), b4 = rand(2, 6), x4 = rand(5, 12);
+
+  // 有加法的題目隨機交換兩數順序
+  const addType1 = rand(0, 1) === 0 ? 'ax+b=c' : 'b+ax=c';
+  const addType3 = rand(0, 1) === 0 ? 'a(x+b)=c' : 'a(b+x)=c';
+
   return shuffle([
-    makeTwoStepObj(types[0], rand(2, 4), rand(2, 8), rand(3, 10)),
-    makeTwoStepObj(types[1], rand(2, 4), rand(2, 8), rand(4, 12)),
-    makeTwoStepObj(types[2], rand(2, 4), rand(2, 6), rand(3, 10)),
-    makeTwoStepObj(types[3], rand(2, 4), rand(2, 6), rand(5, 12))
+    makeTwoStepObjFromC(addType1, a1, b1, a1 * x1 + b1, pickVar()),
+    makeTwoStepObjFromC('ax-b=c', a2, b2, a2 * x2 - b2, pickVar()),
+    makeTwoStepObjFromC(addType3, a3, b3, a3 * (x3 + b3), pickVar()),
+    makeTwoStepObjFromC('a(x-b)=c', a4, b4, a4 * (x4 - b4), pickVar())
   ]);
 }
 
@@ -922,7 +1052,7 @@ function renderTwoTabs() {
   } else {
     const b = document.createElement('button');
     b.className = 'expr-btn active';
-    b.textContent = '✨ 自定義方程: ' + twoStepData[twoIdx].eq;
+    b.textContent = '✨ 自選題目: ' + twoStepData[twoIdx].eq;
     box.appendChild(b);
   }
 }
@@ -947,6 +1077,7 @@ function initTwo() {
   dragSuccess = false;
   renderTwoTabs();
   const d = twoStepData[twoIdx];
+  const subSym = d.subSymbol || 'y';
 
   renderEquationWithTarget();
   const eqEl = $('twoEquation');
@@ -959,9 +1090,10 @@ function initTwo() {
   $('twoSteps').innerHTML = '';
   $('explainsContainer').innerHTML = '';
   $('subResult').innerHTML = '';
-  $('dragInstruction').innerHTML = `🔽 <b>點擊</b>或<b>拖曳</b>下方的 y 卡片到方程中的代數式上面，看看會變成什麼！`;
+  $('dragInstruction').innerHTML = `🔽 <b>點擊</b>或<b>拖曳</b>下方的 ${subSym} 卡片到方程中的代數式上面，看看會變成什麼！`;
 
   const card = $('dragYCard');
+  card.textContent = subSym;
   card.classList.remove('hidden');
   card.style.transform = 'none';
   card.style.position = 'relative';
@@ -1032,12 +1164,12 @@ function handleTwoOp(btn, op) {
       expDiv.textContent = `💡 ${s.explain}`;
       $('explainsContainer').appendChild(expDiv);
 
+      div.classList.add('step2-compact');
       div.innerHTML = `
-        <div class="step-label" style="margin-top:10px;">步驟 2</div>
-        <table class="unified-steps-table">
+        <div class="step-label">步驟 2</div>
+        <table class="unified-steps-table-step2">
           <tr class="row"><td class="cell lhs-cell">${splitEq(s.lines[0])[0]}</td><td class="cell eq-cell">=</td><td class="cell rhs-cell">${splitEq(s.lines[0])[1]}</td></tr>
-          <tr class="row"><td class="cell lhs-cell">解: ${splitEq(s.lines[1])[0]}</td><td class="cell eq-cell">=</td><td class="cell rhs-cell">${splitEq(s.lines[1])[1]}</td></tr>
-          <tr class="row"><td class="cell lhs-cell">${splitEq(s.lines[2])[0]}</td><td class="cell eq-cell">=</td><td class="cell rhs-cell">${splitEq(s.lines[2])[1]}</td></tr>
+          <tr class="row"><td class="cell lhs-cell">${splitEq(s.lines[1])[0]}</td><td class="cell eq-cell">=</td><td class="cell rhs-cell">${splitEq(s.lines[1])[1]}</td></tr>
         </table>`;
     }
     
@@ -1072,6 +1204,8 @@ function handleTwoOp(btn, op) {
 function triggerSubstitution() {
   if (dragSuccess) return;
   dragSuccess = true;
+  const d = twoStepData[twoIdx];
+  const subSym = d.subSymbol || 'y';
   const card = $('dragYCard');
   card.classList.add('hidden');
 
@@ -1079,17 +1213,16 @@ function triggerSubstitution() {
   if (targetEl) {
     targetEl.classList.remove('highlight');
     targetEl.classList.add('success');
-    targetEl.textContent = 'y';
+    targetEl.textContent = subSym;
   }
 
   const box = $('subResult');
   const collapseBtn = $('collapseBtn');
-  const d = twoStepData[twoIdx];
 
   box.innerHTML = `
     <div class="sub-result-wrap" style="text-align:center;">
       <div class="sub-result-box">
-        <div class="r-title">🔁 用 y 代表 ${d.target} 之後</div>
+        <div class="r-title">🔁 用 ${subSym} 代表 ${d.target} 之後</div>
         <div class="r-line">原方程：${d.eq}</div>
         <div class="r-line">代入後：<span class="y-highlight">${d.dragAfter.substituted}</span></div>
         <div class="r-step-badge">↓ 這是一條一步解方程！</div>
@@ -1190,16 +1323,31 @@ function setupDragEvents() {
 
 $('customApplyBtn').addEventListener('click', () => {
   const type = $('customType').value;
-  const a = parseInt($('customA').value) || 2;
-  const b = parseInt($('customB').value) || 3;
-  const x = parseInt($('customX').value) || 4;
-  
-  twoStepData[twoIdx] = makeTwoStepObj(type, a, b, x);
+  const v = $('customVar').value || 'x';
+  const a = parseInt($('customA').value, 10) || 2;
+  const b = parseInt($('customB').value, 10) || 3;
+  const c = parseInt($('customC').value, 10);
+  const errEl = $('customError');
+  errEl.textContent = '';
+
+  if (Number.isNaN(c)) {
+    errEl.textContent = '⚠️ 請輸入等號右邊的數 c！';
+    return;
+  }
+
+  const obj = makeTwoStepObjFromC(type, a, b, c, v);
+  if (obj.error) {
+    errEl.textContent = '⚠️ ' + obj.error;
+    return;
+  }
+
+  twoStepData[twoIdx] = obj;
   customMode = true;
   initTwo();
 });
 
 $('twoReset').addEventListener('click', () => {
+  $('customError').textContent = '';
   customMode = false;
   twoStepData = generateTwoStepData();
   twoIdx = 0;
