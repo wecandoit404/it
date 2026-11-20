@@ -11,6 +11,29 @@
             padding: 0;
         }
 
+        /* ===== 鎖定頁面文字：禁止選取與拖曳 ===== */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* 輸入框允許選取與編輯 */
+        input, textarea, select {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        /* 允許下拉選單點擊 */
+        select {
+            -webkit-user-select: auto;
+            user-select: auto;
+        }
+
         body {
             font-family: 'Noto Serif TC', 'Microsoft JhengHei', 'PingFang TC', 'KaiTi', serif;
             background: #f8f4e8;
@@ -188,7 +211,7 @@
             transform: none;
         }
 
-        /* 拼音顯示/隱藏按鈕（位於計時列中） */
+        /* 拼音顯示/隱藏按鈕 */
         .toggle-pinyin-btn {
             margin-left: auto;
             background: transparent;
@@ -334,7 +357,7 @@
             box-shadow: 0 0 0 3px rgba(180, 150, 110, 0.2), inset 0 1px 4px rgba(160, 130, 90, 0.08);
         }
 
-        /* 上方顯示：每個字 + 拼音 + 顏色反饋 */
+        /* 上方顯示 */
         .line-display {
             display: flex;
             flex-wrap: wrap;
@@ -361,7 +384,6 @@
             transition: color 0.15s;
         }
 
-        /* 拼音字體放大 */
         .char-cell .pinyin {
             font-size: 0.95rem;
             color: #7e6b52;
@@ -382,7 +404,6 @@
             display: none;
         }
 
-        /* 顏色反饋 */
         .char-cell.correct .hanzi {
             color: #1e7b3c;
         }
@@ -405,7 +426,6 @@
             color: #2a1f12;
         }
 
-        /* 標點符號 */
         .punctuation {
             font-size: 1.4rem;
             color: #7e6b52;
@@ -415,7 +435,6 @@
             line-height: 2rem;
         }
 
-        /* 下方：整行輸入框 */
         .line-input-wrapper {
             display: flex;
             justify-content: center;
@@ -458,7 +477,6 @@
             cursor: not-allowed;
         }
 
-        /* 輸入提示 */
         .input-hint {
             display: flex;
             justify-content: space-between;
@@ -595,7 +613,6 @@
             color: #a12b2b;
         }
 
-        /* 計分摘要 */
         .score-summary {
             display: flex;
             gap: 1rem;
@@ -629,7 +646,6 @@
             color: #1e7b3c;
         }
 
-        /* 結果顯示：按照詩詞格式，每行一區塊 */
         .result-poem-lines {
             display: flex;
             flex-direction: column;
@@ -717,14 +733,12 @@
             margin-bottom: 0.2rem;
         }
 
-        /* 圖例 */
         .result-legend {
             font-size: 0.8rem;
             color: #8c7a63;
             text-align: center;
         }
 
-        /* 歷史記錄 */
         .history-section {
             margin-top: 1.8rem;
             background: #faf6ee;
@@ -926,7 +940,6 @@
             animation: fadeIn 0.25s ease;
         }
 
-        /* 提示訊息 */
         .toast-message {
             position: fixed;
             top: 20px;
@@ -962,7 +975,6 @@
     </h1>
     <div class="subhead">請先選擇古詩與時間（順序不拘），兩者都選好後即可開始輸入。開始輸入時自動計時，隨時可送出結果。</div>
 
-    <!-- 下拉選擇列表 -->
     <div class="selector-bar">
         <label for="poemSelect">📖 選擇古詩：</label>
         <select class="poem-select" id="poemSelect">
@@ -971,7 +983,6 @@
         <span class="poem-count-badge" id="poemCountBadge">共 50 首</span>
     </div>
 
-    <!-- 計時設定列（含拼音顯示/隱藏按鈕） -->
     <div class="timer-bar">
         <label>⏱️ 計時選擇：</label>
         <div class="timer-options" id="timerOptions">
@@ -986,21 +997,15 @@
         <div class="timer-display" id="timerDisplay">--:--</div>
     </div>
 
-    <!-- 空白提示 -->
     <div class="empty-prompt" id="emptyPrompt">
         <div class="icon">📖</div>
         <div>請從上方下拉選單選擇一首古詩</div>
         <div class="hint-text">選好古詩與時間後，點擊輸入框開始練習（自動計時）</div>
     </div>
 
-    <!-- 練習區 -->
     <div class="practice-area" id="practiceArea">
         <div class="poem-title" id="poemTitle"></div>
-
-        <!-- 逐行輸入區 -->
         <div id="linesContainer"></div>
-
-        <!-- 輸入提示 -->
         <div class="input-hint">
             <div class="keyboard-tip">
                 ⌨️ 開始輸入即自動計時 · 打完一行按 <kbd>Enter</kbd> 切換
@@ -1015,7 +1020,6 @@
             </div>
         </div>
 
-        <!-- 結果面板 -->
         <div class="result-panel" id="resultPanel">
             <div class="result-header">
                 <div class="result-title">
@@ -1023,7 +1027,6 @@
                 </div>
                 <div class="result-score" id="resultScore">0 / 0</div>
             </div>
-            <!-- 計分摘要 -->
             <div class="score-summary" id="scoreSummary"></div>
             <div class="result-poem-lines" id="resultPoemLines"></div>
             <div class="result-legend">
@@ -1032,7 +1035,6 @@
         </div>
     </div>
 
-    <!-- 歷史記錄 -->
     <div class="history-section">
         <div class="history-header">
             <div class="history-title">
@@ -1053,6 +1055,44 @@
 </div>
 
 <script>
+    // ===== 鎖定頁面文字：攔截複製、剪下、右鍵選單 =====
+    document.addEventListener('copy', (e) => {
+        // 允許輸入框內的複製
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+            return;
+        }
+        e.preventDefault();
+        showToast('頁面文字已鎖定，無法複製');
+    });
+
+    document.addEventListener('cut', (e) => {
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) {
+            return;
+        }
+        e.preventDefault();
+        showToast('頁面文字已鎖定，無法剪下');
+    });
+
+    document.addEventListener('contextmenu', (e) => {
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+            return;
+        }
+        e.preventDefault();
+        showToast('右鍵選單已停用');
+    });
+
+    // 防止拖曳選取
+    document.addEventListener('dragstart', (e) => {
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+            return;
+        }
+        e.preventDefault();
+    });
+
     // ---------- 古詩資料庫 (50首) ----------
     const poems = [
         { id: 'p1', title: '靜夜思', author: '李白', lines: [
@@ -1363,7 +1403,6 @@
     let lineCorrectMaps = [];
     let pinyinVisible = true;
 
-    // 計時狀態
     let selectedMinutes = 0;
     let timerInterval = null;
     let remainingSeconds = 0;
@@ -1372,11 +1411,9 @@
     let timerFinished = false;
     let timerStarted = false;
 
-    // 歷史記錄
-    const HISTORY_KEY = 'poem_practice_history_v14';
+    const HISTORY_KEY = 'poem_practice_history_v15';
     let history = [];
 
-    // DOM 元素
     const poemSelect = document.getElementById('poemSelect');
     const poemTitle = document.getElementById('poemTitle');
     const linesContainer = document.getElementById('linesContainer');
@@ -1393,11 +1430,9 @@
     const historyList = document.getElementById('historyList');
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
-    // 計時 DOM
     const timerOptions = document.getElementById('timerOptions');
     const timerDisplay = document.getElementById('timerDisplay');
 
-    // ---------- 提示訊息 ----------
     function showToast(message, isSuccess = false) {
         const existing = document.querySelector('.toast-message');
         if (existing) existing.remove();
@@ -1412,7 +1447,6 @@
         }, 2500);
     }
 
-    // ---------- 輔助函數 ----------
     function isCJKChar(ch) {
         if (!ch) return false;
         const code = ch.codePointAt(0);
@@ -1462,7 +1496,6 @@
         }
     }
 
-    // ---------- 更新輸入與按鈕狀態 ----------
     function updateInputAvailability() {
         const canInput = currentPoemId && selectedMinutes > 0 && !timerFinished;
         const inputs = linesContainer.querySelectorAll('.line-input');
@@ -1482,12 +1515,9 @@
         return currentPoemId && selectedMinutes > 0 && !timerRunning && !timerFinished && !timerStarted;
     }
 
-    // ---------- 計時器 ----------
-    // 修改：切換計時時，若為重新開始（計時已結束、已開始、或有輸入），則自動清空輸入
     function selectTimer(minutes) {
         if (timerRunning) return;
 
-        // 判斷是否需要清空（重新開始）
         const hadInput = Array.from(linesContainer.querySelectorAll('.line-input')).some(inp => inp.value.trim() !== '');
         const isRestart = timerFinished || timerStarted || hadInput;
 
@@ -1496,7 +1526,6 @@
             timerStarted = false;
         }
 
-        // 重新開始時自動清空已打文字
         if (isRestart) {
             clearAllInputs();
         }
@@ -1577,7 +1606,6 @@
         }
     }
 
-    // ---------- 長度限制與規範化 ----------
     function getLineTargetLength(lineIdx) {
         return currentLines[lineIdx] ? currentLines[lineIdx].text.length : 0;
     }
@@ -1587,9 +1615,6 @@
         return lineIdx % 2 === 0 ? '，' : '。';
     }
 
-    // 規範化輸入值：
-    // - 保留最多 targetLength 個漢字
-    // - 若原字串末尾為標點符號，且漢字總數未超過 targetLength，則保留該標點
     function normalizeInputValue(value, targetLength) {
         const hanzi = extractHanzi(value);
         const truncatedHanzi = hanzi.slice(0, targetLength).join('');
@@ -1605,7 +1630,6 @@
         return truncatedHanzi + trailingPunc;
     }
 
-    // ---------- 輸入相關 ----------
     function updateLineColors(lineIdx) {
         const block = linesContainer.querySelector(`.line-block[data-line="${lineIdx}"]`);
         if (!block) return;
@@ -1656,7 +1680,6 @@
         }
     }
 
-    // ---------- 渲染古詩 ----------
     function renderPoem(poemId) {
         stopTimer();
 
@@ -1860,7 +1883,6 @@
         });
     }
 
-    // ---------- 清空全部輸入 ----------
     function clearAllInputs() {
         const inputs = linesContainer.querySelectorAll('.line-input');
         inputs.forEach(inp => { inp.value = ''; });
@@ -1884,7 +1906,6 @@
         }
     }
 
-    // ---------- 送出結果 ----------
     function submitResult() {
         if (!currentPoemId) {
             showToast('請先選擇一首古詩');
@@ -2035,7 +2056,6 @@
         }, 100);
     }
 
-    // ---------- 歷史記錄 ----------
     function loadHistory() {
         try {
             const raw = localStorage.getItem(HISTORY_KEY);
@@ -2086,7 +2106,6 @@
         }
     }
 
-    // ---------- 拼音顯示/隱藏 ----------
     function togglePinyin() {
         pinyinVisible = !pinyinVisible;
         document.querySelectorAll('.pinyin').forEach(el => {
@@ -2105,7 +2124,6 @@
         }
     }
 
-    // ---------- 事件綁定 ----------
     poemSelect.addEventListener('change', (e) => {
         renderPoem(e.target.value);
         updateInputAvailability();
@@ -2124,7 +2142,6 @@
     togglePinyinBtn.addEventListener('click', togglePinyin);
     clearHistoryBtn.addEventListener('click', clearHistory);
 
-    // ---------- 初始化 ----------
     function init() {
         poemSelect.innerHTML = '<option value="">請選擇一首古詩…</option>';
         poems.forEach((poem, index) => {
