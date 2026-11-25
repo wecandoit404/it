@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>字靈守護戰｜輸入文字，守護核心</title>
+<style>
+  :root{
+    --ink:#20364a; --muted:#6b8091; --line:#d8e7e9;
+    --panel:rgba(255,255,255,.86); --accent:#34b7bd; --accent2:#ffbe63;
+    --core-y:45%;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden}
+  body{
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    color:var(--ink); background:#e8f1f4; -webkit-tap-highlight-color:transparent;
+  }
+  button,input{font-family:inherit}
+  button{cursor:pointer}
+  #arena{position:relative;width:100vw;height:100dvh;min-height:540px;overflow:hidden}
+  #bg{position:absolute;inset:0;background-size:cover;background-position:center 45%;
+      background-image:url("assets/bg1.jpg");filter:saturate(.94);
+      transition:background-image .4s ease,opacity .3s ease}
+  body.in-menu #bg{opacity:0}
+  #veil{position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.72) 0%,rgba(255,255,255,.18) 32%,
+      rgba(255,255,255,.04) 62%,rgba(24,48,64,.30) 100%)}
+  #flash{position:absolute;inset:0;pointer-events:none;background:rgba(255,86,86,0);transition:background .25s;z-index:15}
+  #flash.on{background:rgba(255,86,86,.28)}
+  /* ---------- HUD ---------- */
+  #hud{position:absolute;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;
+       gap:8px;flex-wrap:wrap;padding:12px 16px}
+  .brand{font-weight:900;font-size:18px;letter-spacing:.06em;text-shadow:0 1px 0 #fff;white-space:nowrap}
+  .brand small{display:block;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.12em}
+  .pill{background:var(--panel);border:1px solid rgba(255,255,255,.9);border-radius:999px;
+        padding:7px 13px;font-size:13px;font-weight:800;box-shadow:0 4px 14px rgba(32,54,74,.10);
+        backdrop-filter:blur(8px);white-space:nowrap}
+  .pill b{font-size:15px;color:#138c93}
+  #hearts{letter-spacing:2px;font-size:15px}
+  .spacer{flex:1}
+  .icon-btn{border:0;background:var(--panel);border-radius:999px;width:36px;height:36px;
+    font-size:16px;font-weight:800;box-shadow:0 4px 12px rgba(32,54,74,.12);backdrop-filter:blur(8px)}
+  .icon-btn:active{transform:scale(.92)}
+  .mode-btn{border:2px solid transparent;border-radius:14px;padding:8px 14px;font-size:13px;
+    font-weight:800;color:var(--muted);white-space:nowrap;background:transparent;line-height:1.35}
+  .mode-btn small{display:block;font-size:10px;font-weight:700;opacity:.78}
+  .mode-btn.active{background:var(--accent);color:#fff;box-shadow:0 3px 10px rgba(52,183,189,.35)}
+  /* ---------- Core ---------- */
+  #core{position:absolute;left:50%;top:var(--core-y);transform:translate(-50%,-50%);
+    width:190px;height:190px;z-index:8;pointer-events:none}
+  .core-ring{position:absolute;inset:12px;border-radius:50%;border:3px dashed rgba(52,183,189,.72);
+    box-shadow:0 0 0 8px rgba(255,255,255,.24),inset 0 0 34px rgba(52,183,189,.14);
+    animation:spin 18s linear infinite}
+  .core-ring::before{content:"";position:absolute;inset:12px;border-radius:50%;
+    border:2px solid rgba(255,255,255,.7)}
+  #guardian{position:absolute;left:50%;top:50%;width:158px;height:158px;object-fit:contain;
+    transform:translate(-50%,-52%);filter:drop-shadow(0 10px 10px rgba(24,48,64,.24));
+    animation:float 3.2s ease-in-out infinite}
+  #guardian.casting{animation:cast .48s cubic-bezier(.2,.9,.3,1)}
+  #skillName{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);
+    background:rgba(255,255,255,.88);border-radius:999px;padding:4px 12px;font-size:12px;
+    font-weight:900;white-space:nowrap;box-shadow:0 4px 12px rgba(32,54,74,.12)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes float{0%,100%{transform:translate(-50%,-52%)}50%{transform:translate(-50%,-58%)}}
+  @keyframes cast{0%{transform:translate(-50%,-52%) scale(1)}35%{transform:translate(-50%,-62%) scale(1.16)}
+    100%{transform:translate(-50%,-52%) scale(1)}}
+  /* ---------- Tokens & effects ---------- */
+  #tokens,#effects{position:absolute;inset:0;pointer-events:none}
+  #tokens{z-index:6}
+  .token{position:absolute;left:0;top:0;pointer-events:auto;padding:9px 17px;border-radius:15px;
+    background:rgba(255,255,255,.92);border:2px solid rgba(255,255,255,.95);
+    box-shadow:0 8px 18px rgba(25,52,70,.20),inset 0 0 0 1px rgba(52,183,189,.16);
+    font-size:clamp(18px,2.1vw,26px);font-weight:900;letter-spacing:.06em;white-space:nowrap;
+    user-select:none;will-change:transform;transition:box-shadow .16s,border-color .16s,filter .16s}
+  .token::after{content:"";position:absolute;right:-4px;top:-4px;width:11px;height:11px;border-radius:50%;
+    background:var(--accent);box-shadow:0 0 0 3px rgba(255,255,255,.85)}
+  .token.matched{border-color:#37c4c9;box-shadow:0 0 0 5px rgba(55,196,201,.26),0 8px 18px rgba(25,52,70,.2)}
+  .token.exact{border-color:#ffb347;filter:brightness(1.06);
+    box-shadow:0 0 0 6px rgba(255,179,71,.38),0 8px 20px rgba(25,52,70,.22)}
+  .token.frozen{border-color:#7ec8ff;box-shadow:0 0 0 5px rgba(126,200,255,.35),0 8px 18px rgba(25,52,70,.2)}
+  #effects{z-index:12}
+  .spark,.rune,.leaf{position:absolute;left:0;top:0;pointer-events:none;border-radius:50%}
+  .spark{width:9px;height:9px;background:var(--fx);box-shadow:0 0 12px var(--fx);
+    animation:fly .62s ease-out forwards}
+  .rune{width:18px;height:18px;border:3px solid var(--fx);border-radius:5px;
+    transform:rotate(45deg);box-shadow:0 0 12px var(--fx);animation:fly .5s ease-in forwards}
+  .leaf{width:16px;height:10px;background:var(--fx);border-radius:100% 0 100% 0;
+    animation:fly .6s ease-in-out forwards}
+  .ring{position:absolute;width:40px;height:40px;border-radius:50%;border:4px solid var(--fx);
+    transform:translate(-50%,-50%);animation:ringOut .55s ease-out forwards}
+  .laser{position:absolute;height:7px;border-radius:99px;transform-origin:0 50%;
+    background:linear-gradient(90deg,rgba(255,255,255,.1),var(--fx),#fff);
+    box-shadow:0 0 18px var(--fx);animation:laserOut .34s ease-out forwards}
+  .score-pop{position:absolute;font-weight:900;font-size:20px;color:#fff;transform:translate(-50%,-50%);
+    text-shadow:0 2px 8px rgba(24,48,64,.6);animation:popUp .9s ease-out forwards;white-space:nowrap}
+  @keyframes fly{to{transform:translate(var(--dx),var(--dy)) scale(.2) rotate(220deg);opacity:0}}
+  @keyframes ringOut{to{width:220px;height:220px;opacity:0;border-width:1px}}
+  @keyframes laserOut{0%{opacity:0;transform:scaleY(.2)}25%{opacity:1;transform:scaleY(1)}100%{opacity:0}}
+  @keyframes popUp{to{transform:translate(-50%,-160%) scale(1.15);opacity:0}}
+  /* ---------- Dock ---------- */
+  #dock{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:20;
+    width:min(780px,calc(100% - 22px));display:flex;gap:8px;align-items:center;
+    padding:11px;border-radius:22px;background:rgba(255,255,255,.90);
+    box-shadow:0 12px 34px rgba(24,48,64,.22);backdrop-filter:blur(10px)}
+  #entry{flex:1;min-width:0;border:2px solid #cfe3e5;border-radius:15px;padding:12px 15px;
+    font-size:18px;font-weight:800;color:var(--ink);outline:none;background:#fff}
+  #entry:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(52,183,189,.15)}
+  #entry.shake{animation:shake .3s}
+  @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .dock-btn{border:0;border-radius:15px;padding:12px 17px;font-weight:900;font-size:14px;white-space:nowrap}
+  #fire{background:linear-gradient(135deg,#29b7be,#1693a8);color:#fff;box-shadow:0 5px 14px rgba(22,147,168,.35)}
+  #hint{background:#fff3dc;color:#9b6515}
+  #hint:disabled{opacity:.55;cursor:default}
+  #ult{background:linear-gradient(135deg,#ffb347,#ff7a59);color:#fff;box-shadow:0 5px 14px rgba(255,122,89,.35)}
+  #ult:disabled{background:#e6ecee;color:#9aabb3;box-shadow:none;cursor:default;opacity:.8}
+  #energyWrap.full ~ #dock #ult:not(:disabled), #ult.ready{animation:ultGlow 1s ease-in-out infinite}
+  @keyframes ultGlow{50%{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,122,89,.6)}}
+  #toast{position:absolute;top:76px;left:50%;transform:translate(-50%,-12px);z-index:30;
+    background:rgba(28,52,70,.88);color:#fff;padding:9px 18px;border-radius:999px;font-size:14px;
+    font-weight:800;opacity:0;transition:.25s;pointer-events:none;white-space:nowrap;max-width:92vw;
+    overflow:hidden;text-overflow:ellipsis}
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  #toast.good{background:rgba(20,146,132,.92)}
+  #toast.bad{background:rgba(205,79,79,.92)}
+  #waveBanner{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%) scale(.8);
+    z-index:31;font-size:clamp(28px,5vw,54px);font-weight:900;color:#fff;
+    text-shadow:0 4px 18px rgba(20,44,60,.7);opacity:0;pointer-events:none;transition:.35s;white-space:nowrap}
+  #waveBanner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  /* ---------- Screens ---------- */
+  .screen{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+    padding:18px;background:rgba(22,44,62,.58);backdrop-filter:blur(9px)}
+  .screen.hidden{display:none}
+  .panel{width:min(1120px,100%);max-height:calc(100dvh - 36px);overflow:auto;border-radius:28px;
+    background:rgba(255,255,255,.96);padding:26px;box-shadow:0 24px 70px rgba(14,32,46,.34)}
+  .panel h1{margin:0;font-size:clamp(24px,3.4vw,38px);letter-spacing:.04em}
+  .panel h1 span{color:var(--accent)}
+  .subtitle{margin:6px 0 18px;color:var(--muted);font-size:14px;line-height:1.7}
+  .section-title{font-size:14px;font-weight:900;margin:18px 0 10px;color:#37566c}
+  .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .card{position:relative;border:3px solid transparent;border-radius:20px;background:#f5f9fa;
+    padding:12px;text-align:center;cursor:pointer;transition:.2s;overflow:hidden}
+  .card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(32,54,74,.14)}
+  .card.selected{border-color:var(--c);box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 22%,transparent)}
+  .card .num{position:absolute;left:10px;top:10px;width:26px;height:26px;border-radius:50%;
+    background:var(--c);color:#fff;font-size:13px;font-weight:900;line-height:26px}
+  .card img.g{width:104px;height:104px;object-fit:contain;margin:8px auto 2px;display:block;
+    filter:drop-shadow(0 6px 7px rgba(25,52,70,.18))}
+  .card h3{margin:4px 0 2px;font-size:14px;line-height:1.4}
+  .card p{margin:0;font-size:11px;color:var(--muted);line-height:1.5}
+  .card .skill{display:inline-block;margin-top:8px;font-size:12px;font-weight:900;color:var(--c);
+    background:#fff;border-radius:999px;padding:4px 10px}
+  .mode-row{display:flex;gap:8px;flex-wrap:wrap}
+  .mode-row .mode-btn{background:#f1f6f7;border:2px solid transparent;font-size:13px;padding:9px 15px}
+  .mode-row .mode-btn.active{background:var(--accent);color:#fff}
+  .primary{border:0;border-radius:16px;background:linear-gradient(135deg,#2ab5bd,#12889d);
+    color:#fff;font-size:17px;font-weight:900;padding:14px 34px;box-shadow:0 8px 20px rgba(18,136,157,.34)}
+  .primary:active{transform:scale(.97)}
+  .secondary{border:2px solid #cfe0e4;background:#fff;color:#35546a;border-radius:14px;
+    font-weight:900;padding:11px 20px}
+  .center{text-align:center;margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  #startWarn{margin-top:12px;text-align:center;color:#c0392b;font-size:13px;font-weight:900;
+    background:#fff1f0;border:2px solid #ffc9c4;border-radius:12px;padding:8px 14px}
+  #startWarn.hidden{display:none}
+  .tips{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.8}
+  .big-score{font-size:56px;font-weight:900;color:var(--accent);line-height:1.1}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:16px 0}
+  .stats div{background:#f2f7f8;border-radius:14px;padding:10px 18px;font-size:13px;font-weight:800}
+  /* ---------- 能量條與主動技 ---------- */
+  #energyWrap{position:absolute;left:50%;bottom:88px;transform:translateX(-50%);z-index:20;
+    width:min(780px,calc(100% - 22px));background:rgba(255,255,255,.88);border-radius:14px;
+    padding:7px 12px;box-shadow:0 6px 20px rgba(24,48,64,.16);backdrop-filter:blur(8px)}
+  #energyLabel{font-size:11px;font-weight:900;color:#4d6b7c;margin-bottom:4px}
+  #energyTrack{height:12px;border-radius:99px;background:#dce9ec;overflow:hidden;box-shadow:inset 0 1px 3px rgba(24,48,64,.12)}
+  #energyFill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#7bd6da,var(--accent));
+    transition:width .25s ease}
+  #energyWrap.full #energyFill{background:linear-gradient(90deg,var(--accent),#fff3b0,#ffb347);
+    box-shadow:0 0 14px var(--accent);animation:energyPulse .9s ease-in-out infinite}
+  #energyWrap.full #energyLabel{color:#c47b14}
+  @keyframes energyPulse{50%{filter:brightness(1.25)}}
+  .ult-wave{position:absolute;width:180px;height:180px;border-radius:50%;border:10px solid var(--fx);
+    transform:translate(-50%,-50%);animation:ultWave .75s ease-out forwards}
+  @keyframes ultWave{to{width:1500px;height:1500px;opacity:0;border-width:2px}}
+  @media(max-width:720px){
+    .cards{grid-template-columns:1fr}
+    .card{display:grid;grid-template-columns:80px 1fr;gap:10px;text-align:left;align-items:center}
+    .card img.g{width:76px;height:76px;margin:0}
+    .card .skill{margin-top:4px}
+    .mode-row .mode-btn{flex:1;min-width:120px}
+    .brand{font-size:15px}
+    .pill{padding:5px 9px;font-size:11px}
+    #dock{gap:6px;padding:8px}
+    #energyWrap{bottom:78px;padding:6px 10px}
+    #entry{font-size:16px;padding:10px 12px}
+    .dock-btn{padding:10px 12px;font-size:12px}
+    #core{transform:translate(-50%,-50%) scale(.82)}
+    .panel{padding:18px}
+  }
+</style>
+</head>
+<body>
+<div id="arena">
+  <div id="bg"></div><div id="veil"></div><div id="flash"></div>
+  <header id="hud">
+    <div class="brand">字靈守護戰<small>GLYPH GUARDIANS</small></div>
+    <div class="pill">⏱ <b id="timer">00:00</b></div>
+    <div class="pill">第 <b id="wave">1</b> 波</div>
+    <div class="pill">字靈 <b id="tokenCount">0/5</b></div>
+    <div class="pill">得分 <b id="score">0</b></div>
+    <div class="pill">連擊 <b id="combo">0</b></div>
+    <div class="pill" id="hearts">❤️❤️❤️❤️❤️</div>
+    <div class="spacer"></div>
+    <div class="pill" id="setupTag">請選擇組合</div>
+    <button class="icon-btn" id="soundBtn" title="音效開關">🔊</button>
+    <button class="icon-btn" id="pauseBtn" title="暫停">⏸</button>
+  </header>
+  <div id="core">
+    <div class="core-ring"></div>
+    <img id="guardian" src="" alt="守護者">
+    <div id="skillName">尚未選擇守護者</div>
+  </div>
+  <div id="tokens"></div><div id="effects"></div>
+  <div id="toast"></div><div id="waveBanner"></div>
+  <div id="energyWrap">
+    <div id="energyLabel">能量 0 / 100 · 每打一個字 +10</div>
+    <div id="energyTrack"><div id="energyFill"></div></div>
+  </div>
+  <div id="dock">
+    <input id="entry" type="text" autocomplete="off" autocorrect="off" autocapitalize="off"
+           spellcheck="false" placeholder="輸入字靈的文字，按 Enter 出招…" aria-label="輸入要消滅的文字">
+    <button class="dock-btn" id="hint">提示</button>
+    <button class="dock-btn" id="ult" disabled>★ 主動技</button>
+    <button class="dock-btn" id="fire">施展技能 ↵</button>
+  </div>
+</div>
+
+<!-- 開始畫面 -->
+<div class="screen" id="startScreen">
+  <div class="panel">
+    <h1>字靈守護戰 <span>· 文字防衛</span></h1>
+    <p class="subtitle">文字從四面八方逼近核心。選一位守護者，輸入相同的字，守護者就會施展技能消滅它！</p>
+    <div class="section-title">① 選擇守護者</div>
+    <div class="cards" id="cards"></div>
+    <div class="section-title">② 選擇文字類型（由易到難）</div>
+    <div class="mode-row" id="typeStart"></div>
+    <div class="section-title">③ 選擇速度難度（每種文字都有 4 段速度）</div>
+    <div class="mode-row" id="speedStart"></div>
+    <div class="center"><button class="primary" id="startBtn">開始守護 ✨</button></div>
+    <div id="startWarn" class="hidden"></div>
+    <div class="tips">玩法：計時從 00:00 開始，鍵入文字後按 Enter／點「施展技能」即可加分，也可直接點按字靈。<b>每消滅一個字累積 10 點能量，連續命中再加能量（字數越多加成越高，單次最多 +20），滿 100 點可發動專屬主動技</b>。連續命中累積連击加分；每 20 秒字靈會增殖。Esc 暫停。<b>守護者、文字類型與速度難度在遊戲開始後即鎖定。</b>最佳紀錄：<b id="bestStart">0</b></div>
+  </div>
+</div>
+
+<!-- 暫停 -->
+<div class="screen hidden" id="pauseScreen">
+  <div class="panel" style="max-width:440px;text-align:center">
+    <h1>暫停中 ⏸</h1>
+    <p class="subtitle">深呼吸，字靈們也停下来等你。</p>
+    <div class="center"><button class="primary" id="resumeBtn">繼續遊戲</button>
+    <button class="secondary" id="quitBtn">回到選單</button></div>
+  </div>
+</div>
+
+<!-- 結束 -->
+<div class="screen hidden" id="overScreen">
+  <div class="panel" style="max-width:520px;text-align:center">
+    <h1>核心失守了…</h1>
+    <p class="subtitle">別灰心，再守一次就能突破紀錄！</p>
+    <div class="big-score" id="finalScore">0</div>
+    <div class="stats">
+      <div>存活時間 <b id="finalTime">00:00</b></div>
+      <div>抵達波數 <b id="finalWave">1</b></div>
+      <div>消滅字靈 <b id="finalKills">0</b></div>
+      <div>最高連擊 <b id="finalCombo">0</b></div>
+    </div>
+    <div class="center"><button class="primary" id="againBtn">再守一次</button>
+    <button class="secondary" id="backBtn">更換組合</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => [...document.querySelectorAll(s)];
+
+  const POOLS = {
+    char: ['山','水','火','木','金','土','日','月','星','雲','風','雨','雷','電','花','草','樹','林','江','河','海','天','地','人','心','手','眼','春','夏','秋','冬','光','影','夢','龍','虎','鳥','魚','石','玉','琴','詩','書','畫','劍','馬','舟','橋','雪','霜','露','霧','泉','溪','峰','谷','島','帆','燈','鐘','鼓','鈴','羽','翼','果','葉','根','芽'],
+    word: ['森林','魔法','星光','彩虹','湖泊','晨曦','微風','雪花','月影','花瓣','青龍','白雲','飛鳥','游魚','古井','石橋','微光','守護','冒險','寶藏','精靈','巨人','童話','繪本','遠山','流水','星空','大地','春天','秋天','冬日','夏夜','燈火','歌聲','故事','傳說','秘境','水晶','符文','能量','機甲','翅膀','雲海','山丘','蘑菇','鹿角','盾牌','符咒','奇蹟'],
+    idiom: ['守株待兔','畫龍點睛','一帆風順','春暖花開','畫蛇添足','亡羊補牢','刻舟求劍','井底之蛙','狐假虎威','對牛彈琴','掩耳盜鈴','買櫝還珠','葉公好龍','精衛填海','夸父逐日','愚公移山','一鳴驚人','胸有成竹','妙手回春','一舉兩得','心花怒放','春華秋實','風調雨順','山清水秀','天高雲淡','秋高氣爽','冰天雪地','鳥語花香','柳暗花明','水深火熱','独一无二','萬紫千紅','海闊天空'],
+    poem: ['床前明月光','疑是地上霜','舉頭望明月','低頭思故鄉','春眠不覺曉','處處聞啼鳥','夜來風雨聲','花落知多少','白日依山盡','黃河入海流','欲窮千里目','更上一層樓','空山新雨後','天氣晚來秋','明月松間照','清泉石上流','舉杯邀明月','對影成三人','海上生明月','天涯共此時','會當凌絕頂','一覽眾山小','但願人長久','千里共嬋娟','橫看成嶺側成峰','遠近高低各不同','不識廬山真面目','只緣身在此山中']
+  };
+  // 文字類型（易→難）與速度難度（慢→極速）各自獨立選擇，共 4 × 4 = 16 種組合
+  const TYPES = [
+    {id:'char',  label:'單字', interval:2.10, speed:22, base:100, note:'一個字'},
+    {id:'word',  label:'詞語', interval:2.40, speed:24, base:170, note:'雙字以上'},
+    {id:'idiom', label:'成語', interval:3.00, speed:26, base:260, note:'四字成語'},
+    {id:'poem',  label:'古詩', interval:3.80, speed:28, base:380, note:'完整詩句'}
+  ];
+  const SPEEDS = [
+    {level:1, label:'慢速', factor:0.70, gap:1.30, note:'從容練習'},
+    {level:2, label:'中速', factor:0.95, gap:1.00, note:'標準節奏'},
+    {level:3, label:'快速', factor:1.20, gap:0.82, note:'考驗反應'},
+    {level:4, label:'極速', factor:1.50, gap:0.68, note:'地獄挑戰'}
+  ];
+  const COMBOS = [
+    {n:1, element:'土', name:'磐岩', guardian:'大地戰士守護者', bg:'古代遺跡', skill:'符文震擊', color:'#d9863c',
+     img:'assets/guardian1.png', bgimg:'assets/bg2.jpg', desc:'岩石戰錘揮落，暖橘符文化作衝擊波。',
+     ult:'符文震盪', ultDesc:'符文風暴席捲全場，消滅所有字靈'},
+    {n:2, element:'木', name:'青嵐', guardian:'森林遊俠守護者', bg:'魔法森林', skill:'葉刃風暴', color:'#79b84a',
+     img:'assets/guardian2.png', bgimg:'assets/bg1.jpg', desc:'自然長弓一拉，飛舞葉刃捲起森林之風。',
+     ult:'生命之雨', ultDesc:'回復 2 顆愛心，並淨化最危險的 3 個字靈'},
+    {n:3, element:'火', name:'焰羽', guardian:'烈焰戰士守護者', bg:'紅楓火山', skill:'烈焰灼燒', color:'#f2713c',
+     img:'assets/guardian3.png', bgimg:'assets/bg3.jpg', desc:'烈焰長槍刺出熾熱火芒，點燃字靈。',
+     ult:'熾焰連環', ultDesc:'燃燒最危險的 5 個字靈，並獲得完整分數'},
+    {n:4, element:'水', name:'潮生', guardian:'潮汐騎士守護者', bg:'湖畔水光', skill:'水波漣漪', color:'#3aa9d6',
+     img:'assets/guardian4.png', bgimg:'assets/bg4.jpg', desc:'海神三叉戟划出海藍波紋，洗去字靈。',
+     ult:'洪流席捲', ultDesc:'席捲最危險的 6 個字靈，並獲得 70% 分數'},
+    {n:5, element:'雷', name:'霆曜', guardian:'雷神守護者', bg:'雲端雷光', skill:'雷霆雷射', color:'#8f78dd',
+     img:'assets/guardian5.png', bgimg:'assets/bg5.jpg', desc:'雷電戰錘一揮，射出紫黃雷光。',
+     ult:'雷雲風暴', ultDesc:'雷擊麻痺全場 6 秒，並淨化最危險的 2 個字靈'}
+  ];
+  const arena = $('#arena'), entry = $('#entry'), toastEl = $('#toast');
+  const tokenLayer = $('#tokens'), fxLayer = $('#effects');
+  const state = {
+    comboIndex:null, type:null, speed:null, running:false, paused:false,
+    score:0, combo:0, maxCombo:0, kills:0, lives:5, wave:1, energy:0,
+    elapsed:0, density:1, spawnIn:1.0, tokens:[], id:0, hintCd:0, sound:true,
+    coreX:0, coreY:0, raf:0
+  };
+  let audioCtx = null;
+
+  /* ---------- 小工具 ---------- */
+  const norm = (s) => String(s || '').replace(/[\s，。！？、；：,.!?;:'"（）()「」『』]/g,'').toUpperCase();
+  const rand = (a,b) => a + Math.random()*(b-a);
+  const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
+  const bestKey = 'glyph-guardians-best';
+  const getBest = () => Number(localStorage.getItem(bestKey) || 0);
+  const setBest = (v) => localStorage.setItem(bestKey, String(v));
+  const fmtTime = (s) => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+  // 每 20 秒字靈上限 +1，讓畫面上的文字隨時間越多（上限 18）
+  const maxTokens = () => Math.min(5 + Math.floor(state.elapsed/20), 18);
+  const ENERGY_MAX = 100, ENERGY_PER_CHAR = 10, ENERGY_COMBO_CAP = 20;
+
+  function toast(msg, kind='') {
+    toastEl.textContent = msg;
+    toastEl.className = 'toast show ' + kind;
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => toastEl.classList.remove('show'), 1900);
+  }
+  function tone(freq, dur=.12, type='sine', vol=.06, end=freq) {
+    if (!state.sound) return;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+      o.type = type; o.frequency.setValueAtTime(freq, t);
+      o.frequency.exponentialRampToValueAtTime(Math.max(1,end), t+dur);
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(.001, t+dur);
+      o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t+dur+.02);
+    } catch (e) { /* 音效失敗不影響遊戲 */ }
+  }
+
+  /* ---------- 選單建立 ---------- */
+  function renderCards() {
+    $('#cards').innerHTML = COMBOS.map((c,i) => `
+      <div class="card ${i===state.comboIndex?'selected':''}" data-combo="${i}" style="--c:${c.color}">
+        <div class="num">${c.n}</div>
+        <img class="g" src="${c.img}" alt="${c.name}">
+        <h3>${c.element}元素 · ${c.name}</h3>
+        <p style="color:${c.color};font-weight:800">${c.guardian}</p>
+        <p style="margin-top:8px;color:${c.color};font-weight:900">★ ${c.ult}：${c.ultDesc}</p>
+      </div>`).join('');
+    $$('#cards .card').forEach(card => card.addEventListener('click', () => {
+      if (state.running) return; // 遊戲中鎖定選擇
+      state.comboIndex = Number(card.dataset.combo);
+      applyCombo();
+      renderCards();
+      tone(660,.08,'sine',.05,880);
+    }));
+  }
+  function renderChoices() {
+    $('#typeStart').innerHTML = TYPES.map(t => `<button class="mode-btn ${t.id===state.type?'active':''}" data-type="${t.id}">
+      ${t.label}<small>${t.note}</small></button>`).join('');
+    $('#speedStart').innerHTML = SPEEDS.map(s => `<button class="mode-btn ${s.level===state.speed?'active':''}" data-speed="${s.level}">
+      ${s.level} · ${s.label}<small>${s.note}</small></button>`).join('');
+    const ty = TYPES.find(t=>t.id===state.type), sp = SPEEDS.find(s=>s.level===state.speed);
+    $('#setupTag').textContent = (ty && sp) ? `${ty.label} · ${sp.label}` : (ty ? `${ty.label} · 未選速度` : (sp ? `未選類型 · ${sp.label}` : '請選擇組合'));
+    $$('#typeStart .mode-btn').forEach(b => b.addEventListener('click', () => {
+      if (state.running) return; // 遊戲中鎖定選擇
+      state.type = b.dataset.type;
+      renderChoices(); tone(520,.07,'sine',.04,700);
+    }));
+    $$('#speedStart .mode-btn').forEach(b => b.addEventListener('click', () => {
+      if (state.running) return;
+      state.speed = Number(b.dataset.speed);
+      renderChoices(); tone(700,.07,'sine',.04,700);
+    }));
+  }
+  function applyCombo() {
+    const c = COMBOS[state.comboIndex];
+    if (!c) return;
+    $('#bg').style.backgroundImage = `url("${c.bgimg}")`;
+    $('#guardian').src = c.img;
+    $('#guardian').style.filter = `drop-shadow(0 0 12px ${c.color}88) drop-shadow(0 10px 10px rgba(24,48,64,.24))`;
+    $('#skillName').textContent = `${c.name} · ${c.skill}`;
+    $('#ult').textContent = `★ ${c.ult}`;
+    document.documentElement.style.setProperty('--accent', c.color);
+    $('.core-ring').style.borderColor = c.color + 'cc';
+  }
+
+  /* ---------- HUD ---------- */
+  function updateHud() {
+    $('#wave').textContent = state.wave;
+    $('#score').textContent = state.score;
+    $('#combo').textContent = state.combo;
+    $('#hearts').textContent = '❤️'.repeat(state.lives) + '🖤'.repeat(5-state.lives);
+    $('#bestStart').textContent = getBest();
+  }
+
+  /* ---------- 能量與主動技 ---------- */
+  function updateEnergy() {
+    const full = state.energy >= ENERGY_MAX;
+    $('#energyFill').style.width = Math.round(state.energy/ENERGY_MAX*100) + '%';
+    $('#energyWrap').classList.toggle('full', full);
+    $('#ult').disabled = !full || !state.running;
+    $('#ult').classList.toggle('ready', full);
+    const c = COMBOS[state.comboIndex];
+    $('#energyLabel').textContent = full && c
+      ? `能量已滿！可發動「${c.ult}」`
+      : `能量 ${state.energy} / ${ENERGY_MAX} · 每字 +${ENERGY_PER_CHAR} · 連擊再加（上限 +${ENERGY_COMBO_CAP}）`;
+  }
+  function addEnergy(chars, combo) {
+    if (state.energy >= ENERGY_MAX) return;
+    const before = state.energy;
+    // 連擊加成：每多 1 連擊 +2 能量，依命中字數放大，單次上限 20
+    const comboGain = combo > 1
+      ? Math.min((combo-1)*2*Math.max(1,chars), ENERGY_COMBO_CAP)
+      : 0;
+    const gain = chars*ENERGY_PER_CHAR + comboGain;
+    state.energy = Math.min(ENERGY_MAX, state.energy + gain);
+    updateEnergy();
+    if (before < ENERGY_MAX && state.energy >= ENERGY_MAX) {
+      banner('能量已滿！');
+      toast(`可發動「${COMBOS[state.comboIndex].ult}」！`,'good');
+      tone(880,.18,'triangle',.05,1320);
+    }
+  }
+  function ultWave(color) {
+    const w=document.createElement('i'); w.className='ult-wave';
+    w.style.left=state.coreX+'px'; w.style.top=state.coreY+'px';
+    w.style.setProperty('--fx',color);
+    fxLayer.appendChild(w); setTimeout(()=>w.remove(),800);
+  }
+  function clearTokens(list, factor) {
+    list.forEach(t => {
+      if (!state.tokens.includes(t)) return;
+      const cfg=TYPES.find(x=>x.id===t.type);
+      const gain=Math.round(cfg.base*factor);
+      state.score+=gain; state.kills++;
+      scorePop(t.rx,t.ry,'+'+gain);
+      burst(t.rx,t.ry,COMBOS[state.comboIndex].color,8);
+      removeToken(t);
+    });
+    updateHud();
+  }
+  function useUlt() {
+    if (!state.running || state.paused) return;
+    if (state.energy < ENERGY_MAX) { toast('能量未滿，繼續消滅字靈！'); return; }
+    const c=COMBOS[state.comboIndex];
+    state.energy=0; updateEnergy();
+    const g=$('#guardian');
+    g.classList.remove('casting'); void g.offsetWidth; g.classList.add('casting');
+    setTimeout(()=>g.classList.remove('casting'),700);
+    ultWave(c.color); banner(c.ult+'！');
+    tone(260,.5,'sawtooth',.07,1100);
+    const near=[...state.tokens].sort((a,b)=>
+      Math.hypot(a.rx-state.coreX,a.ry-state.coreY)-Math.hypot(b.rx-state.coreX,b.ry-state.coreY));
+    if (c.n===1) {
+      clearTokens([...state.tokens],0.5);
+      for(let i=0;i<4;i++) setTimeout(()=>ring(state.coreX,state.coreY,c.color),i*130);
+    } else if (c.n===2) {
+      state.lives=Math.min(5,state.lives+2); updateHud();
+      clearTokens(near.slice(0,3),0.5);
+      for(let i=0;i<24;i++) {
+        const p=document.createElement('i'); p.className='spark';
+        p.style.left=rand(20,arena.clientWidth-20)+'px'; p.style.top='-10px';
+        p.style.setProperty('--fx',c.color);
+        p.style.setProperty('--dx',rand(-20,20)+'px');
+        p.style.setProperty('--dy',(state.coreY+40)+'px');
+        p.style.animationDelay=(i*18)+'ms';
+        fxLayer.appendChild(p); setTimeout(()=>p.remove(),900);
+      }
+    } else if (c.n===3) {
+      // 火：燃燒最危險的 5 個字靈，給予完整分數
+      clearTokens(near.slice(0,5),1.0);
+      for(let i=0;i<5;i++) setTimeout(()=>ring(state.coreX,state.coreY,'#ff8a3d'),i*100);
+      burst(state.coreX,state.coreY,'#ffb347',26);
+    } else if (c.n===4) {
+      // 水：洪流席捲最危險 6 個字靈，給予 70% 分數
+      clearTokens(near.slice(0,6),0.7);
+      for(let i=0;i<3;i++) setTimeout(()=>ring(state.coreX,state.coreY,c.color),i*110);
+      for(let i=0;i<26;i++) {
+        const p=document.createElement('i'); p.className='spark';
+        p.style.left=rand(20,arena.clientWidth-20)+'px'; p.style.top=state.coreY+'px';
+        p.style.setProperty('--fx',c.color);
+        p.style.setProperty('--dx',rand(-30,30)+'px');
+        p.style.setProperty('--dy',rand(-50,50)+'px');
+        p.style.animationDelay=(i*16)+'ms';
+        fxLayer.appendChild(p); setTimeout(()=>p.remove(),900);
+      }
+    } else {
+      // 雷：雷擊麻痺全場 6 秒，淨化最危險 2 個
+      clearTokens(near.slice(0,2),0.5);
+      state.tokens.forEach(t=>{ t.frozen=6; t.node.classList.add('frozen'); });
+      for(let i=0;i<3;i++) setTimeout(()=>{
+        const x=rand(60,arena.clientWidth-60), y=rand(80,state.coreY);
+        const laser=document.createElement('i'); laser.className='laser';
+        laser.style.left=x+'px'; laser.style.top=y+'px';
+        laser.style.width=rand(120,260)+'px'; laser.style.setProperty('--fx',c.color);
+        laser.style.transform=`rotate(${rand(-.9,.9)}rad)`;
+        fxLayer.appendChild(laser); setTimeout(()=>laser.remove(),380);
+      },i*140);
+    }
+    toast(`${c.ult} 發動！${c.ultDesc}`,'good');
+    entry.focus();
+  }
+
+  /* ---------- 遊戲流程 ---------- */
+  function show(id, on) { $(id).classList.toggle('hidden', !on); }
+  function startGame() {
+    const missing = [];
+    if (state.comboIndex === null) missing.push('守護者');
+    if (!state.type) missing.push('文字類型');
+    if (!state.speed) missing.push('速度難度');
+    if (missing.length) {
+      $('#startWarn').textContent = `請先選擇：${missing.join('、')}`;
+      $('#startWarn').classList.remove('hidden');
+      tone(200,.12,'square',.035);
+      return;
+    }
+    $('#startWarn').classList.add('hidden');
+    applyCombo();
+    state.score=0; state.combo=0; state.maxCombo=0; state.kills=0;
+    state.lives=5; state.wave=1; state.elapsed=0; state.density=1; state.spawnIn=.8;
+    $('#timer').textContent='00:00'; $('#tokenCount').textContent='0/5';
+    state.hintCd=0; state.paused=false; state.running=true;
+    state.tokens.forEach(t=>t.node.remove()); state.tokens=[];
+    fxLayer.innerHTML=''; entry.value='';
+    $('#hint').disabled=false; $('#hint').textContent='提示';
+    state.energy=0; updateEnergy();
+    updateHud();
+    show('#startScreen',false); show('#overScreen',false); show('#pauseScreen',false);
+    document.body.classList.remove('in-menu');
+    document.documentElement.style.setProperty('--core-y', window.innerWidth<720?'42%':'45%');
+    measureCore();
+    entry.focus();
+    const c0 = COMBOS[state.comboIndex];
+    banner(`${c0.element}元素守護者「${c0.name}」就位！`);
+    tone(440,.14,'triangle',.06,660);
+  }
+  function gameOver() {
+    state.running=false;
+    const best = Math.max(getBest(), state.score); setBest(best);
+    $('#finalScore').textContent=state.score;
+    $('#finalTime').textContent=fmtTime(state.elapsed);
+    $('#finalWave').textContent=state.wave;
+    $('#finalKills').textContent=state.kills;
+    $('#finalCombo').textContent=state.maxCombo;
+    show('#overScreen',true);
+    tone(360,.5,'sawtooth',.05,90);
+  }
+  function togglePause(force) {
+    if (!state.running) return;
+    state.paused = (typeof force === 'boolean') ? force : !state.paused;
+    show('#pauseScreen', state.paused);
+    if (!state.paused) entry.focus();
+  }
+  function banner(text) {
+    const b=$('#waveBanner'); b.textContent=text; b.classList.add('show');
+    clearTimeout(b.timer); b.timer=setTimeout(()=>b.classList.remove('show'),1300);
+  }
+  function measureCore() {
+    const r=arena.getBoundingClientRect();
+    state.coreX=r.width/2;
+    const cy=parseFloat(getComputedStyle(arena).getPropertyValue('--core-y')) || 45;
+    state.coreY=Math.min(r.height*cy/100, r.height-175);
+    $('#core').style.top = state.coreY+'px';
+  }
+
+  /* ---------- 字靈 ---------- */
+  function spawn() {
+    const type = state.type;
+    const ty = TYPES.find(t=>t.id===type), sp = SPEEDS.find(s=>s.level===state.speed);
+    const used = new Set(state.tokens.map(t=>t.key));
+    let text = pick(POOLS[type]);
+    for (let i=0;i<12 && used.has(norm(text));i++) text = pick(POOLS[type]);
+    if (used.has(norm(text))) return;
+
+    const w=arena.clientWidth, h=arena.clientHeight, side=Math.floor(Math.random()*4);
+    let x,y;
+    if (side===0){ x=rand(50,w-50); y=-45; }
+    else if (side===1){ x=w+45; y=rand(70,h-170); }
+    else if (side===2){ x=rand(50,w-50); y=h+45; }
+    else { x=-45; y=rand(70,h-170); }
+    const dx=state.coreX-x, dy=state.coreY-y, len=Math.hypot(dx,dy)||1;
+    const speed=ty.speed*sp.factor*(1+Math.min(state.wave-1,12)*.075)*rand(.9,1.12);
+    const node=document.createElement('div');
+    node.className='token'; node.textContent=text; node.title=`${ty.label} · ${sp.label}`;
+    const t={id:++state.id,node,text,key:norm(text),type,x,y,
+      vx:dx/len*speed, vy:dy/len*speed, rx:x, ry:y,
+      phase:rand(0,Math.PI*2), wfreq:rand(.9,1.7), wobble:rand(4,12)};
+    node.addEventListener('click', () => { if(state.running&&!state.paused) hit([t],true); });
+    tokenLayer.appendChild(node);
+    state.tokens.push(t);
+  }
+  function removeToken(t) {
+    t.node.remove();
+    const i=state.tokens.indexOf(t); if(i>=0) state.tokens.splice(i,1);
+  }
+  function updateTokens(dt, now) {
+    const R = window.innerWidth<720 ? 66 : 84;
+    for (const t of [...state.tokens]) {
+      if (!state.running) break;
+      if (t.frozen>0) {
+        t.frozen=Math.max(0,t.frozen-dt);
+        if (t.frozen===0) { t.node.classList.remove('frozen'); t.node.style.opacity=''; }
+      } else {
+        t.x += t.vx*dt; t.y += t.vy*dt;
+      }
+      t.rx = t.x + Math.sin(now*t.wfreq+t.phase)*t.wobble;
+      t.ry = t.y + Math.cos(now*t.wfreq*.8+t.phase)*t.wobble*.6;
+      t.node.style.transform = `translate(${t.rx}px,${t.ry}px) translate(-50%,-50%)`;
+      if (Math.hypot(t.rx-state.coreX,t.ry-state.coreY) < R) breach(t);
+    }
+  }
+  function breach(t) {
+    removeToken(t);
+    state.lives--; state.combo=0; updateHud();
+    $('#flash').classList.add('on'); setTimeout(()=>$('#flash').classList.remove('on'),220);
+    burst(state.coreX,state.coreY,'#ff6b6b',10);
+    toast('核心受損！剩餘 '+state.lives+' 顆愛心','bad');
+    tone(180,.25,'sawtooth',.06,90);
+    if (state.lives<=0) gameOver();
+  }
+  function highlight() {
+    const key=norm(entry.value);
+    for (const t of state.tokens) {
+      t.node.classList.toggle('matched', key.length>0 && t.key.startsWith(key));
+      t.node.classList.toggle('exact', key.length>0 && t.key===key);
+    }
+  }
+  function submit() {
+    if (!state.running || state.paused) return;
+    const key=norm(entry.value);
+    if (!key) { entry.classList.add('shake'); setTimeout(()=>entry.classList.remove('shake'),320); return; }
+    const exact=state.tokens.filter(t=>t.key===key);
+    if (exact.length) { entry.value=''; highlight(); hit(exact,false); return; }
+    if (state.tokens.some(t=>t.key.startsWith(key))) {
+      toast('快完成了，再輸入幾個字！'); tone(700,.07,'sine',.04);
+    } else {
+      toast('找不到這個字靈…','bad'); state.combo=0; updateHud();
+      entry.classList.add('shake'); setTimeout(()=>entry.classList.remove('shake'),320);
+      tone(200,.12,'square',.035);
+    }
+    entry.focus();
+  }
+  function hit(targets, byClick) {
+    const c=COMBOS[state.comboIndex];
+    const sorted=[...targets].sort((a,b)=>
+      Math.hypot(a.rx-state.coreX,a.ry-state.coreY)-Math.hypot(b.rx-state.coreX,b.ry-state.coreY));
+    state.combo++; state.maxCombo=Math.max(state.maxCombo,state.combo);
+    sorted.forEach((t,i) => {
+      const cfg=TYPES.find(x=>x.id===t.type);
+      const gain=Math.round(cfg.base*(1+Math.min(state.combo-1,10)*.1)*(byClick ? 0.8 : 1));
+      state.score+=gain; state.kills++;
+      addEnergy(t.key.length, state.combo);
+      scorePop(t.rx,t.ry,'+'+gain);
+      removeToken(t);
+      if (i<3) castSkill(t.rx,t.ry,c);
+    });
+    updateHud();
+    toast(state.combo>1 ? `連擊 ×${state.combo}！ ${c.skill}！` : `${c.skill}！字靈已消滅`,'good');
+    entry.focus();
+  }
+
+  /* ---------- 技能特效 ---------- */
+  function burst(x,y,color,n=14) {
+    for (let i=0;i<n;i++) {
+      const p=document.createElement('i'); p.className='spark';
+      const a=rand(0,Math.PI*2), d=rand(35,95);
+      p.style.left=x+'px'; p.style.top=y+'px';
+      p.style.setProperty('--fx',color);
+      p.style.setProperty('--dx',Math.cos(a)*d+'px');
+      p.style.setProperty('--dy',Math.sin(a)*d+'px');
+      fxLayer.appendChild(p); setTimeout(()=>p.remove(),700);
+    }
+  }
+  function scorePop(x,y,text) {
+    const p=document.createElement('div'); p.className='score-pop'; p.textContent=text;
+    p.style.left=x+'px'; p.style.top=y+'px';
+    fxLayer.appendChild(p); setTimeout(()=>p.remove(),950);
+  }
+  function ring(x,y,color) {
+    const r=document.createElement('i'); r.className='ring';
+    r.style.left=x+'px'; r.style.top=y+'px'; r.style.setProperty('--fx',color);
+    fxLayer.appendChild(r); setTimeout(()=>r.remove(),600);
+  }
+  function castSkill(x,y,c) {
+    const g=$('#guardian');
+    g.classList.remove('casting'); void g.offsetWidth; g.classList.add('casting');
+    setTimeout(()=>g.classList.remove('casting'),500);
+    const sx=state.coreX, sy=state.coreY-10, dx=x-sx, dy=y-sy;
+    ring(sx,sy,c.color);
+    if (c.n===1) {
+      for (let i=0;i<7;i++) {
+        const p=document.createElement('i'); p.className='rune';
+        p.style.left=(sx+rand(-16,16))+'px'; p.style.top=(sy+rand(-16,16))+'px';
+        p.style.setProperty('--fx',c.color);
+        p.style.setProperty('--dx',(dx+rand(-22,22))+'px');
+        p.style.setProperty('--dy',(dy+rand(-22,22))+'px');
+        fxLayer.appendChild(p); setTimeout(()=>p.remove(),650);
+      }
+    } else if (c.n===2) {
+      for (let i=0;i<10;i++) {
+        const p=document.createElement('i'); p.className='leaf';
+        p.style.left=(sx+rand(-20,20))+'px'; p.style.top=(sy+rand(-20,20))+'px';
+        p.style.setProperty('--fx',c.color);
+        p.style.setProperty('--dx',(dx+rand(-40,40))+'px');
+        p.style.setProperty('--dy',(dy+rand(-40,40))+'px');
+        p.style.animationDelay=(i*22)+'ms';
+        fxLayer.appendChild(p); setTimeout(()=>p.remove(),850);
+      }
+    } else if (c.n===3) {
+      // 火：向上噴湧的火星
+      for (let i=0;i<14;i++) {
+        const p=document.createElement('i'); p.className='spark';
+        p.style.left=(sx+rand(-14,14))+'px'; p.style.top=sy+'px';
+        p.style.setProperty('--fx',i%2?'#ffb347':'#f2713c');
+        p.style.setProperty('--dx',(dx*.45+rand(-30,30))+'px');
+        p.style.setProperty('--dy',(dy*.45-rand(20,70))+'px');
+        p.style.animationDelay=(i*18)+'ms';
+        fxLayer.appendChild(p); setTimeout(()=>p.remove(),780);
+      }
+    } else if (c.n===4) {
+      // 水：多層擴散水波
+      for (let i=0;i<3;i++) setTimeout(()=>ring(sx,sy,c.color),i*110);
+      for (let i=0;i<8;i++) {
+        const p=document.createElement('i'); p.className='spark';
+        p.style.left=(sx+rand(-12,12))+'px'; p.style.top=sy+'px';
+        p.style.setProperty('--fx','#8ad8f5');
+        p.style.setProperty('--dx',(dx*.6+rand(-26,26))+'px');
+        p.style.setProperty('--dy',(dy*.6+rand(-26,26))+'px');
+        p.style.animationDelay=(i*20)+'ms';
+        fxLayer.appendChild(p); setTimeout(()=>p.remove(),780);
+      }
+    } else {
+      // 雷：紫黃雷射
+      const len=Math.hypot(dx,dy), laser=document.createElement('i');
+      laser.className='laser'; laser.style.left=sx+'px'; laser.style.top=sy+'px';
+      laser.style.width=len+'px'; laser.style.setProperty('--fx',c.color);
+      laser.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;
+      fxLayer.appendChild(laser); setTimeout(()=>laser.remove(),380);
+    }
+    setTimeout(()=>burst(x,y,c.color,12),110);
+    tone(c.n===5?980:760,.16,'triangle',.05,c.n===5?1500:1200);
+  }
+
+  /* ---------- 主迴圈 ---------- */
+  function frame(now) {
+    const dt=Math.min((now-(frame.last||now))/1000,.05); frame.last=now;
+    if (state.running && !state.paused) {
+      state.elapsed+=dt;
+      $('#timer').textContent=fmtTime(state.elapsed);
+      $('#tokenCount').textContent=`${state.tokens.length}/${maxTokens()}`;
+      const w=1+Math.floor(state.elapsed/24);
+      if (w!==state.wave) {
+        state.wave=w; updateHud(); banner('第 '+w+' 波 · 字靈加速！'); tone(520,.2,'triangle',.05,780);
+      }
+      const dens=1+Math.floor(state.elapsed/20);
+      if (dens!==state.density) {
+        state.density=dens;
+        banner(`時間 ${fmtTime(state.elapsed)} · 字靈增殖！最多 ${maxTokens()} 個`);
+        tone(620,.18,'triangle',.05,940);
+      }
+      state.spawnIn-=dt;
+      if (state.spawnIn<=0) {
+        if (state.tokens.length<maxTokens()) spawn();
+        const ty=TYPES.find(t=>t.id===state.type), sp=SPEEDS.find(s=>s.level===state.speed);
+        state.spawnIn=ty.interval*sp.gap/(1+Math.min(state.wave-1,10)*.09)
+          /(1+Math.min(state.density-1,8)*.08)*rand(.78,1.25);
+      }
+      updateTokens(dt,now/1000);
+      if (state.hintCd>0) {
+        state.hintCd=Math.max(0,state.hintCd-dt);
+        $('#hint').disabled=state.hintCd>0;
+        $('#hint').textContent=state.hintCd>0?Math.ceil(state.hintCd)+'s':'提示';
+      }
+    }
+    state.raf=requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  window.addEventListener('resize', () => { measureCore(); state.tokens.forEach(t=>{
+    t.node.style.transform=`translate(${t.rx}px,${t.ry}px) translate(-50%,-50%)`;
+  }); });
+
+  /* ---------- 事件綁定 ---------- */
+  document.body.classList.add('in-menu');
+  renderCards(); renderChoices(); applyCombo(); updateEnergy(); updateHud();
+  const backToMenu = () => {
+    state.running=false; state.paused=false;
+    // 回到選單時清空選擇，維持「無預設選項」
+    state.comboIndex=null; state.type=null; state.speed=null;
+    $('#guardian').src=''; $('#skillName').textContent='尚未選擇守護者';
+    $('#startWarn').classList.add('hidden');
+    renderCards(); renderChoices();
+    show('#overScreen',false); show('#pauseScreen',false);
+    show('#startScreen',true); document.body.classList.add('in-menu');
+    updateEnergy();
+  };
+  $('#startBtn').addEventListener('click', startGame);
+  $('#againBtn').addEventListener('click', startGame);
+  $('#backBtn').addEventListener('click', backToMenu);
+  $('#fire').addEventListener('click', submit);
+  entry.addEventListener('input', highlight);
+  let composing=false;
+  entry.addEventListener('compositionstart',()=>composing=true);
+  entry.addEventListener('compositionend',()=>{ composing=false; highlight(); });
+  entry.addEventListener('keydown',e=>{
+    if (e.key==='Enter' && !composing && !e.isComposing) { e.preventDefault(); submit(); }
+  });
+  $('#hint').addEventListener('click',()=>{
+    if (!state.running||state.paused||state.hintCd>0||!state.tokens.length) return;
+    const target=[...state.tokens].sort((a,b)=>
+      Math.hypot(a.rx-state.coreX,a.ry-state.coreY)-Math.hypot(b.rx-state.coreX,b.ry-state.coreY))[0];
+    toast(`最危險的字靈：「${target.text[0]}」開頭 · 共 ${[...target.text].length} 字`);
+    if (!entry.value) { entry.value=target.text[0]; highlight(); }
+    state.hintCd=8; $('#hint').disabled=true; tone(880,.1,'sine',.04,1320); entry.focus();
+  });
+  $('#soundBtn').addEventListener('click',e=>{
+    state.sound=!state.sound; e.currentTarget.textContent=state.sound?'🔊':'🔇';
+    if(state.sound) tone(660,.08,'sine',.04);
+  });
+  $('#pauseBtn').addEventListener('click',()=>togglePause());
+  $('#resumeBtn').addEventListener('click',()=>togglePause(false));
+  $('#quitBtn').addEventListener('click', backToMenu);
+  $('#ult').addEventListener('click', useUlt);
+  document.addEventListener('keydown',e=>{
+    if (e.key==='Escape') togglePause();
+  });
+  arena.addEventListener('pointerdown',e=>{
+    if (state.running && !state.paused && !e.target.closest('#dock,#hud,.token')) entry.focus();
+  });
+})();
+</script>
+</body>
+</html>
