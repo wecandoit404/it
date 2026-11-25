@@ -181,6 +181,38 @@
   .ult-wave{position:absolute;width:180px;height:180px;border-radius:50%;border:10px solid var(--fx);
     transform:translate(-50%,-50%);animation:ultWave .75s ease-out forwards}
   @keyframes ultWave{to{width:1500px;height:1500px;opacity:0;border-width:2px}}
+  /* 橫屏：放大選項 2/3 並平均分佈整行，同時壓縮卡片與間距避免溢出 */
+  @media (orientation:landscape) and (min-width:721px){
+    .panel{padding:18px 26px}
+    .panel h1{font-size:clamp(22px,2.6vw,32px)}
+    .subtitle{margin:4px 0 10px;font-size:13px}
+    .section-title{margin:12px 0 8px;font-size:13px}
+    .card{padding:10px}
+    .card img.g{width:88px;height:88px;margin:6px auto 0}
+    .card h3{font-size:13px}
+    .card p{font-size:10px}
+    .mode-row{flex-wrap:nowrap;gap:12px}
+    .mode-row .mode-btn{flex:1;min-width:0;padding:14px 10px;font-size:16px;line-height:1.35}
+    .mode-row .mode-btn small{font-size:12px}
+    .center{margin-top:14px}
+    .tips{margin-top:10px;font-size:11px;line-height:1.6}
+  }
+  /* 極矮橫屏（如 844×390）：再壓縮角色卡，讓選項 2/3 更容易顯示 */
+  @media (orientation:landscape) and (min-width:721px) and (max-height:480px){
+    .panel{padding:12px 20px}
+    .panel h1{font-size:22px}
+    .subtitle{margin:4px 0 6px;font-size:12px}
+    .section-title{margin:8px 0 5px;font-size:12px}
+    .card{padding:6px}
+    .card img.g{width:60px;height:60px;margin:2px auto 0}
+    .card h3{font-size:11px}
+    .card p{font-size:9px}
+    .mode-row .mode-btn{padding:9px 10px;font-size:14px}
+    .mode-row .mode-btn small{font-size:10px}
+    .center{margin-top:10px}
+    .primary{padding:10px 26px;font-size:15px}
+    .tips{margin-top:8px;font-size:10px;line-height:1.5}
+  }
   @media(max-width:720px){
     .cards{grid-template-columns:1fr}
     .card{display:grid;grid-template-columns:80px 1fr;gap:10px;text-align:left;align-items:center}
