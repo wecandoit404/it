@@ -691,7 +691,9 @@
     if (state.tokens.some(t=>t.key.startsWith(key))) {
       toast('快完成了，再輸入幾個字！'); tone(700,.07,'sine',.04);
     } else {
+      // 打錯字或找不到字靈：清空輸入框並移除高亮，方便重新輸入
       toast('找不到這個字靈…','bad'); state.combo=0; updateHud();
+      entry.value=''; highlight();
       entry.classList.add('shake'); setTimeout(()=>entry.classList.remove('shake'),320);
       tone(200,.12,'square',.035);
     }
