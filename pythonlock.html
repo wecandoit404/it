@@ -256,6 +256,17 @@ body{
 .codex-eff{ font-size:12.5px; color:#4a4a63; line-height:1.5; margin-top:2px; }
 .codex-tip{ font-size:12px; color:#2f7a52; margin-top:3px; line-height:1.45; }
 .codex-note{ font-size:12.5px; color:#6b5c8a; background:#f6f2ff; border-radius:10px; padding:8px 10px; line-height:1.55; }
+/* 勇者技能：Lv.1 / Lv.2 / Lv.3 完整效果一覽 */
+.skill-lv-list{ margin-top:6px; border:1px solid #e9e4f3; border-radius:9px; overflow:hidden; background:#fff; }
+.skill-lv-row{ display:flex; align-items:flex-start; gap:8px; padding:5px 8px; font-size:12.5px;
+  line-height:1.5; color:#4a4a63; border-bottom:1px dashed #ebe7f4; }
+.skill-lv-row:last-child{ border-bottom:none; }
+.skill-lv-row.current{ background:#f0fbf3; box-shadow:inset 3px 0 0 #27ae60; }
+.skill-lv-tag{ flex:0 0 auto; font-size:11.5px; font-weight:bold; color:#6b4ca0;
+  background:#f3eeff; border-radius:6px; padding:1px 6px; margin-top:1px; }
+.skill-lv-row.current .skill-lv-tag{ color:#1f7a47; background:#dff5e6; }
+.skill-lv-desc{ flex:1; }
+.skill-lv-now{ flex:0 0 auto; font-size:11px; font-weight:bold; color:#1f7a47; margin-top:2px; }
 .boss-shield{
   font-size:12px; font-weight:bold; color:#1d4ed8; background:rgba(219,234,254,.85);
   display:inline-block; padding:2px 10px; border-radius:10px; margin-top:4px;
@@ -436,6 +447,8 @@ body{
 .lu-row.lu-down{ background:#fdeaea; border-color:#e8a0a0; color:#a33; }
 
 /* ---------- 通關成長畫面 ---------- */
+.continue-btn{ background:linear-gradient(135deg,#5cb85c,#7bd67b); box-shadow:0 6px 0 #3d8b3d; }
+.continue-btn:active{ box-shadow:0 2px 0 #3d8b3d; }
 .growth-box{
   width:100%; max-width: 430px; margin:0 auto; padding: 2px;
   max-height: calc(100dvh - 80px); overflow:auto;
@@ -554,6 +567,54 @@ body{
 }
 .skill-btn.ready:active{ transform: translateY(3px); box-shadow:0 1px 0 #b86a00; }
 @keyframes skillGlow{ 0%,100%{filter:brightness(1);} 50%{filter:brightness(1.18);} }
+
+/* ---------- 作答區技能列：橫屏時的主要操作入口（不被戰場縮放影響） ---------- */
+#combat-skillbar{ display:none; }
+@media (orientation: landscape){
+  #combat-skillbar{
+    display:flex; align-items:stretch; justify-content:center; gap:10px;
+    width:100%; flex:0 0 auto; padding:4px 6px 2px; box-sizing:border-box;
+  }
+  .cskill-group{
+    flex:1 1 0; max-width:440px; min-width:0;
+    display:flex; align-items:center; gap:7px;
+    background:#fbfaff; border:2px solid #ded3f2; border-radius:14px; padding:5px 8px;
+  }
+  .cskill-meta{
+    flex:0 0 auto; min-width:34px; display:flex; flex-direction:column; align-items:center; gap:3px;
+  }
+  .cskill-name{ font-size:12px; font-weight:bold; color:#3a3a55; white-space:nowrap; }
+  .cskill-energy{ display:inline-flex; gap:3px; }
+  .cskill-energy .epip{ width:11px; height:11px; border-width:2px; }
+  .cskill-btns{ flex:1 1 0; min-width:0; display:flex; gap:6px; }
+  .cskill-btn{
+    flex:1 1 0; min-width:0; min-height:40px; padding:4px 7px;
+    font-size:13px; font-weight:bold; font-family:inherit; line-height:1.2; cursor:pointer;
+    border:none; border-radius:11px; background:#b7bcc4; color:#fff; opacity:.72;
+    transition: transform .08s, box-shadow .08s;
+  }
+  .cskill-btn.ready{
+    background:linear-gradient(135deg,#ff7b00,#ffd93d); color:#4a2b00; opacity:1;
+    box-shadow:0 3px 0 #b86a00; animation:skillGlow 1s ease-in-out infinite;
+  }
+  .cskill-btn:active{ transform:translateY(2px); box-shadow:none; }
+  .cskill-info{
+    flex:0 0 auto; width:40px; min-height:40px; padding:0;
+    font-size:19px; font-family:inherit; cursor:pointer;
+    border:2px solid #a06cd5; border-radius:11px; background:#f6f2ff; color:#5a2d82;
+  }
+  .cskill-info:active{ transform:translateY(2px); }
+  /* 技能改到作答區後，戰場內的小按鈕在橫屏不再顯示（戰場也能少縮一點） */
+  .battle-scene .skill-row{ display:none; }
+  /* 極矮橫屏：技能列再壓緊一點，把空間留給題目 */
+  @media (max-height:480px){
+    #combat-skillbar{ padding:2px 6px 0; }
+    .cskill-group{ padding:3px 6px; border-radius:11px; gap:5px; }
+    .cskill-btn{ min-height:32px; font-size:12px; padding:2px 5px; }
+    .cskill-info{ width:32px; min-height:32px; font-size:16px; }
+    .cskill-energy .epip{ width:9px; height:9px; }
+  }
+}
 
 /* ---------- 技能橫幅 ---------- */
 #skill-banner{
@@ -735,6 +796,39 @@ body{
   .battle-scene .player-card{ min-width:0; border:none; box-shadow:0 4px 10px rgba(0,0,0,.12); }
 }
 
+
+/* 橫屏勇者卡：與魔王卡高度對齊，頭像與資訊放大到合適比例 */
+@media (orientation: landscape){
+  .battle-scene #players-panel{ flex-direction:row; flex-wrap:nowrap; gap:10px; }
+  .battle-scene #players-panel .player-card{
+    display:flex; flex-direction:column; justify-content:center;
+    min-height:212px; padding:12px 14px; min-width:0;
+  }
+  .battle-scene .player-sprite{ align-self:center; }
+  .battle-scene .player-sprite svg{ width:78px; height:78px; margin:0 auto; }
+  .battle-scene .player-name{
+    margin:5px 0 9px; font-size:17px; line-height:1.2; white-space:normal;
+  }
+  .battle-scene .level-badge{ font-size:12px; padding:1px 7px; }
+  .battle-scene .player-card .hp-bar{ height:20px; }
+  .battle-scene .player-card .hp-text{ font-size:12px; line-height:20px; }
+  .battle-scene .player-atk{
+    display:inline-block; margin:9px 0 0; padding:3px 10px; border-radius:10px;
+    font-size:14px; background:linear-gradient(135deg,#dbe9ff,#cfe0ff);
+  }
+  .battle-scene .energy-wrap{ margin:7px 0 2px; }
+  .battle-scene .energy-wrap .epip{ width:14px; height:14px; }
+  .battle-scene .down-tag{ margin:4px 0 0; font-size:12px; }
+}
+@media (orientation: landscape) and (max-height:480px){
+  .battle-scene #players-panel .player-card{ min-height:180px; padding:8px 10px; }
+  .battle-scene .player-sprite svg{ width:58px; height:58px; }
+  .battle-scene .player-name{ font-size:14px; margin:3px 0 5px; }
+  .battle-scene .player-card .hp-bar{ height:16px; }
+  .battle-scene .player-atk{ font-size:12px; margin:5px 0 0; padding:2px 8px; }
+  .battle-scene .energy-wrap{ margin:4px 0 0; }
+  .battle-scene .energy-wrap .epip{ width:11px; height:11px; }
+}
 </style>
 </head>
 <body>
@@ -751,10 +845,11 @@ body{
       <div class="big">🏰⚔️🐉</div>
       <h2>歡迎來到程式勇者村！</h2>
       <p>用你在 10 堂課學到的 Python 魔法指令，<br>答對選擇題就能攻擊魔王，把牠打倒吧！</p>
-      <p style="font-size:12px;color:#6b7a99;margin-top:6px;">🔥 每打完一個大關可獲得 <b>20 點成長</b>，自由分配到血量／攻擊／防禦，<br>還能升級技能或再學第 2 招（每人最多 2 招）。</p>
+      <p style="font-size:12px;color:#6b7a99;margin-top:6px;">🔥 每個大關首次通關可獲得 <b>20 點成長</b>，自由分配到血量／攻擊／防禦，<br>還能升級技能或再學第 2 招（每人最多 2 招）。同一階段重玩不再發放。</p>
     </div>
     <button class="menu-btn" onclick="selectMode('solo')">🧍 單人冒險</button>
     <button class="menu-btn alt" onclick="selectMode('coop')">👫 雙人合作</button>
+    <button class="menu-btn continue-btn" id="continue-party-btn" onclick="continueSavedParty()" style="display:none;">▶️ 繼續上次隊伍（保留等級・素質・技能）</button>
   </section>
 
   <!-- 職業選擇 -->
@@ -779,6 +874,7 @@ body{
     <div style="text-align:center;margin-top:14px;">
       <button class="back-link" onclick="beginClassSelection()">← 重新選職業</button>
       <button class="back-link" onclick="resetProgress()" style="margin-left:14px;">🔄 重置進度</button>
+      <button class="back-link" onclick="resetParty()" style="margin-left:14px;">🧹 重置角色成長</button>
     </div>
   </section>
 
@@ -819,6 +915,8 @@ body{
       </div>
 
       <div id="battle-question">
+        <!-- 橫屏作戰 major 操作列：不受戰場 zoom 影響，按鈕大且好按 -->
+        <div id="combat-skillbar"></div>
         <div id="questions-area"></div>
       </div>
     </div>
@@ -1312,14 +1410,16 @@ function escapeHtml(t){
 /* ---------- 技能庫（每個技能 3 級；每個角色最多 2 招，且各角色技能不重複） ----------
    type 決定戰鬥中的實際效果：
    wall 擋傷 / blood 獻血增傷 / burn 灼燒 / heal 自我治療 /
-   pierce 破甲無視護盾 / stun 震懾（魔王無法反擊）/ drain 吸血
+   可學技能「依職業分組」：成長時從本職業 2 招中選 1 招，不同職業候選完全不同
 */
 const SKILL_LEVEL_MAX = 3;
 const SKILLS = {
   wall: {
     id:'wall', name:'盾牆守護', icon:'🛡️', type:'wall',
     brief:'擋下下一次傷害',
-    text: lv => `展開護盾，抵擋下一次答錯受到的傷害${lv>=2?'，並反彈 50% 傷害給魔王':''}${lv>=3?'（可連續抵擋 2 次）':''}`,
+    text: lv => ['展開護盾，抵擋下一次答錯受到的傷害（可擋 1 次）',
+                 '抵擋 1 次答錯的傷害，並反彈 50% 傷害給魔王',
+                 '抵擋 2 次答錯的傷害，並反彈 50% 傷害給魔王'][lv-1],
   },
   blood: {
     id:'blood', name:'獻血狂斬', icon:'🩸', type:'blood',
@@ -1334,7 +1434,7 @@ const SKILLS = {
   heal: {
     id:'heal', name:'聖光治癒', icon:'🌟', type:'heal',
     brief:'回復自身 30% 血量',
-    text: lv => `回復自己最大血量的 30%（不治療隊友、不能復活任何人）${lv>=2?`，並額外回復 ${lv-1} 點能量`:''}`,
+    text: lv => `回復自己最大血量的 30%（不治療隊友、不能復活任何人）${lv>=2?`，並返還 ${lv-1} 點能量`:''}`,
   },
   pierce: {
     id:'pierce', name:'破甲重擊', icon:'⚡', type:'pierce',
@@ -1344,16 +1444,52 @@ const SKILLS = {
   stun: {
     id:'stun', name:'震懾之擊', icon:'💫', type:'stun',
     brief:'讓魔王無法反擊',
-    text: lv => `下一題魔王無法反擊（答錯也不受傷）${lv>=2?'，且該題傷害 +25%':''}${lv>=3?'，該題魔王也無法施放技能':''}`,
+    text: lv => ['下一題魔王無法反擊（答錯也不受傷）',
+                 '下一題魔王無法反擊，且該題傷害 +25%',
+                 '下一題魔王無法反擊、該題傷害 +25%，並且封鎖魔王技能'][lv-1],
   },
   drain: {
     id:'drain', name:'汲血之刃', icon:'🧛', type:'drain',
     brief:'攻擊同時吸血',
     text: lv => `下一題答對時，回復造成傷害的 ${[40,55,70][lv-1]}% 血量`,
   },
+  haste: {
+    id:'haste', name:'迅捷之力', icon:'💨', type:'haste',
+    brief:'下一題加速集能',
+    text: lv => `下一題答對後，額外獲得 ${[1,2,3][lv-1]} 點能量（更快再次發動技能）`,
+  },
+  execute: {
+    id:'execute', name:'斬殺重擊', icon:'⚔️', type:'execute',
+    brief:'對殘血魔王加重傷害',
+    text: lv => `下一題無視護盾並造成 +${[30,45,60][lv-1]}% 傷害；若魔王血量低於一半，再額外 +20%`,
+  },
+  meteor: {
+    id:'meteor', name:'流星火雨', icon:'☄️', type:'meteor',
+    brief:'更強的持續灼燒',
+    text: lv => `下一題答對後點燃魔王 3 回合，每回合額外 ${[12,18,25][lv-1]} 點傷害（無視護盾）`,
+  },
+  bless: {
+    id:'bless', name:'聖光祝福', icon:'✨', type:'bless',
+    brief:'復活隊友並回血',
+    text: lv => `立即復活一位倒下的隊友，回復其最大血量的 ${[30,40,50][lv-1]}%${lv>=2?`，並返還 ${lv-1} 點能量`:''}（若無人倒下則改為回復自己）`,
+  },
+  aegis: {
+    id:'aegis', name:'守護壁壘', icon:'🔰', type:'aegis',
+    brief:'擋傷的同時回血',
+    text: lv => [`抵擋 1 次答錯的傷害，擋下時回復 ${[10,18,26][lv-1]} 點血量`,
+                 `抵擋 1 次答錯的傷害，回復 ${[10,18,26][lv-1]} 點血量，並反彈 50% 傷害`,
+                 `抵擋 2 次答錯的傷害，回復 ${[10,18,26][lv-1]} 點血量，並反彈 50% 傷害`][lv-1],
+  },
 };
-/* 只能靠「通關成長」學會的技能（四職業的基礎技能不會互相學習，確保角色技能不重複） */
-const LEARNABLE = ['pierce','stun','drain'];
+/* 每個職業專屬 2 招可學技能：成長時從中 2 選 1，不同職業候選完全不同。
+   共 8 招，四職業各 2 招；雙人不同職業也不會出現相同候選。 */
+const LEARN_BY_CLASS = {
+  knight:  ['pierce','stun'],
+  warrior: ['drain','execute'],
+  mage:    ['haste','meteor'],
+  sage:    ['bless','aegis'],
+};
+const LEARNABLE = [...new Set(Object.values(LEARN_BY_CLASS).flat())];
 function skillLvText(id, lv){ return SKILLS[id] ? SKILLS[id].text(lv) : ''; }
 
 /* ---------- 職業資料（每個職業的基礎技能都不同） ---------- */
@@ -2331,7 +2467,11 @@ function pickClass(clsKey){
     return;
   }
   const names = state.mode==='coop' ? ['玩家 1','玩家 2'] : ['勇者'];
-  state.players = pickOrder.map((k,i)=>makePlayer(names[i],k));
+  // 同一模式、同一職業組合 → 讀回之前的成長；重新選不同職業才會從頭開始
+  state.players = savedPartyMatches(state.mode, pickOrder)
+    ? partyFromSave(savedParty)
+    : pickOrder.map((k,i)=>makePlayer(names[i],k));
+  saveParty();
   renderStageScreen();
   showScreen('stage');
 }
@@ -2346,6 +2486,32 @@ let unlockedStage = 1;   // 已開放的最高階段；= MAX_STAGE+1 代表全�
     if(Number.isInteger(v) && v >= 1 && v <= MAX_STAGE+1) unlockedStage = v;
   }catch(e){ /* file:// 或隱私模式可能禁用 localStorage：降級為「本次連線有效」 */ }
 })();
+/* 每個階段的 20 點成長與技能升級「只能領一次」，重玩同一階段不再發放 */
+const GROWTH_KEY = 'python_rpg_growth_claimed_v1';
+let claimedStages = new Set();
+(function loadClaimedGrowth(){
+  try{
+    const raw = localStorage.getItem(GROWTH_KEY);
+    if(raw === null){
+      // 舊版本沒有領取紀錄：已通關（已解鎖下一階段）的視為已領過，避免更新後多領一次
+      for(let id=1; id<unlockedStage; id++) claimedStages.add(id);
+      try{ localStorage.setItem(GROWTH_KEY, JSON.stringify([...claimedStages])); }catch(e){}
+      return;
+    }
+    const arr = JSON.parse(raw);
+    if(Array.isArray(arr)) arr.forEach(id=>{ if(Number.isInteger(id) && id>=1 && id<=MAX_STAGE) claimedStages.add(id); });
+  }catch(e){ /* localStorage 不可用時降級為本次連線有效 */ }
+})();
+function growthClaimed(id){ return claimedStages.has(id); }
+function claimGrowth(id){
+  if(!Number.isInteger(id)) return;
+  claimedStages.add(id);
+  try{ localStorage.setItem(GROWTH_KEY, JSON.stringify([...claimedStages])); }catch(e){}
+}
+function clearClaimedGrowth(){
+  claimedStages.clear();
+  try{ localStorage.removeItem(GROWTH_KEY); }catch(e){}
+}
 function unlockStage(id){
   if(id > unlockedStage && id <= MAX_STAGE+1){
     unlockedStage = id;
@@ -2355,10 +2521,91 @@ function unlockStage(id){
   return false;
 }
 function resetProgress(){
-  if(!confirm('確定要重置闖關進度嗎？第 2–6 階段會重新鎖住。')) return;
+  if(!confirm('確定要重置闖關進度嗎？第 2–6 階段會重新鎖住，各階段成長獎勵也會重新可領取。')) return;
   unlockedStage = 1;
+  clearClaimedGrowth();
   try{ localStorage.removeItem(UNLOCK_KEY); }catch(e){}
   renderStageScreen();
+}
+
+/* ---------- 角色成長存檔：換階段、回首页、重開瀏覽器都不會丟 ----------
+   每次通關成長確認後存檔；從首頁「繼續上次隊伍」或再次選相同職業/模式時自動讀回。
+   因此「重複玩同一階段」也能持續累積等級、素質與技能。 */
+const PARTY_KEY = 'python_rpg_party_v1';
+let savedParty = null;
+(function loadParty(){
+  try{
+    const raw = localStorage.getItem(PARTY_KEY);
+    if(!raw) return;
+    const o = JSON.parse(raw);
+    const need = o && o.mode === 'solo' ? 1 : (o && o.mode === 'coop' ? 2 : 0);
+    if(need && Array.isArray(o.players) && o.players.length === need) savedParty = o;
+  }catch(e){ /* localStorage 不可用時降級為本次連線有效 */ }
+})();
+function saveParty(){
+  if(!state.players || !state.players.length) return;
+  savedParty = {
+    mode: state.mode,
+    players: state.players.map(p=>({
+      name:p.name, cls:p.cls.key, level:p.level, maxHp:p.maxHp, atk:p.atk, def:p.def,
+      skills:p.skills.map(s=>({ id:s.id, lv:s.lv }))
+    }))
+  };
+  try{ localStorage.setItem(PARTY_KEY, JSON.stringify(savedParty)); }catch(e){}
+  updateContinueBtn();
+}
+/* 從存檔還原角色（做基本檢查，避免舊檔或手改資料讓遊戲當掉） */
+function partyFromSave(snap){
+  if(!snap || !Array.isArray(snap.players)) return [];
+  return snap.players.map(d=>{
+    const c = CLASSES[d && d.cls]; if(!c) return null;
+    const p = makePlayer(d.name || (snap.mode==='solo' ? '勇者' : '玩家'), d.cls);
+    p.level  = Math.max(1, Math.min(99, Number(d.level) || 1));
+    p.maxHp  = Math.max(1, Number(d.maxHp) || c.hp);
+    p.atk    = Math.max(1, Number(d.atk) || c.atk);
+    p.def    = Math.max(0, Number(d.def) || c.def);
+    p.hp     = p.maxHp;
+    const seen = new Set();
+    p.skills = (Array.isArray(d.skills) ? d.skills : [])
+      .filter(sk=>sk && SKILLS[sk.id] && !seen.has(sk.id) && seen.add(sk.id))
+      .slice(0,2)
+      .map(sk=>({ id:sk.id, lv:Math.max(1, Math.min(SKILL_LEVEL_MAX, Number(sk.lv) || 1)) }));
+    if(!p.skills.length) p.skills = [{ id:c.skill, lv:1 }];
+    return p;
+  }).filter(Boolean);
+}
+function savedPartyMatches(mode, keys){
+  if(!savedParty || savedParty.mode !== mode) return false;
+  if(!Array.isArray(savedParty.players) || savedParty.players.length !== keys.length) return false;
+  return keys.every((k,i)=>savedParty.players[i] && savedParty.players[i].cls === k);
+}
+function continueSavedParty(){
+  if(!savedParty) return;
+  const ps = partyFromSave(savedParty);
+  if(ps.length !== savedParty.players.length) return;
+  state.mode = savedParty.mode;
+  usedSigs = new Set(); usedSigOrder = []; state.recentTpl = [];
+  state.players = ps;
+  renderStageScreen();
+  showScreen('stage');
+}
+function resetParty(){
+  if(!confirm('確定要重置角色成長嗎？等級、血量／攻擊／防禦與技能都會回到初始值，各階段成長獎勵也會重新可領取（闖關進度不受影響）。')) return;
+  savedParty = null;
+  clearClaimedGrowth();
+  try{ localStorage.removeItem(PARTY_KEY); }catch(e){}
+  updateContinueBtn();
+  if(document.getElementById('screen-stage').classList.contains('active')) renderStageScreen();
+}
+function updateContinueBtn(){
+  const b = $('continue-party-btn'); if(!b) return;
+  if(!savedParty){ b.style.display = 'none'; return; }
+  b.style.display = '';
+  const names = savedParty.players.map(p=>{
+    const c = CLASSES[p.cls];
+    return `${c ? c.name : p.cls} Lv.${Number(p.level)||1}`;
+  }).join('、');
+  b.textContent = `▶️ 繼續上次隊伍（${names}）`;
 }
 
 /* ---------- 階段選擇 ---------- */
@@ -2390,6 +2637,7 @@ function renderStageScreen(){
       <div class="stage-qcount">${cleared ? '✅ 已通關・可再挑戰' : '📝 無限題庫・隨機生成不重複'}</div>
       <div class="stage-skills">👹 魔王技能：${skillNames}</div>
       <div class="stage-qcount" style="font-size:11.5px;color:#8a7aa8;">${rate<1?'🟢 單人模式：魔王血量 -25%':'👫 雙人模式：魔王完整強度'}</div>
+      ${growthClaimed(s.id)?'<div class="stage-qcount" style="font-size:11.5px;color:#b3261e;">🎁 本階段成長已領取・重玩不再發放</div>':''}
     </button>`;
   }).join('');
 }
@@ -2481,6 +2729,23 @@ function renderBattle(){
       <div class="skill-row" id="skills-${i}">${skillButtonsHtml(i,p)}</div>
       ${p.alive?'':'<div class="down-tag">😵 昏倒</div>'}
     </div>`).join('');
+  // 作答區大技能列（橫屏主要入口；直屏由 CSS 隱藏，維持原戰場按鈕）
+  $('combat-skillbar').innerHTML = state.players.map((p,i)=>{
+    const ready = skillReady(i,p);
+    const btns = p.skills.map((s,si)=>{
+      const def = SKILLS[s.id];
+      return `<button class="cskill-btn ${ready?'ready':''}" id="cskill-${i}-${si}"
+        onclick="activateSkill(${i},${si})" ${ready?'':'disabled'}
+        title="${escapeHtml(def.text(s.lv))}">${def.icon} ${def.name}</button>`;
+    }).join('');
+    return `<div class="cskill-group">
+      <div class="cskill-meta"><span class="cskill-name">${p.name}</span>
+        <span class="cskill-energy" id="cpips-${i}">${pipsHtml(p)}</span></div>
+      <div class="cskill-btns">${btns}</div>
+      <button class="cskill-info" type="button" onclick="openHeroSkills(${i})"
+        title="查看 ${escapeHtml(p.name)} 的技能說明">📖</button>
+    </div>`;
+  }).join('');
   renderQuestion();
   updateBars();
 }
@@ -2536,7 +2801,10 @@ function fitAnswerArea(){
   const area = document.getElementById('questions-area');
   if(!box || !area) return;
   area.style.zoom = '1';                       // 先還原，取得自然高度
-  const avail = box.clientHeight;              // 作答區所在格的高度（橫屏=下面 2/3）
+  const bar = document.getElementById('combat-skillbar');
+  const barH = (bar && getComputedStyle(bar).display !== 'none')
+    ? bar.getBoundingClientRect().height + 4 : 0;
+  const avail = Math.max(80, box.clientHeight - barH);  // 扣除技能列後的可題目可用高度
   const nat   = area.getBoundingClientRect().height;
   if(avail > 0 && nat > avail + 1){
     const s = Math.max(0.4, Math.min(1, avail / nat));   // 只縮不放，最多 0.4
@@ -2652,7 +2920,7 @@ function activateSkill(i, si){
   p.energy = 0;
 
   if(def.type==='heal'){
-    /* 賢者：只補自己，回復「目前最大血量的 30%」，不治療隊友、不復活任何人 */
+    /* 聖光治癒：只補自己 30%，不治療隊友、不復活任何人 */
     const amount = Math.round(p.maxHp * 0.3);
     const before = p.hp;
     p.hp = Math.min(p.maxHp, p.hp + amount);
@@ -2662,6 +2930,31 @@ function activateSkill(i, si){
     showSkillBanner(`🌟 ${p.name} 施放【${def.name} Lv.${lv}】！回復自身最大血量 30%（+${gained}）${refund?`，返還 ${refund} 點能量`:''}，無法復活隊友`);
     if(gained>0){ floatDamage($('player-'+i), '+'+gained, 'heal'); healFlash(i); }
     playSound('skill');
+  } else if(def.type==='bless'){
+    /* 聖光祝福：復活一位倒下的隊友，回復其最大血量 30/40/50%。
+       若無人倒下（或單人模式）則退化為回復自己，避免技能浪費。 */
+    const rate = [0.3,0.4,0.5][lv-1];
+    const refund = lv>=2 ? lv-1 : 0;
+    const mateIdx = state.players.findIndex((q,j)=> j!==i && !q.alive);
+    if(mateIdx>=0){
+      const mate = state.players[mateIdx];
+      mate.alive = true;
+      mate.hp = Math.max(1, Math.round(mate.maxHp * rate));
+      mate.done = false; mate.picked = -1; mate.pending = null;
+      if(refund) p.energy = Math.min(3, refund);
+      renderBattle();   // 重繪隊友卡與作答區，讓復活的隊友能繼續作答
+      showSkillBanner(`✨ ${p.name} 施放【${def.name} Lv.${lv}】！復活 ${mate.name}，回復 ${mate.hp}/${mate.maxHp} 血（${Math.round(rate*100)}%）${refund?`，返還 ${refund} 點能量`:''}！`);
+      floatDamage($('player-'+mateIdx), '+'+mate.hp, 'heal');
+      healFlash(mateIdx);
+    } else {
+      const before = p.hp;
+      p.hp = Math.min(p.maxHp, p.hp + Math.round(p.maxHp*rate));
+      const gained = p.hp - before;
+      if(refund) p.energy = Math.min(3, refund);
+      showSkillBanner(`✨ ${p.name} 施放【${def.name} Lv.${lv}】！沒有倒下的隊友，改為回復自身 ${Math.round(rate*100)}%（+${gained}）${refund?`，返還 ${refund} 點能量`:''}`);
+      if(gained>0){ floatDamage($('player-'+i), '+'+gained, 'heal'); healFlash(i); }
+    }
+    playSound('skill');
   } else if(def.type==='blood'){
     const cost = Math.min(Math.max(1, Math.round(p.maxHp*0.10)), Math.max(0, p.hp-1));
     p.hp = Math.max(1, p.hp - cost);
@@ -2669,10 +2962,11 @@ function activateSkill(i, si){
     floatDamage($('player-'+i), '🩸-'+cost, 'dmg-player');
     showSkillBanner(`🩸 ${p.name} 燃燒生命（-${cost} 血），下一題造成 ×${[2,2.5,3][lv-1]} 傷害！`);
     playSound('skill');
-  } else if(def.type==='wall'){
+  } else if(def.type==='wall' || def.type==='aegis'){
     const charges = lv>=3 ? 2 : 1;
-    p.pending = { id:'wall', lv, charges };
-    showSkillBanner(`🛡️ ${p.name} 展開【${def.name} Lv.${lv}】！可抵擋 ${charges} 次傷害${lv>=2?'，並反彈 50% 傷害':''}`);
+    const aegisHeal = def.type==='aegis' ? [10,18,26][lv-1] : 0;
+    p.pending = { id:def.type, lv, charges, heal:aegisHeal };
+    showSkillBanner(`${def.icon} ${p.name} 展開【${def.name} Lv.${lv}】！可抵擋 ${charges} 次傷害${lv>=2?'，並反彈 50% 傷害':''}${aegisHeal?`，擋下時回復 ${aegisHeal} 血`:''}`);
     playSound('skill');
   } else {
     p.pending = { id:def.type, lv };
@@ -2694,7 +2988,14 @@ function refreshControls(){
     const pips = $('pips-'+i);
     if(pips) pips.innerHTML = pipsHtml(p);
     const row = $('skills-'+i);
-    if(row) row.innerHTML = skillButtonsHtml(i,p);   // 技能按鈕狀態（能量、待發動）
+    if(row) row.innerHTML = skillButtonsHtml(i,p);   // 戰場內技能按鈕（直屏）
+    const cp = $('cpips-'+i);
+    if(cp) cp.innerHTML = pipsHtml(p);
+    const ready = skillReady(i,p);
+    p.skills.forEach((s,si)=>{
+      const b = $('cskill-'+i+'-'+si);
+      if(b){ b.classList.toggle('ready', ready); b.disabled = !ready; }
+    });
   });
 }
 
@@ -2757,15 +3058,23 @@ function resolveRound(){
 
     if(correct){
       p.correct++;
-      p.energy = Math.min(3, p.energy+1);
+      // 迅捷：本題額外回能（在一般 +1 之外）
+      const hasteGain = (pd && pd.id==='haste') ? [1,2,3][pd.lv-1] : 0;
+      p.energy = Math.min(3, p.energy+1+hasteGain);
       let mult = 1, crit = false, ignoreShield = false, drainPct = 0;
 
       if(pd){
         if(pd.id==='blood'){ mult = [2,2.5,3][pd.lv-1]; crit = true; p.pending = null; }
         else if(pd.id==='pierce'){ mult = 1 + [0.2,0.35,0.5][pd.lv-1]; crit = true; ignoreShield = true; p.pending = null; }
+        else if(pd.id==='execute'){
+          mult = 1 + [0.3,0.45,0.6][pd.lv-1];
+          if(state.bossHp <= state.bossMax/2) mult += 0.2;
+          crit = true; ignoreShield = true; p.pending = null;
+        }
         else if(pd.id==='stun'){ if(pd.lv>=2) mult = 1.25; crit = true; p.pending = null; }
         else if(pd.id==='drain'){ drainPct = [0.4,0.55,0.7][pd.lv-1]; p.pending = null; }
-        else if(pd.id==='burn'){ p.pending = null; }
+        else if(pd.id==='haste'){ p.pending = null; }
+        else if(pd.id==='burn' || pd.id==='meteor'){ p.pending = null; }
         // wall（盾牆）保留待命：要等答錯時才消耗，答對不會用掉
       }
 
@@ -2782,10 +3091,14 @@ function resolveRound(){
       playSound('hit');
 
       let msg = `✅ ${p.name} 答對！對 ${state.bossName} 造成 ${dmg} 點傷害` + (mult>1?'（技能強化！）':'') + '！';
+      if(hasteGain>0) msg += ` 💨 迅捷額外獲得 ${hasteGain} 點能量！`;
 
-      if(pd && pd.id==='burn'){
-        state.bossBurn = { dmg:[8,12,16][pd.lv-1], turns:2 };
-        msg += ` 🔥 魔王被點燃，接下來 2 題各額外受到 ${state.bossBurn.dmg} 傷害！`;
+      if(pd && (pd.id==='burn' || pd.id==='meteor')){
+        const meteor = pd.id==='meteor';
+        const bd = meteor ? [12,18,25][pd.lv-1] : [8,12,16][pd.lv-1];
+        const turns = meteor ? 3 : 2;
+        state.bossBurn = { dmg:bd, turns };
+        msg += ` 🔥 魔王被點燃，接下來 ${turns} 題各額外受到 ${bd} 傷害！`;
       }
       if(drainPct>0){
         const before = p.hp;
@@ -2807,9 +3120,15 @@ function resolveRound(){
     } else {
       let blocked = false, noCounter = false, reflect = false;
       if(pd){
-        if(pd.id==='wall'){
+        if(pd.id==='wall' || pd.id==='aegis'){
           blocked = true;
           pd.charges--;
+          if(pd.id==='aegis' && pd.heal){
+            const before = p.hp;
+            p.hp = Math.min(p.maxHp, p.hp + pd.heal);
+            const got = p.hp - before;
+            if(got>0){ floatDamage(playerEl, '+'+got, 'heal'); healFlash(i); }
+          }
           if(pd.charges<=0) p.pending = null;   // 用完才移除
           if(pd.lv>=2) reflect = true;
         } else if(pd.id==='stun'){
@@ -2837,7 +3156,9 @@ function resolveRound(){
           state.bossHp = Math.max(0, state.bossHp - rd);
           floatDamage($('boss-area'), '🛡️反彈-'+rd, 'dmg-shield');
         }
-        if(fbEl){ fbEl.textContent = `❌ ${p.name} 答錯，但🛡️盾牆擋下了攻擊${reflect?'並反彈傷害':''}！📘 ` + q.explain; fbEl.className = 'feedback bad'; }
+        const blockName = (pd && pd.id==='aegis') ? '守護壁壘' : '盾牆';
+        const blockHeal = (pd && pd.id==='aegis' && pd.heal) ? `（+${pd.heal} 血）` : '';
+        if(fbEl){ fbEl.textContent = `❌ ${p.name} 答錯，但🛡️${blockName}擋下了攻擊${blockHeal}${reflect?'並反彈傷害':''}！📘 ` + q.explain; fbEl.className = 'feedback bad'; }
       } else {
         floatDamage(playerEl, '-'+dmg, 'dmg-player');
         playerHit(i); shakeScreen(); playSound('hurt');
@@ -3026,21 +3347,26 @@ function heroSkillCardHtml(id, lv){
   const def = SKILLS[id];
   if(!def) return '';
   const max = SKILL_LEVEL_MAX;
-  const next = lv < max ? def.text(lv+1) : '';
-  const how = (def.type === 'heal')
+  const how = (def.type === 'heal' || def.type === 'bless')
     ? '🕐 發動方式：立刻生效（不佔用下一題）'
     : '🕐 發動方式：發動後「下一題」生效，該題答對才吃得到效果';
+  /* 一次列出 Lv.1 → Lv.2 → Lv.3 的完整效果，並標示目前等級 */
+  const levels = Array.from({length:max}, (_,n)=>n+1);
+  const rows = levels.map(n=>`
+    <div class="skill-lv-row ${n===lv?'current':''}">
+      <span class="skill-lv-tag">Lv.${n}</span>
+      <span class="skill-lv-desc">${def.text(n)}</span>
+      ${n===lv ? '<span class="skill-lv-now">目前</span>' : ''}
+    </div>`).join('');
   return `<div class="codex-boss">
     <div class="codex-boss-head">
       <span class="codex-boss-name">${def.icon} ${def.name}</span>
-      <span class="codex-boss-stat">Lv.${lv} / ${max}</span>
+      <span class="codex-boss-stat">目前 Lv.${lv} / 最高 Lv.${max}</span>
       <span class="codex-badge" style="color:#7a5ac0">${def.brief}</span>
     </div>
-    <div class="codex-skill">目前效果（Lv.${lv}）</div>
-    <div class="codex-eff">${def.text(lv)}</div>
-    ${next
-      ? `<div class="codex-skill" style="color:#2f7a52">升級後（Lv.${lv+1}）</div><div class="codex-eff">${next}</div>`
-      : `<div class="codex-tip">✅ 已達最高級 Lv.${max}</div>`}
+    <div class="codex-skill">Lv.1 → Lv.2 → Lv.3 完整效果</div>
+    <div class="skill-lv-list">${rows}</div>
+    ${lv>=max ? `<div class="codex-tip">✅ 已達最高級 Lv.${max}</div>` : ''}
     <div class="codex-eff" style="color:#6b5c8a">${how}</div>
   </div>`;
 }
@@ -3072,11 +3398,15 @@ function openPartySkills(){
 }
 function openClassSkills(key){
   const c = CLASSES[key]; if(!c) return;
+  const learnIds = LEARN_BY_CLASS[key] || [];
   openBossModal(`
     <div class="modal-title">${c.name}・職業技能</div>
     <div class="modal-sub">❤️ ${c.hp} 血　⚔️ ${c.atk} 攻　🛡️ ${c.def} 防<br>💠 被動：${c.passive}</div>
+    <div class="codex-stage-title">基礎技能（自帶）</div>
     ${heroSkillCardHtml(c.skill, 1)}
-    <div class="codex-note">通關每個大關後，可把技能升到 Lv.${SKILL_LEVEL_MAX}，或再學第 2 招（破甲重擊／震懾之擊／汲血之刃）。每人最多 2 招，隊友學過的不會重複。</div>`);
+    <div class="codex-stage-title">可選新技能（通關成長時，從這 ${learnIds.length} 招中選 1 招）</div>
+    ${learnIds.map(id=>heroSkillCardHtml(id, 1)).join('')}
+    <div class="codex-note">不同職業候選完全不同　·　每人最多 2 招　·　技能上限 Lv.${SKILL_LEVEL_MAX}</div>`);
 }
 
 /* ---------- 特效 ---------- */
@@ -3154,12 +3484,24 @@ function showBossDefeated(){
 /* ---------- 通關成長：20 點素質自由配 + 技能升級／學習 ---------- */
 const GROWTH_POINTS = 20;
 const GROWTH_STEP = { hp:10, atk:1, def:1 };   // 1 點 = 血量+10 / 攻擊+1 / 防禦+1
+/* 通關成長的新技能候選：每位勇者看到「自己職業的 2 招」，從中 2 選 1。
+   候選由職業決定（不同職業完全不同），並排除自己與隊友已學會的技能。
+   在開啟成長畫面時就固定，避免某人選了之後另一人的選項跟著變動。 */
+function assignLearnOpts(){
+  return state.players.map((p,i)=>{
+    const pool = LEARN_BY_CLASS[p.cls.key] || LEARNABLE.slice(0,2);
+    return pool.filter(id => !p.skills.some(s=>s.id===id) && !learnedByAnyone(id,i));
+  });
+}
 function openGrowth(){
+  // 已領取過本階段成長 → 直接進結果頁，不再發放點數與技能升級
+  if(state.stage && growthClaimed(state.stage.id)){ showResult('stageClear'); return; }
   state.growth = {
     points: state.players.map(()=>GROWTH_POINTS),
     add: state.players.map(()=>({ hp:0, atk:0, def:0 })),
     skillDone: state.players.map(()=>false),
     skillChoice: state.players.map(()=>''),
+    learnOpts: assignLearnOpts(),
   };
   renderGrowth();
   showScreen('growth');
@@ -3168,8 +3510,10 @@ function openGrowth(){
 function growthOptions(i){
   const p = state.players[i];
   const ups = p.skills.map((s,si)=>({ si, sk:s })).filter(o=>o.sk.lv < SKILL_LEVEL_MAX);
+  const opts = (state.growth && Array.isArray(state.growth.learnOpts))
+    ? (state.growth.learnOpts[i] || []) : [];
   const learns = (p.skills.length < 2)
-    ? LEARNABLE.filter(id => !p.skills.some(s=>s.id===id) && !learnedByAnyone(id,i))
+    ? opts.filter(id => !p.skills.some(s=>s.id===id) && !learnedByAnyone(id,i))
     : [];
   return { ups, learns };
 }
@@ -3177,7 +3521,9 @@ function renderGrowth(){
   const g = state.growth; if(!g) return;
   $('growth-title').textContent = `🎊 通關「第 ${state.stage.id} 階段・${state.stage.name}」！`;
   $('growth-sub').innerHTML = `每位勇者各有 <b>${GROWTH_POINTS} 點</b>，可自由分配到血量／攻擊／防禦；<br>
-    並可 <b>升級現有技能</b> 或 <b>再學第 2 招技能</b>（每人最多 2 招，技能等級上限 Lv.${SKILL_LEVEL_MAX}）。`;
+    並可 <b>升級現有技能</b>，或從 <b>自己職業的 2 招專屬新技能中選 1 招</b>（不同職業候選完全不同）。<br>
+    每人最多 2 招，技能等級上限 Lv.${SKILL_LEVEL_MAX}。<br>
+    <span style="color:#b3261e">⚠️ 每個階段的成長只能領取一次；重玩同一階段通關後，不會再獲得點數或技能升級。</span>`;
 
   $('growth-cards').innerHTML = state.players.map((p,i)=>{
     const a = g.add[i], pts = g.points[i], done = g.skillDone[i];
@@ -3281,6 +3627,8 @@ function confirmGrowth(){
   });
   state.growthSummary = summary.join('<br>');
   state.growth = null;
+  claimGrowth(state.stage.id);   // 本階段成長已領取，重玩不再發放
+  saveParty();                   // 保存角色素質與技能，供其他階段延續使用
   showResult('stageClear');
 }
 function retryStage(){ startStage(state.stage.id); }
@@ -3305,7 +3653,7 @@ function showResult(type){
     } else if(opened){
       msg += ` 🔓 已解鎖「第 ${nextId} 階段・${STAGES[nextId].name}」！`;
     } else {
-      msg += ' 繼續挑戰已解鎖的階段吧！';
+      msg += ' 繼續挑戰已解鎖的階段吧！本階段的成長已領取過，重玩不會再發放點數與技能升級。';
     }
     $('result-msg').textContent = msg;
     confetti();
@@ -3337,7 +3685,7 @@ function confetti(){
   setTimeout(()=>{ box.innerHTML=''; }, 3200);
 }
 
-window.addEventListener('DOMContentLoaded', ()=>{ showScreen('home'); });
+window.addEventListener('DOMContentLoaded', ()=>{ updateContinueBtn(); showScreen('home'); });
 
 // 視窗/方向變化時，若在戰鬥畫面就重新自動縮放（戰場 1 : 作答區 2 也會重算）
 window.addEventListener('resize', ()=>{
