@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>字靈守護戰｜輸入文字，守護核心</title>
+<title>字靈守護戰（單機版）｜輸入文字，守護核心</title>
 <style>
   :root{
     --ink:#20364a; --muted:#6b8091; --line:#d8e7e9;
@@ -68,7 +68,7 @@
   /* ---------- Tokens & effects ---------- */
   #tokens,#effects{position:absolute;inset:0;pointer-events:none}
   #tokens{z-index:6}
-  .token{position:absolute;left:0;top:0;pointer-events:auto;padding:9px 17px;border-radius:15px;
+  .token{position:absolute;left:0;top:0;pointer-events:none;padding:9px 17px;border-radius:15px;
     background:rgba(255,255,255,.92);border:2px solid rgba(255,255,255,.95);
     box-shadow:0 8px 18px rgba(25,52,70,.20),inset 0 0 0 1px rgba(52,183,189,.16);
     font-size:clamp(18px,2.1vw,26px);font-weight:900;letter-spacing:.06em;white-space:nowrap;
@@ -228,13 +228,33 @@
     #core{transform:translate(-50%,-50%) scale(.82)}
     .panel{padding:18px}
   }
+  #userChip{font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #myRecords{max-height:320px;overflow:auto;width:100%;font-size:12px;text-align:left}
+  #myRecords table{width:100%;border-collapse:collapse}
+  #myRecords th,#myRecords td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+  #myRecords th{color:var(--muted);font-weight:900}
+  .records-foot{margin-top:10px;font-size:12px;color:var(--muted);text-align:center;font-weight:800}
+  .storage-warn{background:#fff7e6;border:2px solid #ffd79a;color:#8a5a12;border-radius:12px;
+    padding:9px 12px;font-size:12px;font-weight:800;line-height:1.6;margin-bottom:10px}
+  .saved-tip{display:none;margin-top:14px;font-size:12px;font-weight:800;border-radius:12px;padding:8px 12px}
+  .saved-tip.ok{display:block;background:#e9fbf4;border:2px solid #a8e6cf;color:#1d7a55}
+  .saved-tip.warn{display:block;background:#fff7e6;border:2px solid #ffd79a;color:#8a5a12}
+  /* 防複製／防選取：點擊文字不會有選取反應 */
+  html,body{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+    -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+  input,textarea{-webkit-user-select:text;-moz-user-select:text;user-select:text}
+  img{-webkit-user-drag:none;user-drag:none;pointer-events:none}
+  .who{border:2px dashed #bfe0dd;border-radius:14px;padding:9px 12px;margin:0 0 12px;
+    background:#f4fbfa;font-size:13px;font-weight:900;color:#2a6172;display:flex;
+    justify-content:center;gap:14px;flex-wrap:wrap}
+  .who b{color:#12626a}
 </style>
 </head>
-<body>
+<body oncontextmenu="return false" ondragstart="return false">
 <div id="arena">
   <div id="bg"></div><div id="veil"></div><div id="flash"></div>
   <header id="hud">
-    <div class="brand">字靈守護戰<small>GLYPH GUARDIANS</small></div>
+    <div class="brand">字靈守護戰<small>GLYPH GUARDIANS · 單機版</small></div>
     <div class="pill">⏱ <b id="timer">00:00</b></div>
     <div class="pill">第 <b id="wave">1</b> 波</div>
     <div class="pill">字靈 <b id="tokenCount">0/5</b></div>
@@ -243,6 +263,8 @@
     <div class="pill" id="hearts">❤️❤️❤️❤️❤️</div>
     <div class="spacer"></div>
     <div class="pill" id="setupTag">請選擇組合</div>
+    <div class="pill" id="userChip">🖥 單機模式</div>
+    <button class="icon-btn" id="recordsBtn" title="我的本機紀錄">📊</button>
     <button class="icon-btn" id="soundBtn" title="音效開關">🔊</button>
     <button class="icon-btn" id="pauseBtn" title="暫停">⏸</button>
   </header>
@@ -267,7 +289,7 @@
 </div>
 
 <!-- 開始畫面 -->
-<div class="screen" id="startScreen">
+<div class="screen hidden" id="startScreen">
   <div class="panel">
     <h1>字靈守護戰 <span>· 文字防衛</span></h1>
     <p class="subtitle">文字從四面八方逼近核心。選一位守護者，輸入相同的字，守護者就會施展技能消滅它！</p>
@@ -277,9 +299,20 @@
     <div class="mode-row" id="typeStart"></div>
     <div class="section-title">③ 選擇速度難度（每種文字都有 4 段速度）</div>
     <div class="mode-row" id="speedStart"></div>
-    <div class="center"><button class="primary" id="startBtn">開始守護 ✨</button></div>
+    <div class="center"><button class="primary" id="startBtn">開始守護 ✨</button>
+      <button class="secondary" id="menuRecordsBtn">📊 我的本機紀錄</button></div>
     <div id="startWarn" class="hidden"></div>
-    <div class="tips">玩法：計時從 00:00 開始，鍵入文字後按 Enter／點「施展技能」即可加分，也可直接點按字靈。<b>每消滅一個字累積 10 點能量，連續命中再加能量（字數越多加成越高，單次最多 +20），滿 100 點可發動專屬主動技</b>。連續命中累積連击加分；每 20 秒字靈會增殖。Esc 暫停。<b>守護者、文字類型與速度難度在遊戲開始後即鎖定。</b>最佳紀錄：<b id="bestStart">0</b></div>
+    <div class="tips">玩法：計時從 00:00 開始，鍵入文字後按 Enter／點「施展技能」即可加分。<b>每消滅一個字累積 10 點能量，連續命中再加能量（字數越多加成越高，單次最多 +20），滿 100 點可發動專屬主動技</b>。連續命中累積連击加分；每 20 秒字靈會增殖。Esc 暫停。<b>守護者、文字類型與速度難度在遊戲開始後即鎖定。</b>最佳紀錄：<b id="bestStart">0</b>　本機已存：<b id="recordCount">尚無</b></div>
+  </div>
+</div>
+
+<!-- 我的本機紀錄 -->
+<div class="screen hidden" id="recordsScreen">
+  <div class="panel" style="max-width:660px">
+    <h1>我的本機紀錄 📊</h1>
+    <p class="subtitle">紀錄只儲存在這台電腦的瀏覽器裡，不會上傳到任何地方。</p>
+    <div id="myRecords"></div>
+    <div class="center"><button class="secondary" id="closeRecords">返回選單</button></div>
   </div>
 </div>
 
@@ -306,7 +339,9 @@
       <div>最高連擊 <b id="finalCombo">0</b></div>
     </div>
     <div class="center"><button class="primary" id="againBtn">再守一次</button>
-    <button class="secondary" id="backBtn">更換組合</button></div>
+    <button class="secondary" id="backBtn">更換組合</button>
+    <button class="secondary" id="overRecordsBtn">📊 本機紀錄</button></div>
+    <div id="savedTip" class="saved-tip"></div>
   </div>
 </div>
 
@@ -315,6 +350,94 @@
   'use strict';
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
+
+  /* ---------- 本機模式：免登入、不連網，成績存在瀏覽器 ----------
+     若 localStorage 被封鎖（例如在預覽框或受限制的電腦上），會自動退回記憶體，
+     確保遊戲流程不會中斷，並明確告知「本次成績無法永久保存」。 */
+  const LOCAL_KEY = 'ziling.local.scores.v1';
+  const BEST_KEY = 'glyph-guardians-best';
+  const memStore = Object.create(null);
+  let storageOK = true;
+
+  function storeGet(k) {
+    try {
+      const v = localStorage.getItem(k);
+      if (v !== null) return v;
+    } catch (e) { storageOK = false; }
+    return (k in memStore) ? memStore[k] : null;
+  }
+  function storeSet(k, v) {
+    memStore[k] = v;
+    try { localStorage.setItem(k, v); return true; }
+    catch (e) { storageOK = false; return false; }
+  }
+  (function probeStorage() {
+    try { localStorage.setItem('__zg_probe__', '1'); localStorage.removeItem('__zg_probe__'); }
+    catch (e) { storageOK = false; }
+  })();
+
+  const getBest = () => Number(storeGet(BEST_KEY) || 0);
+  const setBest = (v) => storeSet(BEST_KEY, String(v));
+
+  function readLocalScores() {
+    try {
+      const raw = storeGet(LOCAL_KEY);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function recordScore() {
+    const c = COMBOS[state.comboIndex], ty = TYPES.find(t => t.id === state.type), sp = SPEEDS.find(s => s.level === state.speed);
+    const row = {
+      at: Date.now(),
+      score: state.score, secs: Math.round(state.elapsed),
+      kills: state.kills, combo: state.maxCombo,
+      guardian: c ? `${c.element} · ${c.name}` : null,
+      type: ty ? ty.label : null, speed: sp ? sp.label : null
+    };
+    const list = readLocalScores();
+    list.unshift(row);
+    return storeSet(LOCAL_KEY, JSON.stringify(list.slice(0, 100)));
+  }
+  function enterMenu() {
+    show('#startScreen', true);
+    document.body.classList.add('in-menu');
+    updateRecordCount();
+  }
+  function updateRecordCount() {
+    const n = readLocalScores().length;
+    $('#recordCount').textContent = n ? `${n} 筆${storageOK ? '' : '（本次）'}` : '尚無';
+    $('#bestStart').textContent = getBest();
+  }
+  let recordsFrom = 'menu';
+  function closeRecords() {
+    show('#recordsScreen', false);
+    if (recordsFrom === 'game' && state.running) {
+      state.paused = false; entry.focus();
+    } else if (recordsFrom === 'menu') {
+      updateRecordCount();
+    }
+  }
+  function showRecords(from) {
+    recordsFrom = from || (state.running ? 'game' : 'menu');
+    if (recordsFrom === 'game' && state.running && !state.paused) state.paused = true;
+    $('#closeRecords').textContent =
+      recordsFrom === 'game' ? '返回遊戲' : (recordsFrom === 'over' ? '返回成績' : '返回選單');
+    const data = readLocalScores();
+    show('#recordsScreen', true);
+    const warn = storageOK ? '' :
+      '<div class="storage-warn">⚠️ 這台電腦／這個開啟方式不允許本機儲存，成績只會保留到關閉頁面為止。建議用 Chrome／Edge 直接開啟本檔案。</div>';
+    if (!data.length) {
+      $('#myRecords').innerHTML = warn +
+        '<div style="padding:14px;text-align:center;color:var(--muted)">尚無紀錄，快去玩一局吧！</div>';
+      return;
+    }
+    $('#myRecords').innerHTML = warn + `<table><thead><tr><th>時間</th><th>分數</th><th>存活</th><th>消滅</th><th>連擊</th><th>守護者</th></tr></thead><tbody>` +
+      data.map(r => `<tr><td>${new Date(r.at).toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>` +
+        `<td><b>${r.score}</b></td><td>${fmtTime(r.secs)}</td><td>${r.kills}</td><td>${r.combo}</td>` +
+        `<td>${r.guardian||''}</td></tr>`).join('') + '</tbody></table>' +
+      `<div class="records-foot">共 ${data.length} 筆（最多保留 100 筆）· 最佳 ${getBest()} 分</div>`;
+  }
 
   const POOLS = {
     char: ['山','水','火','木','金','土','日','月','星','雲','風','雨','雷','電','花','草','樹','林','江','河','海','天','地','人','心','手','眼','春','夏','秋','冬','光','影','夢','龍','虎','鳥','魚','石','玉','琴','詩','書','畫','劍','馬','舟','橋','雪','霜','露','霧','泉','溪','峰','谷','島','帆','燈','鐘','鼓','鈴','羽','翼','果','葉','根','芽'],
@@ -366,9 +489,6 @@
   const norm = (s) => String(s || '').replace(/[\s，。！？、；：,.!?;:'"（）()「」『』]/g,'').toUpperCase();
   const rand = (a,b) => a + Math.random()*(b-a);
   const pick = (arr) => arr[Math.floor(Math.random()*arr.length)];
-  const bestKey = 'glyph-guardians-best';
-  const getBest = () => Number(localStorage.getItem(bestKey) || 0);
-  const setBest = (v) => localStorage.setItem(bestKey, String(v));
   const fmtTime = (s) => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
   // 每 20 秒字靈上限 +1，讓畫面上的文字隨時間越多（上限 18）
   const maxTokens = () => Math.min(5 + Math.floor(state.elapsed/20), 18);
@@ -583,6 +703,8 @@
     state.energy=0; updateEnergy();
     updateHud();
     show('#startScreen',false); show('#overScreen',false); show('#pauseScreen',false);
+    show('#recordsScreen',false);
+    $('#savedTip').className='saved-tip'; $('#savedTip').textContent='';
     document.body.classList.remove('in-menu');
     document.documentElement.style.setProperty('--core-y', window.innerWidth<720?'42%':'45%');
     measureCore();
@@ -599,6 +721,15 @@
     $('#finalWave').textContent=state.wave;
     $('#finalKills').textContent=state.kills;
     $('#finalCombo').textContent=state.maxCombo;
+    const saved = recordScore();
+    const tip = $('#savedTip');
+    if (saved) {
+      tip.className = 'saved-tip ok';
+      tip.textContent = `✅ 本局成績已存入本機紀錄（共 ${readLocalScores().length} 筆）`;
+    } else {
+      tip.className = 'saved-tip warn';
+      tip.textContent = '⚠️ 這個開啟方式無法寫入本機儲存，關閉頁面後紀錄會消失';
+    }
     show('#overScreen',true);
     tone(360,.5,'sawtooth',.05,90);
   }
@@ -638,11 +769,10 @@
     const dx=state.coreX-x, dy=state.coreY-y, len=Math.hypot(dx,dy)||1;
     const speed=ty.speed*sp.factor*(1+Math.min(state.wave-1,12)*.075)*rand(.9,1.12);
     const node=document.createElement('div');
-    node.className='token'; node.textContent=text; node.title=`${ty.label} · ${sp.label}`;
+    node.className='token'; node.textContent=text;
     const t={id:++state.id,node,text,key:norm(text),type,x,y,
       vx:dx/len*speed, vy:dy/len*speed, rx:x, ry:y,
       phase:rand(0,Math.PI*2), wfreq:rand(.9,1.7), wobble:rand(4,12)};
-    node.addEventListener('click', () => { if(state.running&&!state.paused) hit([t],true); });
     tokenLayer.appendChild(node);
     state.tokens.push(t);
   }
@@ -687,7 +817,7 @@
     const key=norm(entry.value);
     if (!key) { entry.classList.add('shake'); setTimeout(()=>entry.classList.remove('shake'),320); return; }
     const exact=state.tokens.filter(t=>t.key===key);
-    if (exact.length) { entry.value=''; highlight(); hit(exact,false); return; }
+    if (exact.length) { entry.value=''; highlight(); hit(exact); return; }
     if (state.tokens.some(t=>t.key.startsWith(key))) {
       toast('快完成了，再輸入幾個字！'); tone(700,.07,'sine',.04);
     } else {
@@ -699,14 +829,14 @@
     }
     entry.focus();
   }
-  function hit(targets, byClick) {
+  function hit(targets) {
     const c=COMBOS[state.comboIndex];
     const sorted=[...targets].sort((a,b)=>
       Math.hypot(a.rx-state.coreX,a.ry-state.coreY)-Math.hypot(b.rx-state.coreX,b.ry-state.coreY));
     state.combo++; state.maxCombo=Math.max(state.maxCombo,state.combo);
     sorted.forEach((t,i) => {
       const cfg=TYPES.find(x=>x.id===t.type);
-      const gain=Math.round(cfg.base*(1+Math.min(state.combo-1,10)*.1)*(byClick ? 0.8 : 1));
+      const gain=Math.round(cfg.base*(1+Math.min(state.combo-1,10)*.1));
       state.score+=gain; state.kills++;
       addEnergy(t.key.length, state.combo);
       scorePop(t.rx,t.ry,'+'+gain);
@@ -841,6 +971,24 @@
   /* ---------- 事件綁定 ---------- */
   document.body.classList.add('in-menu');
   renderCards(); renderChoices(); applyCombo(); updateEnergy(); updateHud();
+  $('#recordsBtn').addEventListener('click', () => showRecords('game'));
+  $('#menuRecordsBtn').addEventListener('click', () => showRecords('menu'));
+  $('#overRecordsBtn').addEventListener('click', () => showRecords('over'));
+  $('#closeRecords').addEventListener('click', closeRecords);
+
+  // 防右鍵／防複製／防選取（點文字不會有反應）
+  ['contextmenu','dragstart','selectstart','copy','cut'].forEach(ev =>
+    document.addEventListener(ev, e => {
+      if (ev === 'selectstart' && e.target.closest('input,textarea')) return;
+      e.preventDefault();
+    }, true));
+  document.addEventListener('keydown', e => {
+    const k = (e.key || '').toLowerCase();
+    if (e.key === 'F12') { e.preventDefault(); e.stopPropagation(); return; }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i','j','c','k'].includes(k)) { e.preventDefault(); return; }
+    if ((e.ctrlKey || e.metaKey) && ['u','s','p','a'].includes(k)) { e.preventDefault(); return; }
+  }, true);
+  enterMenu();
   const backToMenu = () => {
     state.running=false; state.paused=false;
     // 回到選單時清空選擇，維持「無預設選項」
@@ -848,9 +996,10 @@
     $('#guardian').src=''; $('#skillName').textContent='尚未選擇守護者';
     $('#startWarn').classList.add('hidden');
     renderCards(); renderChoices();
-    show('#overScreen',false); show('#pauseScreen',false);
+    show('#overScreen',false); show('#pauseScreen',false); show('#recordsScreen',false);
     show('#startScreen',true); document.body.classList.add('in-menu');
     updateEnergy();
+    updateRecordCount();
   };
   $('#startBtn').addEventListener('click', startGame);
   $('#againBtn').addEventListener('click', startGame);
@@ -880,7 +1029,10 @@
   $('#quitBtn').addEventListener('click', backToMenu);
   $('#ult').addEventListener('click', useUlt);
   document.addEventListener('keydown',e=>{
-    if (e.key==='Escape') togglePause();
+    if (e.key==='Escape') {
+      if (!$('#recordsScreen').classList.contains('hidden')) { closeRecords(); return; }
+      togglePause();
+    }
   });
   arena.addEventListener('pointerdown',e=>{
     if (state.running && !state.paused && !e.target.closest('#dock,#hud,.token')) entry.focus();
